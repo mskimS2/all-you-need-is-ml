@@ -1,6 +1,5 @@
 from typing import List
 
-
 class Task:
     type = {
         "classification": 0,
