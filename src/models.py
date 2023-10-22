@@ -1,4 +1,4 @@
-import xgboost as xgb
+from xgboost import XGBClassifier, XGBRegressor
 from lightgbm import LGBMClassifier, LGBMRegressor
 from catboost import CatBoostClassifier, CatBoostRegressor
 from sklearn import svm
@@ -19,7 +19,6 @@ from sklearn.ensemble import (
     RandomForestRegressor
 )
 
-
 def get_model(
     model_name: str,
     problem: str,
@@ -28,15 +27,15 @@ def get_model(
     
     if model_name == "xgboost":
         if problem == "binary_classification":
-            model = xgb.XGBClassifier
+            model = XGBClassifier
         elif problem == "multi_class_classification":
-            model = xgb.XGBClassifier
+            model = XGBClassifier
         elif problem == "multi_label_classification":
-            model = xgb.XGBClassifier
+            model = XGBClassifier
         elif problem == "single_column_regression":
-            model = xgb.XGBRegressor
+            model = XGBRegressor
         elif problem == "multi_column_regression":
-            model = xgb.XGBRegressor
+            model = XGBRegressor
         else:
             raise ValueError(f"Invalid problem type: {problem}")
     
