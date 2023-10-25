@@ -1,10 +1,11 @@
 import numpy as np
 import pandas as pd
+from dataclasses import dataclass
 from typing import List
 from sklearn.model_selection import KFold, StratifiedKFold
 
 from logger import logger
-from type import Problem
+from type import Problem, Task
 
 
 def created_fold(
@@ -51,7 +52,40 @@ def created_fold(
         kf = KFold(n_splits=n_splits, shuffle=shuffle, random_state=random_state)
         for fold, (_, valid_indicies) in enumerate(kf.split(X=df, y=y)):
             df.loc[valid_indicies, "fold_id"] = fold
+
     else:
         raise Exception("Invalid problem type for created fold.")
         
     return df
+
+def check_problem_type(
+    df: pd.DataFrame,
+    task: Task,
+    target_columns: List[str],
+):
+    num_labels = len(np.unique(df[target_columns].values))
+    if task is not None:
+        if task == Task.types.classification:
+            problem_type = Problem.type.multi_label_classification
+            if num_labels == 2:
+                problem_type = Problem.type.binary_classification
+
+        elif task == Task.types.regression:
+            problem_type = Problem.type.multi_column_regression
+            if num_labels == 1:
+                problem_type = Problem.type.single_column_regression
+                
+        else:
+            raise Exception("Problem type not understood")
+
+    logger.info(f"problem type: {problem_type.name}, detected labels: {num_labels}")
+    return problem_type
+
+@dataclass
+class Trainer:
+    
+    def fit(self, train_df: pd.DataFrame):
+        raise NotImplementedError
+    
+    def predict(self, test_df: pd.DataFrame):
+        raise NotImplementedError

@@ -23,8 +23,6 @@ def get_model(
     model_name: str,
     problem: str,
 ):
-    model = None
-    
     if model_name == "xgboost":
         if problem == "binary_classification":
             model = XGBClassifier
