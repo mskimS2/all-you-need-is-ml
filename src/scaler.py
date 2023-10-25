@@ -37,7 +37,3 @@ class Scaler:
     
     def fit_transform(self, df: pd.DataFrame):
         return self.scaler.fit_transform(df[self.features])
-        
-    
-    
-    
