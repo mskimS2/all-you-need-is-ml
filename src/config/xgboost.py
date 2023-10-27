@@ -8,10 +8,12 @@ def xgboost_args():
     p.add_argument('--num_folds', type=int, default=5)
     p.add_argument('--random_seed', type=int, default=42)
     p.add_argument('--use_predict_proba', type=bool, default=True)
+    p.add_argument('--shuffle', type=bool, default=True)
     p.add_argument('--early_stopping_rounds', type=int, default=50)
     p.add_argument('--problem_type', type=str, default="binary_classification")
     p.add_argument('--train_data', type=str, default="dataset/binary_classification.csv")
     p.add_argument('--device', type=str, default="cpu", choices=["cpu", "gpu"])
+    p.add_argument('--fast', type=bool, default=True)
     
     # parameters for tree booster
     # - https://xgboost.readthedocs.io/en/stable/parameter.html

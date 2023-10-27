@@ -4,6 +4,7 @@ from dataclasses import dataclass
 from typing import List
 from sklearn.model_selection import KFold, StratifiedKFold
 
+from metrics import Metric
 from logger import logger
 from type import Problem, Task
 
@@ -21,16 +22,13 @@ def created_fold(
         return df
     
     df["fold_id"] = -1
-    if problem in (
-        Problem.type.binary_classification, 
-        Problem.type.multi_class_classification,
-    ):
+    if problem in ["binary_classification", "multi_class_classification"]:
         y = df[target_columns].values
         skf = StratifiedKFold(n_splits=n_splits, shuffle=shuffle, random_state=random_state)
         for fold, (_, valid_indicies) in enumerate(skf.split(X=df, y=y)):
             df.loc[valid_indicies, "fold_id"] = fold
             
-    elif problem in Problem.type.single_column_regression:
+    elif problem in ["single_column_regression"]:
         y = df[target_columns].values
         num_bins = min(int(np.floor(1 + np.log2(len(df)))), 10)
         skf = StratifiedKFold(n_splits=n_splits, shuffle=shuffle, random_state=random_state)
@@ -39,14 +37,14 @@ def created_fold(
             df.loc[valid_indicies, "fold_id"] = fold
         df = df.drop("bins", axis=1)
         
-    elif problem in Problem.type.multi_column_regression:
+    elif problem in ["multi_column_regression"]:
         # Todo: MultilabelStratifiedKFold
         y = df[target_columns].values
         kf = KFold(n_splits=n_splits, shuffle=shuffle, random_state=random_state)
         for fold, (_, valid_indicies) in enumerate(kf.split(X=df, y=y)):
             df.loc[valid_indicies, "fold_id"] = fold
     
-    elif problem in Problem.type.multi_label_classification:
+    elif problem in ["multi_label_classification"]:
         # Todo: MultilabelStratifiedKFold
         y = df[target_columns].values
         kf = KFold(n_splits=n_splits, shuffle=shuffle, random_state=random_state)
@@ -83,9 +81,69 @@ def check_problem_type(
 
 @dataclass
 class Trainer:
+    config: dict
     
-    def fit(self, train_df: pd.DataFrame):
-        raise NotImplementedError
+    def dict_mean(self, dict_list):
+        mean_dict = {}
+        for key in dict_list[0].keys():
+            mean_dict[key] = sum(d[key] for d in dict_list) / len(dict_list)
+        return mean_dict
+    
+    def fit(
+        self, 
+        model: object,
+        train_df: pd.DataFrame,
+        features: List[str],
+        targets: List[str],
+    ):
+        logger.info(f"model configuration: {self.config}")
+        metrics = Metric(self.config.problem_type)
+        scores = []
+        
+        train_df = created_fold(
+            train_df, 
+            self.config.problem_type, 
+            self.config.num_folds, 
+            self.config.shuffle, 
+            self.config.random_seed, 
+            targets,
+        )
+        
+        for fold in range(self.config.num_folds):
+            x_train = train_df[train_df["fold_id"]!=fold][features]
+            y_train = train_df[train_df["fold_id"]!=fold][targets]
+            x_valid = train_df[train_df["fold_id"]!=fold][features]
+            y_valid = train_df[train_df["fold_id"]!=fold][targets]
+
+            ypred = []
+            models = [model] * len(targets)
+            for idx, _m in enumerate(models):
+                _m.fit(
+                    x_train,
+                    y_train,
+                    early_stopping_rounds=self.config.early_stopping_rounds,
+                    eval_set=[(x_valid, y_valid)],
+                    verbose=False,
+                )
+            
+                ypred_temp = _m.predict_proba(x_valid)[:, 1]
+                ypred.append(ypred_temp)
+            ypred = np.column_stack(ypred)
+
+            if self.config.use_predict_proba:
+                ypred = model.predict_proba(x_valid)
+            else:
+                ypred = model.predict(x_valid)
+
+            # calculate metric
+            metric_dict = metrics.calculate(y_valid, ypred)
+            scores.append(metric_dict)
+            if self.config.fast is True:
+                break
+
+        mean_metrics = self.dict_mean(scores)
+        logger.info(f"Metric score: {mean_metrics}")
+        return mean_metrics
     
     def predict(self, test_df: pd.DataFrame):
         raise NotImplementedError

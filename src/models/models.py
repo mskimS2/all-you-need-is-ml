@@ -1,3 +1,4 @@
+from config.xgboost import xgboost_args
 from xgboost import XGBClassifier, XGBRegressor
 from lightgbm import LGBMClassifier, LGBMRegressor
 from catboost import CatBoostClassifier, CatBoostRegressor
@@ -24,16 +25,17 @@ def get_model(
     problem: str,
 ):
     if model_name == "xgboost":
+        args = xgboost_args()
         if problem == "binary_classification":
-            model = XGBClassifier
+            model = XGBClassifier()
         elif problem == "multi_class_classification":
-            model = XGBClassifier
+            model = XGBClassifier()
         elif problem == "multi_label_classification":
-            model = XGBClassifier
+            model = XGBClassifier()
         elif problem == "single_column_regression":
-            model = XGBRegressor
+            model = XGBRegressor()
         elif problem == "multi_column_regression":
-            model = XGBRegressor
+            model = XGBRegressor()
         else:
             raise ValueError(f"Invalid problem type: {problem}")
     
@@ -154,4 +156,4 @@ def get_model(
     else:
         raise ValueError(f"Invalid model name: {model_name}")
     
-    return model
+    return model, args
