@@ -1,3 +1,4 @@
+import pickle
 import numpy as np
 import pandas as pd
 from dataclasses import dataclass
@@ -9,52 +10,6 @@ from logger import logger
 from type import Problem, Task
 
 
-def created_fold(
-    df: pd.DataFrame,
-    problem: Problem,
-    n_splits: int,
-    shuffle: bool,
-    random_state: int,
-    target_columns: List[str],
-):
-    if "fold_id" in df.columns:
-        logger.info("`fold_id` column already exists from input dataframe.")
-        return df
-    
-    df["fold_id"] = -1
-    if problem in ["binary_classification", "multi_class_classification"]:
-        y = df[target_columns].values
-        skf = StratifiedKFold(n_splits=n_splits, shuffle=shuffle, random_state=random_state)
-        for fold, (_, valid_indicies) in enumerate(skf.split(X=df, y=y)):
-            df.loc[valid_indicies, "fold_id"] = fold
-            
-    elif problem in ["single_column_regression"]:
-        y = df[target_columns].values
-        num_bins = min(int(np.floor(1 + np.log2(len(df)))), 10)
-        skf = StratifiedKFold(n_splits=n_splits, shuffle=shuffle, random_state=random_state)
-        df["bins"] = pd.cut(df[target_columns].values.ravel(), bins=num_bins, labels=False)
-        for fold, (_, valid_indicies) in enumerate(kf.split(X=df, y=df.bins.values)):
-            df.loc[valid_indicies, "fold_id"] = fold
-        df = df.drop("bins", axis=1)
-        
-    elif problem in ["multi_column_regression"]:
-        # Todo: MultilabelStratifiedKFold
-        y = df[target_columns].values
-        kf = KFold(n_splits=n_splits, shuffle=shuffle, random_state=random_state)
-        for fold, (_, valid_indicies) in enumerate(kf.split(X=df, y=y)):
-            df.loc[valid_indicies, "fold_id"] = fold
-    
-    elif problem in ["multi_label_classification"]:
-        # Todo: MultilabelStratifiedKFold
-        y = df[target_columns].values
-        kf = KFold(n_splits=n_splits, shuffle=shuffle, random_state=random_state)
-        for fold, (_, valid_indicies) in enumerate(kf.split(X=df, y=y)):
-            df.loc[valid_indicies, "fold_id"] = fold
-
-    else:
-        raise Exception("Invalid problem type for created fold.")
-        
-    return df
 
 def check_problem_type(
     df: pd.DataFrame,
@@ -83,12 +38,6 @@ def check_problem_type(
 class Trainer:
     config: dict
     
-    def dict_mean(self, dict_list):
-        mean_dict = {}
-        for key in dict_list[0].keys():
-            mean_dict[key] = sum(d[key] for d in dict_list) / len(dict_list)
-        return mean_dict
-    
     def fit(
         self, 
         model: object,
@@ -100,7 +49,7 @@ class Trainer:
         metrics = Metric(self.config.problem_type)
         scores = []
         
-        train_df = created_fold(
+        train_df = self.created_fold(
             train_df, 
             self.config.problem_type, 
             self.config.num_folds, 
@@ -141,9 +90,83 @@ class Trainer:
             if self.config.fast is True:
                 break
 
+        self.model_save(model)
         mean_metrics = self.dict_mean(scores)
         logger.info(f"Metric score: {mean_metrics}")
         return mean_metrics
     
-    def predict(self, test_df: pd.DataFrame):
-        raise NotImplementedError
+    def predict(
+        self, 
+        test_df: pd.DataFrame,
+        targets: List[str],
+    ):
+        model = self.model_load()
+        models = [model] * len(targets)
+        ypred = []
+        for idx, _m in enumerate(models):
+            ypred_temp = _m.predict_proba(test_df)[:, 1]
+            ypred.append(ypred_temp)
+        ypred = np.column_stack(ypred)
+        return ypred
+    
+    def model_save(self, model):
+        with open(f"{self.config.output_path}/{self.config.model_name}.pickle", "wb") as f:
+            pickle.dump(model, f)
+            
+    def model_load(self) -> object:
+        with open(f"{self.config.output_path}/{self.config.model_name}.pickle", "rb") as f:
+            model = pickle.load(f)
+        return model
+    
+    def dict_mean(self, dict_list):
+        mean_dict = {}
+        for key in dict_list[0].keys():
+            mean_dict[key] = sum(d[key] for d in dict_list) / len(dict_list)
+        return mean_dict
+    
+    def created_fold(
+        df: pd.DataFrame,
+        problem: Problem,
+        n_splits: int,
+        shuffle: bool,
+        random_state: int,
+        target_columns: List[str],
+    ):
+        if "fold_id" in df.columns:
+            logger.info("`fold_id` column already exists from input dataframe.")
+            return df
+        
+        df["fold_id"] = -1
+        if problem in ["binary_classification", "multi_class_classification"]:
+            y = df[target_columns].values
+            skf = StratifiedKFold(n_splits=n_splits, shuffle=shuffle, random_state=random_state)
+            for fold, (_, valid_indicies) in enumerate(skf.split(X=df, y=y)):
+                df.loc[valid_indicies, "fold_id"] = fold
+                
+        elif problem in ["single_column_regression"]:
+            y = df[target_columns].values
+            num_bins = min(int(np.floor(1 + np.log2(len(df)))), 10)
+            skf = StratifiedKFold(n_splits=n_splits, shuffle=shuffle, random_state=random_state)
+            df["bins"] = pd.cut(df[target_columns].values.ravel(), bins=num_bins, labels=False)
+            for fold, (_, valid_indicies) in enumerate(kf.split(X=df, y=df.bins.values)):
+                df.loc[valid_indicies, "fold_id"] = fold
+            df = df.drop("bins", axis=1)
+            
+        elif problem in ["multi_column_regression"]:
+            # Todo: MultilabelStratifiedKFold
+            y = df[target_columns].values
+            kf = KFold(n_splits=n_splits, shuffle=shuffle, random_state=random_state)
+            for fold, (_, valid_indicies) in enumerate(kf.split(X=df, y=y)):
+                df.loc[valid_indicies, "fold_id"] = fold
+        
+        elif problem in ["multi_label_classification"]:
+            # Todo: MultilabelStratifiedKFold
+            y = df[target_columns].values
+            kf = KFold(n_splits=n_splits, shuffle=shuffle, random_state=random_state)
+            for fold, (_, valid_indicies) in enumerate(kf.split(X=df, y=y)):
+                df.loc[valid_indicies, "fold_id"] = fold
+
+        else:
+            raise Exception("Invalid problem type for created fold.")
+            
+        return df

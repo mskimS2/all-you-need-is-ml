@@ -15,7 +15,7 @@ class Task:
 
     @staticmethod
     def list_str() -> List[str]:
-        return Task.type.keys()
+        return list(Task.type.keys())
     
 
 class Problem:
@@ -36,7 +36,7 @@ class Problem:
 
     @staticmethod
     def list_str() -> List[str]:
-        return Problem.type.keys()
+        return list(Problem.type.keys())
 
 if __name__ == "__main__":
     print(Task.from_str("classification"))
