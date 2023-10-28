@@ -2,8 +2,8 @@ from src.logger import logger
 
 all = [
     "logger",
-    "models.models",
-    "models.base",
+    "models",
+    "trainer",
     "type",
     "utils",
     "scaler",
