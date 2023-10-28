@@ -1,7 +1,7 @@
 import argparse
 
 
-def catboost_args():
+def lightgbm_args():
     p = argparse.ArgumentParser(description="lightgbm")
     
     p.add_argument("--model_name", type=str, default="lightgbm")

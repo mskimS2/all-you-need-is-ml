@@ -1,5 +1,3 @@
-from src.logger import logger
-
 all = [
     "logger",
     "models",
@@ -8,4 +6,5 @@ all = [
     "utils",
     "scaler",
     "metrics",
+    "config",
 ]

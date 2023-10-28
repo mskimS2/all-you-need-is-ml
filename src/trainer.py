@@ -12,30 +12,6 @@ from metrics import Metric
 from logger import logger
 from type import Problem, Task
 
-
-def check_problem_type(
-    df: pd.DataFrame,
-    task: Task,
-    target_columns: List[str],
-):
-    num_labels = len(np.unique(df[target_columns].values))
-    if task is not None:
-        if task == Task.types.classification:
-            problem_type = Problem.type.multi_label_classification
-            if num_labels == 2:
-                problem_type = Problem.type.binary_classification
-
-        elif task == Task.types.regression:
-            problem_type = Problem.type.multi_column_regression
-            if num_labels == 1:
-                problem_type = Problem.type.single_column_regression
-                
-        else:
-            raise Exception("Problem type not understood")
-
-    logger.info(f"problem type: {problem_type.name}, detected labels: {num_labels}")
-    return problem_type
-
 @dataclass
 class Trainer:
     config: dict
@@ -77,12 +53,12 @@ class Trainer:
 
             ypred = []
             models = [model] * len(targets)
-            for idx, _m in enumerate(tqdm(models, total=len(models), ncols=120)):
+            for idx, _m in enumerate(models):
                 _m.fit(
                     x_train,
                     y_train,
                     eval_set=[(x_valid, y_valid)],
-                    verbose=self.config.verbose,
+                    verbose=self.config.verbose
                 )
             
                 ypred_temp = _m.predict_proba(x_valid)[:, 1]
@@ -183,3 +159,27 @@ class Trainer:
             raise Exception("Invalid problem type for created fold.")
             
         return df
+    
+    def check_problem_type(
+        self,
+        df: pd.DataFrame,
+        task: Task,
+        target_columns: List[str],
+    ):
+        num_labels = len(np.unique(df[target_columns].values))
+        if task is not None:
+            if task == Task.types.classification:
+                problem_type = Problem.type.multi_label_classification
+                if num_labels == 2:
+                    problem_type = Problem.type.binary_classification
+
+            elif task == Task.types.regression:
+                problem_type = Problem.type.multi_column_regression
+                if num_labels == 1:
+                    problem_type = Problem.type.single_column_regression
+                    
+            else:
+                raise Exception("Problem type not understood")
+
+        logger.info(f"problem type: {problem_type.name}, detected labels: {num_labels}")
+        return problem_type

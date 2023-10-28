@@ -1,12 +1,7 @@
-import os
 import sys
-sys.path.append("/C:/workspace/awesome-tablet-data/src")
-print(sys.path)
-import os
+sys.path.append("../src")
 import optuna
 import pandas as pd
-from typing import List
-from logger import logger
 from models import get_model
 from trainer import Trainer
 
