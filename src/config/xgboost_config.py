@@ -16,7 +16,7 @@ def xgboost_args():
     p.add_argument("--fast", type=bool, default=True)
     p.add_argument("--output_path", type=str, default="results")
     
-    # parameters for tree booster
+    # parameters
     # - https://xgboost.readthedocs.io/en/stable/parameter.html
     p.add_argument("--learning_rate", type=float, default=0.3, help="eta(Learning rate), [0, 1]")
     p.add_argument("--gamma", type=float, default=0., help="gamma(min_split_loss), [0, inf]")

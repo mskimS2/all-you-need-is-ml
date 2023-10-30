@@ -16,8 +16,8 @@ def catboost_args():
     p.add_argument("--fast", type=bool, default=True)
     p.add_argument("--output_path", type=str, default="results")
     
-    # parameters for tree booster
-    # - https://xgboost.readthedocs.io/en/stable/parameter.html
+    # parameters 
+    # - https://catboost.ai/en/docs/references/training-parameters/
     p.add_argument("--iterations", type=float, default=1000, help="[1, inf]")
     p.add_argument("--learning_rate", type=float, default=0., help="learning_rate, (0, inf]")
     p.add_argument("--early_stopping_rounds", type=int, default=50)

@@ -17,8 +17,8 @@ def lightgbm_args():
     p.add_argument("--output_path", type=str, default="results")
     p.add_argument("--device_type", type=str, default="cpu", choices=["cpu", "gpu", "cuda"])
     
-    # parameters for tree booster
-    # - https://xgboost.readthedocs.io/en/stable/parameter.html
+    # parameters
+    # - https://lightgbm.readthedocs.io/en/stable/Parameters.html
     p.add_argument("--iterations", type=float, default=1000, help="[1, inf]")
     p.add_argument("--learning_rate", type=float, default=0., help="learning_rate, (0, inf]")
     p.add_argument("--early_stopping_rounds", type=int, default=50)

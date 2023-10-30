@@ -1,6 +1,3 @@
-from config.xgboost_config import xgboost_args
-from config.catboost_config import catboost_args
-from config.lightgbm_config import lightgbm_args
 from xgboost import XGBClassifier, XGBRegressor
 from lightgbm import LGBMClassifier, LGBMRegressor
 from catboost import CatBoostClassifier, CatBoostRegressor
@@ -24,6 +21,14 @@ from sklearn.ensemble import (
     RandomForestClassifier,  
     RandomForestRegressor
 )
+from config.xgboost_config import xgboost_args
+from config.catboost_config import catboost_args
+from config.lightgbm_config import lightgbm_args
+from config.random_forest_config import random_forest_config
+from config.extra_tree_config import extra_tree_config
+from config.decision_tree_config import decision_tree_config
+from config.logistic_regression_config import logistic_regression_config
+
 
 def get_xgboost(problem: str):
     args = xgboost_args()
@@ -74,7 +79,7 @@ def get_catboost(problem: str):
     return model, args
 
 def get_random_forest(problem: str):
-    args = None
+    args = random_forest_config()
     if problem == "binary_classification":
         model = RandomForestClassifier()
     elif problem == "multi_class_classification":
@@ -90,7 +95,7 @@ def get_random_forest(problem: str):
     return model, args
 
 def get_decision_tree(problem: str):
-    args = None
+    args = decision_tree_config()
     if problem == "binary_classification":
         model = DecisionTreeClassifier()
     elif problem == "multi_class_classification":
@@ -106,7 +111,7 @@ def get_decision_tree(problem: str):
     return model, args
 
 def get_extra_tree(problem: str):
-    args = None
+    args = extra_tree_config()
     if problem == "binary_classification":
         model = ExtraTreeClassifier()
     elif problem == "multi_class_classification":
@@ -122,7 +127,7 @@ def get_extra_tree(problem: str):
     return model, args
 
 def get_logistic_regression(problem: str):
-    args = None
+    args = logistic_regression_config()
     if problem == "single_column_regression":
         model = LogisticRegression()
     elif problem == "multi_column_regression":
