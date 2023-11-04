@@ -3,6 +3,7 @@ import torch
 import numpy as np
 from src.logger import logger
 
+
 def set_randomness(random_seed: int = 42):
     random.seed(random_seed)
     np.random.seed(random_seed)

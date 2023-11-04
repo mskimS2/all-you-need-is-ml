@@ -4,7 +4,7 @@ all = [
     "trainer",
     "type",
     "utils",
-    "scaler",
+    "preprocessing",
     "metrics",
     "config",
 ]
