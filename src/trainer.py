@@ -13,6 +13,8 @@ from type import Problem, Task
 
 @dataclass
 class Trainer:
+    # Todo: Feature importance
+    
     config: dict
     
     def fit(

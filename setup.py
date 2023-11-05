@@ -8,7 +8,7 @@ INSTALL_REQUIRES = [
     "loguru==0.7.2",
     "tqdm==4.66.1",
     "matplotlib==3.8.0",
-    "numpy==1.24.1",
+    "numpy==1.23.0",
     "optuna==3.4.0",
     "joblib==1.3.2",
     "pandas==2.1.1",
@@ -16,6 +16,8 @@ INSTALL_REQUIRES = [
     "xgboost==2.0.1",
     "lightgbm==4.1.0",
     "catboost==1.2.2",
+    "scikit-optimize==0.9.0",
+    "pyaml==23.9.7",
 ]
 
 if __name__ == "__main__":
