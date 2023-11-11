@@ -1,5 +1,5 @@
 import pandas as pd
-from typing import List, Union
+from typing import List, Union, Tuple
 from dataclasses import dataclass
 from sklearn.preprocessing import (
     # encoder
@@ -45,25 +45,72 @@ class Scaler:
     def fit_transform(self, df: pd.DataFrame):
         return self.scaler.fit_transform(df[self.features])
 
+@dataclass
+class Encoder:
+    # one_hot_encoder = OneHotEncoder(sparse=False)
+    # lable_encoder = LabelEncoder()
+    # oridinal_encoder = OrdinalEncoder()
+    encoder: Union[OneHotEncoder, LabelEncoder, OrdinalEncoder]
+    
+    def fit(
+        self,
+        train_df: pd.DataFrame,
+        test_df: pd.DataFrame,
+        columns: List[str],
+    ):
+        if self.encoder is None:
+            raise ValueError("Encoder is None")
+        
+        for col in columns:
+            if train_df is not None:
+                train_df[col] = self.encoder.fit_transform(train_df[col])
+                if test_df is not None:
+                    test_df[col] = self.encoder.transform(test_df[col])
 
+        return train_df, test_df
+    
 @dataclass
 class Preprocessor:
-    one_hot_encoder = OneHotEncoder(sparse=False)
-    lable_encoder = LabelEncoder()
-    oridinal_encoder = OrdinalEncoder()
+    scaler: Scaler = None
+    encoder: Encoder = None
     EPS = 1e-8
     
     # Todo:
     # 1. Remove Outliers
     # 2. Remove Target Imbalance
     
+    def fit_scaling(
+        self,
+        train_df: pd.DataFrame,
+        test_df: pd.DataFrame,
+        columns: List[str],
+    ):
+        if self.scaler is None:
+            return train_df, test_df
+        
+        for col in columns:
+            if train_df is not None:
+                train_df[col] = self.scaler.fit_transform(train_df[col])
+                if test_df is not None:
+                    test_df[col] = self.scaler.transform(test_df[col])
+                    
+        return train_df, test_df
+    
+    def fit_encoding(
+        self,
+        train_df: pd.DataFrame,
+        test_df: pd.DataFrame,
+        columns: List[str],
+    ):
+        return self.encoder.fit(train_df, test_df, columns)
+    
     def feature_engineering(
         self,
         df: pd.DataFrame,
         features: Union[
-            List[str, str],
-            List[int, int],
-            List[float, float],
+            List[Tuple[str, str]],
+            List[Tuple[int, int]],
+            List[Tuple[float, float]],
         ],
         operator: str = None, # +, -, *, /, _,
     ) -> pd.DataFrame:

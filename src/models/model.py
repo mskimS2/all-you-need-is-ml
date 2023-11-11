@@ -44,20 +44,26 @@ from config.knn_config import (
     knn_regressor_config,
 )
 
+from models.xgboost import XGBoost
+
+
 def get_xgboost(problem: str):
     args = xgboost_args()
-    if problem == "binary_classification":
-        model = XGBClassifier()
-    elif problem == "multi_class_classification":
-        model = XGBClassifier()
-    elif problem == "multi_label_classification":
-        model = XGBClassifier()
-    elif problem == "single_column_regression":
-        model = XGBRegressor()
-    elif problem == "multi_column_regression":
-        model = XGBRegressor()
+    if problem in [
+        "binary_classification",
+        "multi_class_classification",
+        "multi_label_classification",
+    ]:
+        model = XGBoost(XGBClassifier(), args) 
+        
+    elif problem in [
+        "single_column_regression",
+        "multi_column_regression",
+    ]:
+        model = XGBoost(XGBRegressor(), args)
     else:
         raise ValueError(f"Invalid problem type: {problem}")
+    
     return model, args
 
 def get_lightgbm(problem: str):

@@ -13,7 +13,7 @@ def xgboost_args():
     p.add_argument("--problem_type", type=str, default="binary_classification")
     p.add_argument("--train_data", type=str, default="dataset/binary_classification.csv")
     p.add_argument("--device", type=str, default="cpu", choices=["cpu", "gpu"])
-    p.add_argument("--fast", type=bool, default=True)
+    p.add_argument("--only_one_train", type=bool, default=True)
     p.add_argument("--output_path", type=str, default="results")
     
     # parameters
@@ -27,7 +27,7 @@ def xgboost_args():
     p.add_argument("--subsample", type=float, default=1., help="max_delta_step, (0, 1]")
     p.add_argument("--sampling_method", type=str, default="uniform", help="(uniform, gradient_based)")
     p.add_argument("--colsample_bytree", type=float, default=1, help="colsample_bytree, (0, 1]")
-    p.add_argument("--lambda", type=float, default=1., help="lambda, [0, inf]")
+    p.add_argument("--reg_lambda", type=float, default=1., help="lambda(reg_lambda), [0, inf]")
     p.add_argument("--alpha", type=float, default=0., help="alpha, [0, inf]")
     p.add_argument("--tree_method", type=str, default="auto", help="(auto, exact, approx, hist)")
     p.add_argument("--scale_pos_weight", type=float, default=1., help="A typical value to consider: sum(negative instances) / sum(positive instances).")

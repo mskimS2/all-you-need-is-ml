@@ -1,6 +1,6 @@
 all = [
     "logger",
-    "models",
+    "models/model",
     "trainer",
     "type",
     "utils",

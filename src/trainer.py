@@ -5,31 +5,37 @@ import pandas as pd
 from dataclasses import dataclass
 from typing import List
 from sklearn.model_selection import KFold, StratifiedKFold
-from sklearn.preprocessing import LabelEncoder, OrdinalEncoder
 
+from models.base import MLModel
+from preprocessing import (
+    Encoder, 
+    Scaler, 
+    Preprocessor,
+)
 from metrics import Metric
 from logger import logger
 from type import Problem, Task
 
 @dataclass
 class Trainer:
-    # Todo: Feature importance
-    
+    model: MLModel
     config: dict
+    scaler: Scaler
+    encoder: Encoder
+    
+    def __post_init__(self):
+        self.preprocessor = Preprocessor(self.scaler, self.encoder)
     
     def fit(
         self, 
-        model: object,
         train_df: pd.DataFrame,
         features: List[str],
         targets: List[str],
-        encoder: object = None,
     ):
-        logger.info(f"model configuration: {self.config}")
+        self.columns = features
+        logger.info(f"configuration: {self.model}")
         metrics = Metric(self.config.problem_type)
         scores = []
-        
-        model.early_stopping_rounds=self.config.early_stopping_rounds
         
         train_df = self.created_fold(
             train_df, 
@@ -40,11 +46,9 @@ class Trainer:
             targets,
         )
         
-        if encoder is not None:
-            encoder = LabelEncoder()
-            train_df[targets] = encoder.fit_transform(
-                train_df[targets].values.reshape(-1),
-            )
+        train_df, _ = self.preprocessor.fit_scaling(train_df, None, targets)
+        
+        train_df, _ = self.preprocessor.fit_encoding(train_df, None, targets)
         
         for fold in range(self.config.num_folds):
             x_train = train_df[train_df["fold_id"]!=fold][features]
@@ -53,7 +57,7 @@ class Trainer:
             y_valid = train_df[train_df["fold_id"]!=fold][targets]
 
             ypred = []
-            models = [model] * len(targets)
+            models = [self.model] * len(targets)
             for idx, _m in enumerate(models):
                 _m.fit(
                     x_train,
@@ -67,27 +71,32 @@ class Trainer:
             ypred = np.column_stack(ypred)
 
             if self.config.use_predict_proba:
-                ypred = model.predict_proba(x_valid)
+                ypred = self.model.predict_proba(x_valid)
             else:
-                ypred = model.predict(x_valid)
+                ypred = self.model.predict(x_valid)
 
             # calculate metric
             metric_dict = metrics.calculate(y_valid, ypred)
             scores.append(metric_dict)
-            if self.config.fast is True:
+            if self.config.only_one_train is True:
                 break
 
-        self.model_save(model)
+        self.model_save(self.model)
         mean_metrics = self.dict_mean(scores)
-        logger.info(f"Metric score: {mean_metrics}")
+        logger.info(f"Result metric score: {mean_metrics}")
         return mean_metrics
     
     def predict(
         self, 
         test_df: pd.DataFrame,
         targets: List[str],
+        path: str = None,
     ):
-        model = self.model_load()
+        if path is not None:
+            model = self.model_load()
+        else:
+            model = self.model
+        
         models = [model] * len(targets)
         ypred = []
         for idx, _m in enumerate(models):
@@ -173,14 +182,18 @@ class Trainer:
                 problem_type = Problem.type.multi_label_classification
                 if num_labels == 2:
                     problem_type = Problem.type.binary_classification
-
+                    
             elif task == Task.types.regression:
                 problem_type = Problem.type.multi_column_regression
                 if num_labels == 1:
                     problem_type = Problem.type.single_column_regression
-                    
+
             else:
                 raise Exception("Problem type not understood")
 
         logger.info(f"problem type: {problem_type.name}, detected labels: {num_labels}")
         return problem_type
+    
+    def feature_importacne(self):
+        return self.model.feature_importances(columns=self.columns)
+        

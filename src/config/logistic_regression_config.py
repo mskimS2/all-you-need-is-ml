@@ -13,7 +13,7 @@ def logistic_regression_config():
     p.add_argument("--problem_type", type=str, default="binary_classification")
     p.add_argument("--train_data", type=str, default="dataset/binary_classification.csv")
     p.add_argument("--device", type=str, default="cpu", choices=["cpu", "gpu"])
-    p.add_argument("--fast", type=bool, default=True)
+    p.add_argument("--only_one_train", type=bool, default=True)
     p.add_argument("--output_path", type=str, default="results")
     
     # parameters 
