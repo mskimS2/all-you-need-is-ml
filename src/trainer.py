@@ -58,8 +58,8 @@ class Trainer:
             models = [self.model] * len(targets)
             for idx, _m in enumerate(models):
                 _m.fit(
-                    x_train,
-                    y_train,
+                    X=x_train,
+                    y=y_train,
                     eval_set=[(x_valid, y_valid)],
                     verbose=self.config.verbose
                 )
@@ -69,9 +69,9 @@ class Trainer:
             ypred = np.column_stack(ypred)
 
             if self.config.use_predict_proba:
-                ypred = self.model.predict_proba(x_valid)
+                ypred = self.model.predict_proba(X=x_valid)
             else:
-                ypred = self.model.predict(x_valid)
+                ypred = self.model.predict(X=x_valid)
 
             # calculate metric
             metric_dict = metrics.calculate(y_valid, ypred)

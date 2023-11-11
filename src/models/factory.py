@@ -31,6 +31,7 @@ import argparse
 from const import Const
 from models.base import BaseModel
 from models.xgboost import XGBoost
+from models.lightgbm import LGBM
 from config.xgboost_config import xgboost_args
 from config.catboost_config import catboost_args
 from config.lightgbm_config import lightgbm_args
@@ -76,7 +77,7 @@ def get_lightgbm(problem: str) -> Tuple[BaseModel, argparse.Namespace]:
         Const.MULTI_CLASS_CLASSIFICATION,
         Const.MULTI_LABEL_CLASSIFICATION,
     ]:
-        model = LGBMClassifier()
+        model = LGBM(LGBMClassifier(), args)
     elif problem in [
         Const.SINGLE_COLUMN_REGRESSION,
         Const.MULTI_COLUMN_REGRESSION,
