@@ -13,6 +13,7 @@ from logger import logger
 from type import Problem, Task
 from const import Const
 
+
 @dataclass
 class Trainer:
     model: BaseModel
@@ -54,7 +55,7 @@ class Trainer:
             x_valid = train_df[train_df[Const.FOLD_ID]!=fold][features]
             y_valid = train_df[train_df[Const.FOLD_ID]!=fold][targets]
 
-            ypred = []
+            y_pred = []
             models = [self.model] * len(targets)
             for idx, _m in enumerate(models):
                 _m.fit(
@@ -64,17 +65,17 @@ class Trainer:
                     verbose=self.config.verbose
                 )
             
-                ypred_temp = _m.predict_proba(x_valid)[:, 1]
-                ypred.append(ypred_temp)
-            ypred = np.column_stack(ypred)
+                y_pred_temp = _m.predict_proba(x_valid)[:, 1]
+                y_pred.append(y_pred_temp)
+            y_pred = np.column_stack(y_pred)
 
             if self.config.use_predict_proba:
-                ypred = self.model.predict_proba(X=x_valid)
+                y_pred = self.model.predict_proba(X=x_valid)
             else:
-                ypred = self.model.predict(X=x_valid)
+                y_pred = self.model.predict(X=x_valid)
 
             # calculate metric
-            metric_dict = metrics.calculate(y_valid, ypred)
+            metric_dict = metrics.calculate(y_valid, y_pred)
             scores.append(metric_dict)
             if self.config.only_one_train is True:
                 break
@@ -86,15 +87,14 @@ class Trainer:
         if test_df is None:
             return mean_metrics, None
         
-        ypred = self.predict(test_df, targets)
         if self.config.use_predict_proba:
-            ypred = self.model.predict_proba(test_df)
+            y_pred = self.model.predict_proba(test_df)  
         else:
-            ypred = self.model.predict(test_df)
+            y_pred = self.model.predict(test_df)
             
         return {
             "training_metric": mean_metrics,
-            "prediction": ypred,
+            "prediction": y_pred,
         }
     
     def predict(
@@ -108,21 +108,21 @@ class Trainer:
             model = self.model_load()
         
         models = [model] * len(targets)
-        ypred = []
+        y_pred = []
         for idx, _m in enumerate(models):
-            ypred_temp = _m.predict_proba(test_df)[:, 1]
-            ypred.append(ypred_temp)
-        ypred = np.column_stack(ypred)
-        return ypred
+            y_pred_temp = _m.predict_proba(test_df)[:, 1]
+            y_pred.append(y_pred_temp)
+        y_pred = np.column_stack(y_pred)
+        return y_pred
     
-    def model_save(self, model):
+    def model_save(self, model) -> None:
         os.makedirs(self.config.output_path, exist_ok=True)
-        with open(f"{self.config.output_path}/{self.config.model_name}.pickle", "wb") as f:
+        with open(f"{self.config.output_path}/{self.config.model_name}.pkl", "wb") as f:
             pickle.dump(model, f)
             
     def model_load(self) -> BaseModel:
         os.makedirs(self.config.output_path, exist_ok=True)
-        with open(f"{self.config.output_path}/{self.config.model_name}.pickle", "rb") as f:
+        with open(f"{self.config.output_path}/{self.config.model_name}.pkl", "rb") as f:
             model = pickle.load(f)
         return model
     

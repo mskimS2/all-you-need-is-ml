@@ -93,6 +93,8 @@ class Preprocessor:
                 train_df[col] = self.scaler.fit_transform(train_df[col])
                 if test_df is not None:
                     test_df[col] = self.scaler.transform(test_df[col])
+            else:
+                raise ValueError("Train_df is None")
                     
         return train_df, test_df
     
@@ -102,6 +104,9 @@ class Preprocessor:
         test_df: pd.DataFrame,
         columns: List[str],
     ):
+        if train_df is None:
+            raise ValueError("Train_df is None")
+        
         return self.encoder.fit(train_df, test_df, columns)
     
     def feature_engineering(

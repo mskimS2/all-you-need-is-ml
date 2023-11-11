@@ -34,6 +34,8 @@ from models.xgboost import XGBoost
 from models.lightgbm import LightGBM
 from models.catboost import CatBoost
 from models.decision_tree import DecisionTree
+from models.random_forest import RandomForest
+
 from config.xgboost_config import xgboost_args
 from config.catboost_config import catboost_args
 from config.lightgbm_config import lightgbm_args
@@ -107,12 +109,12 @@ def get_random_forest(problem: str) -> Tuple[BaseModel, argparse.Namespace]:
         Const.MULTI_CLASS_CLASSIFICATION,
         Const.MULTI_LABEL_CLASSIFICATION,
     ]:
-        model = RandomForestClassifier()
+        model = RandomForest(RandomForestClassifier(), args)
     elif problem in [
         Const.SINGLE_COLUMN_REGRESSION,
         Const.MULTI_COLUMN_REGRESSION,
     ]:
-        model = RandomForestRegressor()
+        model = RandomForest(RandomForestRegressor(), args)
     else:
         raise ValueError(f"Invalid problem type: {problem}")
     return model, args
