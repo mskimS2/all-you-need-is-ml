@@ -1,9 +1,10 @@
+from const import Const
 from typing import List
 
 class Task:
     type = {
-        "classification": 0,
-        "regression": 1,
+        Const.CLASSIFICATION: 0,
+        Const.REGRESSION: 1,
     }
         
     @staticmethod
@@ -20,11 +21,11 @@ class Task:
 
 class Problem:
     type = {
-        "binary_classification": 1,
-        "multi_class_classification": 2,
-        "multi_label_classification": 3,
-        "single_column_regression": 4,
-        "multi_column_regression": 5,
+        Const.BINARY_CLASSIFICATION: 1,
+        Const.MULTI_CLASS_CLASSIFICATION: 2,
+        Const.MULTI_LABEL_CLASSIFICATION: 3,
+        Const.SINGLE_COLUMN_REGRESSION: 4,
+        Const.MULTI_COLUMN_REGRESSION: 5,
     }
         
     @staticmethod
@@ -37,16 +38,3 @@ class Problem:
     @staticmethod
     def list_str() -> List[str]:
         return list(Problem.type.keys())
-
-if __name__ == "__main__":
-    print(Task.from_str("classification"))
-    print(Task.from_str("regression"))
-    print(Task.list_str())
-    
-    print(Problem.from_str("binary_classification"))
-    print(Problem.from_str("multi_class_classification"))
-    print(Problem.from_str("multi_label_classification"))
-    print(Problem.from_str("single_column_regression"))
-    print(Problem.from_str("multi_column_regression"))
-    
-    print(Problem.list_str())

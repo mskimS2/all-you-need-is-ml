@@ -44,21 +44,22 @@ from config.knn_config import (
     knn_regressor_config,
 )
 
+from const import Const
 from models.xgboost import XGBoost
 
 
 def get_xgboost(problem: str):
     args = xgboost_args()
     if problem in [
-        "binary_classification",
-        "multi_class_classification",
-        "multi_label_classification",
+        Const.BINARY_CLASSIFICATION,
+        Const.MULTI_CLASS_CLASSIFICATION,
+        Const.MULTI_LABEL_CLASSIFICATION,
     ]:
         model = XGBoost(XGBClassifier(), args) 
         
     elif problem in [
-        "single_column_regression",
-        "multi_column_regression",
+        Const.SINGLE_COLUMN_REGRESSION,
+        Const.MULTI_COLUMN_REGRESSION,
     ]:
         model = XGBoost(XGBRegressor(), args)
     else:
@@ -68,15 +69,16 @@ def get_xgboost(problem: str):
 
 def get_lightgbm(problem: str):
     args = lightgbm_args()
-    if problem == "binary_classification":
+    if problem in [
+        Const.BINARY_CLASSIFICATION,
+        Const.MULTI_CLASS_CLASSIFICATION,
+        Const.MULTI_LABEL_CLASSIFICATION,
+    ]:
         model = LGBMClassifier()
-    elif problem == "multi_class_classification":
-        model = LGBMClassifier()
-    elif problem == "multi_label_classification":
-        model = LGBMClassifier()
-    elif problem == "single_column_regression":
-        model = LGBMRegressor()
-    elif problem == "multi_column_regression":
+    elif problem in [
+        Const.SINGLE_COLUMN_REGRESSION,
+        Const.MULTI_COLUMN_REGRESSION,
+    ]:
         model = LGBMRegressor()
     else:
         raise ValueError(f"Invalid problem type: {problem}")
@@ -84,15 +86,16 @@ def get_lightgbm(problem: str):
 
 def get_catboost(problem: str):
     args = catboost_args()
-    if problem == "binary_classification":
+    if problem in [
+        Const.BINARY_CLASSIFICATION,
+        Const.MULTI_CLASS_CLASSIFICATION,
+        Const.MULTI_LABEL_CLASSIFICATION,
+    ]:
         model = CatBoostClassifier()
-    elif problem == "multi_class_classification":
-        model = CatBoostClassifier()
-    elif problem == "multi_label_classification":
-        model = CatBoostClassifier()
-    elif problem == "single_column_regression":
-        model = CatBoostRegressor()
-    elif problem == "multi_column_regression":
+    elif problem in [
+        Const.SINGLE_COLUMN_REGRESSION,
+        Const.MULTI_COLUMN_REGRESSION,
+    ]:
         model = CatBoostRegressor()
     else:
         raise ValueError(f"Invalid problem type: {problem}")
@@ -100,15 +103,16 @@ def get_catboost(problem: str):
 
 def get_random_forest(problem: str):
     args = random_forest_config()
-    if problem == "binary_classification":
+    if problem in [
+        Const.BINARY_CLASSIFICATION,
+        Const.MULTI_CLASS_CLASSIFICATION,
+        Const.MULTI_LABEL_CLASSIFICATION,
+    ]:
         model = RandomForestClassifier()
-    elif problem == "multi_class_classification":
-        model = RandomForestClassifier()
-    elif problem == "multi_label_classification":
-        model = RandomForestClassifier()
-    elif problem == "single_column_regression":
-        model = RandomForestRegressor()
-    elif problem == "multi_column_regression":
+    elif problem in [
+        Const.SINGLE_COLUMN_REGRESSION,
+        Const.MULTI_COLUMN_REGRESSION,
+    ]:
         model = RandomForestRegressor()
     else:
         raise ValueError(f"Invalid problem type: {problem}")
@@ -116,15 +120,16 @@ def get_random_forest(problem: str):
 
 def get_decision_tree(problem: str):
     args = decision_tree_config()
-    if problem == "binary_classification":
+    if problem in [
+        Const.BINARY_CLASSIFICATION,
+        Const.MULTI_CLASS_CLASSIFICATION,
+        Const.MULTI_LABEL_CLASSIFICATION,
+    ]:
         model = DecisionTreeClassifier()
-    elif problem == "multi_class_classification":
-        model = DecisionTreeClassifier()
-    elif problem == "multi_label_classification":
-        model = DecisionTreeClassifier()
-    elif problem == "single_column_regression":
-        model = DecisionTreeRegressor()
-    elif problem == "multi_column_regression":
+    elif problem in [
+        Const.SINGLE_COLUMN_REGRESSION,
+        Const.MULTI_COLUMN_REGRESSION,
+    ]:
         model = DecisionTreeRegressor()
     else:
         raise ValueError(f"Invalid problem type: {problem}")
@@ -132,15 +137,16 @@ def get_decision_tree(problem: str):
 
 def get_extra_tree(problem: str):
     args = extra_tree_config()
-    if problem == "binary_classification":
+    if problem in [
+        Const.BINARY_CLASSIFICATION,
+        Const.MULTI_CLASS_CLASSIFICATION,
+        Const.MULTI_LABEL_CLASSIFICATION,
+    ]:
         model = ExtraTreeClassifier()
-    elif problem == "multi_class_classification":
-        model = ExtraTreeClassifier()
-    elif problem == "multi_label_classification":
-        model = ExtraTreeClassifier()
-    elif problem == "single_column_regression":
-        model = ExtraTreeRegressor()
-    elif problem == "multi_column_regression":
+    elif problem in [
+        Const.SINGLE_COLUMN_REGRESSION,
+        Const.MULTI_COLUMN_REGRESSION,
+    ]:
         model = ExtraTreeRegressor()
     else:
         raise ValueError(f"Invalid problem type: {problem}")
@@ -158,9 +164,10 @@ def get_logistic_regression(problem: str):
 
 def get_linear_regression(problem: str):
     args = linear_regression_config()
-    if problem == "single_column_regression":
-        model = LinearRegression()
-    elif problem == "multi_column_regression":
+    if problem in [
+        Const.SINGLE_COLUMN_REGRESSION,
+        Const.MULTI_COLUMN_REGRESSION,
+    ]:
         model = LinearRegression()
     else:
         raise ValueError(f"Invalid problem type: {problem}")
@@ -168,9 +175,10 @@ def get_linear_regression(problem: str):
 
 def get_lasso(problem: str):
     args = lasso_config()
-    if problem == "single_column_regression":
-        model = Lasso()
-    elif problem == "multi_column_regression":
+    if problem in [
+        Const.SINGLE_COLUMN_REGRESSION,
+        Const.MULTI_COLUMN_REGRESSION,
+    ]:
         model = Lasso()
     else:
         raise ValueError(f"Invalid problem type: {problem}")
@@ -178,26 +186,28 @@ def get_lasso(problem: str):
 
 def get_sgd_classifier(problem: str):
     args = sgd_classifier_config()
-    if problem == "binary_classification":
+    if problem in [
+        Const.BINARY_CLASSIFICATION,
+        Const.MULTI_CLASS_CLASSIFICATION,
+        Const.MULTI_LABEL_CLASSIFICATION,
+    ]:
         model = SGDClassifier()
     else:
         raise ValueError(f"Invalid problem type: {problem}")
     return model, args
 
 def get_support_vector_machine(problem: str):
-    if problem == "binary_classification":
+    if problem in [
+        Const.BINARY_CLASSIFICATION,
+        Const.MULTI_CLASS_CLASSIFICATION,
+        Const.MULTI_LABEL_CLASSIFICATION,
+    ]:
         args = svc_config()
         model = SVC()
-    elif problem == "multi_class_classification":
-        args = svc_config()
-        model = SVC()
-    elif problem == "multi_label_classification":
-        args = svc_config()
-        model = SVC()
-    elif problem == "single_column_regression":
-        args = svr_config()
-        model = SVR()
-    elif problem == "multi_column_regression":
+    elif problem in [
+        Const.SINGLE_COLUMN_REGRESSION,
+        Const.MULTI_COLUMN_REGRESSION,
+    ]:
         args = svr_config()
         model = SVR()
     else:
@@ -205,19 +215,17 @@ def get_support_vector_machine(problem: str):
     return model, args
 
 def get_knn(problem: str):
-    if problem == "binary_classification":
+    if problem in [
+        Const.BINARY_CLASSIFICATION,
+        Const.MULTI_CLASS_CLASSIFICATION,
+        Const.MULTI_LABEL_CLASSIFICATION,
+    ]:
         args = knn_classifier_config()
         model = KNeighborsClassifier()
-    elif problem == "multi_class_classification":
-        args = knn_classifier_config()
-        model = KNeighborsClassifier()
-    elif problem == "multi_label_classification":
-        args = knn_classifier_config()
-        model = KNeighborsClassifier()
-    elif problem == "single_column_regression":
-        args = knn_regressor_config()
-        model = KNeighborsRegressor()
-    elif problem == "multi_column_regression":
+    elif problem in [
+        Const.SINGLE_COLUMN_REGRESSION,
+        Const.MULTI_COLUMN_REGRESSION,
+    ]:
         args = knn_regressor_config()
         model = KNeighborsRegressor()
     else:
@@ -228,29 +236,22 @@ def get_model(
     model_name: str,
     problem: str,
 ):
-    if model_name == "xgboost":
-        return get_xgboost(problem)
-    elif model_name == "catboost":
-        return get_catboost(problem)
-    elif model_name == "lightgbm":
-        return get_lightgbm(problem)
-    elif model_name == "random_forest":
-        return get_random_forest(problem)
-    elif model_name == "decision_tree":
-        return get_decision_tree(problem)
-    elif model_name == "extra_tree":
-        return get_extra_tree(problem)
-    elif model_name == "logistic_regression":
-        return get_logistic_regression(problem)
-    elif model_name == "linear_regression":
-        return get_linear_regression(problem)
-    elif model_name == "lasso":
-        return get_lasso(problem)
-    elif model_name == "sgd_classifier":
-        return get_sgd_classifier(problem)
-    elif model_name == "support_vector_machine":
-        return get_support_vector_machine(problem)
-    elif model_name == "knn":
-        return get_knn(problem)
-    else:
+    model_dict = {
+        Const.XGBOOST: get_xgboost(problem),
+        Const.CATBOOST: get_catboost(problem),
+        Const.LIGHTGBM: get_lightgbm(problem),
+        Const.RANDOM_FOREST: get_random_forest(problem),
+        Const.DECISION_TREE: get_decision_tree(problem),
+        Const.EXTRA_TREE: get_extra_tree(problem),
+        Const.LOGISTIC_REGRESSION: get_logistic_regression(problem),
+        Const.LINEAR_REGRESSION: get_linear_regression(problem),
+        Const.LASSO: get_lasso(problem),
+        Const.SGD_CLASSIFIER: get_sgd_classifier(problem),
+        Const.SVM: get_support_vector_machine(problem),
+        Const.KNN: get_knn(problem),
+    }
+    
+    if model_dict.get(model_name) is None:
         raise ValueError(f"Invalid model name: {model_name}")
+    
+    return model_dict[model_name]

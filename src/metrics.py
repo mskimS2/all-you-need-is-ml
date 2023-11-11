@@ -1,6 +1,7 @@
 import copy
 import numpy as np
 from type import Problem
+from const import Const
 from sklearn import metrics
 from dataclasses import dataclass
 from functools import partial
@@ -8,46 +9,46 @@ from functools import partial
 @dataclass
 class BinaryClassificationMetric:
     metrics = {
-        "auc": metrics.roc_auc_score,
-        "logloss": metrics.log_loss,
-        "f1_score": metrics.f1_score,
-        "accuracy": metrics.accuracy_score,
-        "precision": metrics.precision_score,
-        "recall": metrics.recall_score,
+        Const.AUC: metrics.roc_auc_score,
+        Const.LOG_LOSS: metrics.log_loss,
+        Const.F1_SCORE: metrics.f1_score,
+        Const.ACCURACY: metrics.accuracy_score,
+        Const.PRECISION: metrics.precision_score,
+        Const.RECALL: metrics.recall_score,
     }
 
 @dataclass
 class MultiClassClassificationMetric:
     metrics = {
-        "logloss": metrics.log_loss,
-        "accuracy": metrics.accuracy_score,
-        "mlogloss": metrics.log_loss,
+        Const.LOG_LOSS: metrics.log_loss,
+        Const.ACCURACY: metrics.accuracy_score,
+        Const.MLOG_LOSS: metrics.log_loss,
     }    
 
 @dataclass
 class RegressionMetric:
     metrics = {
-        "r2": metrics.r2_score,
-        "mse": metrics.mean_squared_error,
-        "mae": metrics.mean_absolute_error,
-        "rmse": partial(metrics.mean_squared_error, squared=False),
-        "rmsle": partial(metrics.mean_squared_log_error, squared=False),
+        Const.R2: metrics.r2_score,
+        Const.MSE: metrics.mean_squared_error,
+        Const.MAE: metrics.mean_absolute_error,
+        Const.RMSE: partial(metrics.mean_squared_error, squared=False),
+        Const.RMSLE: partial(metrics.mean_squared_log_error, squared=False),
     } 
 
 @dataclass
 class MultiLabelClassificationMetric:
     metrics = {
-        "logloss": metrics.log_loss,
+        Const.LOG_LOSS: metrics.log_loss,
     } 
 
 @dataclass
 class Metric:
     problem: Problem
     metric = {
-        "binary_classification": BinaryClassificationMetric(),
-        "multi_class_classification": MultiLabelClassificationMetric(),
-        "regression": RegressionMetric(),
-        "multi_label_classification": MultiLabelClassificationMetric(),
+        Const.BINARY_CLASSIFICATION: BinaryClassificationMetric(),
+        Const.MULTI_CLASS_CLASSIFICATION: MultiLabelClassificationMetric(),
+        Const.REGRESSION: RegressionMetric(),
+        Const.MULTI_LABEL_CLASSIFICATION: MultiLabelClassificationMetric(),
     }
     
     def __post_init__(self):
@@ -58,26 +59,23 @@ class Metric:
     def calculate(self, y_true, y_pred):
         results = {}
         for metric_name, metric_func in self._metric.metrics.items():
-            if self.problem == "binary_classification":
-                if metric_name == "auc":
+            if self.problem == Const.BINARY_CLASSIFICATION:
+                if metric_name == Const.AUC:
                     results[metric_name] = metric_func(y_true, y_pred[:, 1])
-                elif metric_name == "logloss":
+                elif metric_name == Const.LOG_LOSS:
                     results[metric_name] = metric_func(y_true, y_pred)
                 else:
                     results[metric_name] = metric_func(y_true, y_pred[:, 1] >= 0.5)
-            elif self.problem == "multi_class_classification":
-                if metric_name == "accuracy":
+            elif self.problem == Const.MULTI_CLASS_CLASSIFICATION:
+                if metric_name == Const.ACCURACY:
                     results[metric_name] = metric_func(y_true, np.argmax(y_pred, axis=1))
                 else:
                     results[metric_name] = metric_func(y_true, y_pred)
             else:
-                if metric_name == "rmsle":
+                if metric_name == Const.RMSLE:
                     temp_pred = copy.deepcopy(y_pred)
                     temp_pred[temp_pred < 0] = 0
                     results[metric_name] = metric_func(y_true, temp_pred)
                 else:
                     results[metric_name] = metric_func(y_true, y_pred)
         return results
-
-if __name__ == "__main__":
-    pass

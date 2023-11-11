@@ -7,4 +7,5 @@ all = [
     "preprocessing",
     "metrics",
     "config",
+    "const",
 ]
