@@ -31,8 +31,9 @@ from sklearn.neighbors import (
 from const import Const
 from models.base import BaseModel
 from models.xgboost import XGBoost
-from models.lightgbm import LGBM
+from models.lightgbm import LightGBM
 from models.catboost import CatBoost
+from models.decision_tree import DecisionTree
 from config.xgboost_config import xgboost_args
 from config.catboost_config import catboost_args
 from config.lightgbm_config import lightgbm_args
@@ -72,12 +73,12 @@ def get_lightgbm(problem: str) -> Tuple[BaseModel, argparse.Namespace]:
         Const.MULTI_CLASS_CLASSIFICATION,
         Const.MULTI_LABEL_CLASSIFICATION,
     ]:
-        model = LGBM(LGBMClassifier(), args)
+        model = LightGBM(LGBMClassifier(), args)
     elif problem in [
         Const.SINGLE_COLUMN_REGRESSION,
         Const.MULTI_COLUMN_REGRESSION,
     ]:
-        model = LGBMRegressor()
+        model = LightGBM(LGBMRegressor(), args)
     else:
         raise ValueError(f"Invalid problem type: {problem}")
     return model, args
@@ -123,12 +124,12 @@ def get_decision_tree(problem: str) -> Tuple[BaseModel, argparse.Namespace]:
         Const.MULTI_CLASS_CLASSIFICATION,
         Const.MULTI_LABEL_CLASSIFICATION,
     ]:
-        model = DecisionTreeClassifier()
+        model = DecisionTree(DecisionTreeClassifier(), args)
     elif problem in [
         Const.SINGLE_COLUMN_REGRESSION,
         Const.MULTI_COLUMN_REGRESSION,
     ]:
-        model = DecisionTreeRegressor()
+        model = DecisionTree(DecisionTreeRegressor(), args)
     else:
         raise ValueError(f"Invalid problem type: {problem}")
     return model, args

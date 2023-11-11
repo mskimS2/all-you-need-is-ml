@@ -1,7 +1,7 @@
 import argparse
 
 
-def xgboost_args():
+def xgboost_args() -> argparse.Namespace:
     p = argparse.ArgumentParser(description="XGBoost")
     
     p.add_argument("--model_name", type=str, default="xgboost")

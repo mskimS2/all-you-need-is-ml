@@ -1,7 +1,7 @@
 import argparse
 
 
-def logistic_regression_config():
+def logistic_regression_config() -> argparse.Namespace:
     p = argparse.ArgumentParser(description="logistic_regression")
     
     p.add_argument("--model_name", type=str, default="logistic_regression")

@@ -7,7 +7,7 @@ from typing import List
 from sklearn.model_selection import KFold, StratifiedKFold
 
 from models.base import BaseModel
-from preprocessing import Encoder, Scaler, Preprocessor
+from preprocessor import Encoder, Scaler, Preprocessor
 from metrics import Metric
 from logger import logger
 from type import Problem, Task

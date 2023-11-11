@@ -1,5 +1,4 @@
 import pandas as pd
-import numpy as np
 from models.base import BaseModel
 from dataclasses import dataclass
 from typing import Union, Dict
@@ -7,7 +6,7 @@ from lightgbm import LGBMClassifier, LGBMRegressor
 
 
 @dataclass
-class LGBM(BaseModel):
+class LightGBM(BaseModel):
     model: Union[LGBMClassifier, LGBMRegressor]
     config: Dict
     

@@ -1,7 +1,7 @@
 import argparse
 
 
-def catboost_args():
+def catboost_args() -> argparse.Namespace:
     p = argparse.ArgumentParser(description="Catboost")
     
     p.add_argument("--model_name", type=str, default="catboost")

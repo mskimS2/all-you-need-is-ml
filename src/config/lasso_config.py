@@ -1,7 +1,7 @@
 import argparse
 
 
-def lasso_config():
+def lasso_config() -> argparse.Namespace:
     p = argparse.ArgumentParser(description="lasso")
     
     p.add_argument("--model_name", type=str, default="lasso")

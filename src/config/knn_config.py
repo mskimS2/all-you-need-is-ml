@@ -1,7 +1,7 @@
 import argparse
 
 
-def knn_classifier_config():
+def knn_classifier_config() -> argparse.Namespace:
     p = argparse.ArgumentParser(description="knn_classifier")
     
     p.add_argument("--model_name", type=str, default="knn_classifier")

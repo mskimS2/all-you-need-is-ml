@@ -1,7 +1,7 @@
 import argparse
 
 
-def lightgbm_args():
+def lightgbm_args() -> argparse.Namespace:
     p = argparse.ArgumentParser(description="lightgbm")
     
     p.add_argument("--model_name", type=str, default="lightgbm")

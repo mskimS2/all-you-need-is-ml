@@ -1,7 +1,7 @@
 import argparse
 
 
-def svc_config():
+def svc_config() -> argparse.Namespace:
     p = argparse.ArgumentParser(description="svc")
     
     p.add_argument("--model_name", type=str, default="svc")
@@ -36,7 +36,7 @@ def svc_config():
     
     return p.parse_args()
 
-def svr_config():
+def svr_config() -> argparse.Namespace:
     p = argparse.ArgumentParser(description="svr")
     
     p.add_argument("--model_name", type=str, default="svr")

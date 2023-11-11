@@ -1,7 +1,7 @@
 import argparse
 
 
-def decision_tree_config():
+def decision_tree_config() -> argparse.Namespace:
     p = argparse.ArgumentParser(description="decision_tree")
     
     p.add_argument("--model_name", type=str, default="decision_tree")

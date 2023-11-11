@@ -1,7 +1,7 @@
 import argparse
 
 
-def linear_regression_config():
+def linear_regression_config() -> argparse.Namespace:
     p = argparse.ArgumentParser(description="linear_regression")
     
     p.add_argument("--model_name", type=str, default="linear_regression")

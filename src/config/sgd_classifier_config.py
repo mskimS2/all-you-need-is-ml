@@ -1,7 +1,7 @@
 import argparse
 
 
-def sgd_classifier_config():
+def sgd_classifier_config() -> argparse.Namespace:
     p = argparse.ArgumentParser(description="sgd_classifier")
     
     p.add_argument("--model_name", type=str, default="sgd_classifier")

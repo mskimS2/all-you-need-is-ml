@@ -4,7 +4,7 @@ all = [
     "trainer",
     "type",
     "utils",
-    "preprocessing",
+    "preprocessor",
     "metrics",
     "config",
     "const",

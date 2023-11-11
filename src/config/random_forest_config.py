@@ -1,7 +1,7 @@
 import argparse
 
 
-def random_forest_config():
+def random_forest_config() -> argparse.Namespace:
     p = argparse.ArgumentParser(description="random_forest")
     
     p.add_argument("--model_name", type=str, default="random_forest")

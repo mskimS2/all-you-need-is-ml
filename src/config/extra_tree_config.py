@@ -1,7 +1,7 @@
 import argparse
 
 
-def extra_tree_config():
+def extra_tree_config() -> argparse.Namespace:
     p = argparse.ArgumentParser(description="extra_tree")
     
     p.add_argument("--model_name", type=str, default="extra_tree")
