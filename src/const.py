@@ -39,3 +39,6 @@ class Const:
     SGD_CLASSIFIER: Final = "sgd_classifier"
     SVM: Final = "support_vector_machine"
     KNN: Final = "knn"
+    
+    # column name
+    FOLD_ID: Final = "fold_id"

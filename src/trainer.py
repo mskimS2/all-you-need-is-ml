@@ -49,10 +49,10 @@ class Trainer:
         train_df, test_df = self.preprocessor.fit_encoding(train_df, test_df, targets)
         
         for fold in range(self.config.num_folds):
-            x_train = train_df[train_df["fold_id"]!=fold][features]
-            y_train = train_df[train_df["fold_id"]!=fold][targets]
-            x_valid = train_df[train_df["fold_id"]!=fold][features]
-            y_valid = train_df[train_df["fold_id"]!=fold][targets]
+            x_train = train_df[train_df[Const.FOLD_ID]!=fold][features]
+            y_train = train_df[train_df[Const.FOLD_ID]!=fold][targets]
+            x_valid = train_df[train_df[Const.FOLD_ID]!=fold][features]
+            y_valid = train_df[train_df[Const.FOLD_ID]!=fold][targets]
 
             ypred = []
             models = [self.model] * len(targets)
@@ -141,39 +141,39 @@ class Trainer:
         random_state: int,
         target_columns: List[str],
     ):
-        if "fold_id" in df.columns:
+        if Const.FOLD_ID in df.columns:
             logger.info("`fold_id` column already exists from input dataframe.")
             return df
         
-        df["fold_id"] = -1
-        if problem in ["binary_classification", "multi_class_classification"]:
+        df[Const.FOLD_ID] = -1
+        if problem in [Const.BINARY_CLASSIFICATION, Const.MULTI_CLASS_CLASSIFICATION]:
             y = df[target_columns].values
             skf = StratifiedKFold(n_splits=n_splits, shuffle=shuffle, random_state=random_state)
             for fold, (_, valid_indicies) in enumerate(skf.split(X=df, y=y)):
-                df.loc[valid_indicies, "fold_id"] = fold
+                df.loc[valid_indicies, Const.FOLD_ID] = fold
                 
-        elif problem in ["single_column_regression"]:
+        elif problem in [Const.SINGLE_COLUMN_REGRESSION]:
             y = df[target_columns].values
             num_bins = min(int(np.floor(1 + np.log2(len(df)))), 10)
             skf = StratifiedKFold(n_splits=n_splits, shuffle=shuffle, random_state=random_state)
             df["bins"] = pd.cut(df[target_columns].values.ravel(), bins=num_bins, labels=False)
             for fold, (_, valid_indicies) in enumerate(kf.split(X=df, y=df.bins.values)):
-                df.loc[valid_indicies, "fold_id"] = fold
+                df.loc[valid_indicies, Const.FOLD_ID] = fold
             df = df.drop("bins", axis=1)
             
-        elif problem in ["multi_column_regression"]:
+        elif problem in [Const.MULTI_COLUMN_REGRESSION]:
             # Todo: MultilabelStratifiedKFold
             y = df[target_columns].values
             kf = KFold(n_splits=n_splits, shuffle=shuffle, random_state=random_state)
             for fold, (_, valid_indicies) in enumerate(kf.split(X=df, y=y)):
-                df.loc[valid_indicies, "fold_id"] = fold
+                df.loc[valid_indicies, Const.FOLD_ID] = fold
         
-        elif problem in ["multi_label_classification"]:
+        elif problem in [Const.MULTI_LABEL_CLASSIFICATION]:
             # Todo: MultilabelStratifiedKFold
             y = df[target_columns].values
             kf = KFold(n_splits=n_splits, shuffle=shuffle, random_state=random_state)
             for fold, (_, valid_indicies) in enumerate(kf.split(X=df, y=y)):
-                df.loc[valid_indicies, "fold_id"] = fold
+                df.loc[valid_indicies, Const.FOLD_ID] = fold
 
         else:
             raise Exception("Invalid problem type for created fold.")

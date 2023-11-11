@@ -1,3 +1,4 @@
+import argparse
 from typing import Tuple
 from xgboost import XGBClassifier, XGBRegressor
 from lightgbm import LGBMClassifier, LGBMRegressor
@@ -27,11 +28,11 @@ from sklearn.neighbors import (
     KNeighborsRegressor,
 )
 
-import argparse
 from const import Const
 from models.base import BaseModel
 from models.xgboost import XGBoost
 from models.lightgbm import LGBM
+from models.catboost import CatBoost
 from config.xgboost_config import xgboost_args
 from config.catboost_config import catboost_args
 from config.lightgbm_config import lightgbm_args
@@ -42,14 +43,8 @@ from config.logistic_regression_config import logistic_regression_config
 from config.linear_regression_config import linear_regression_config
 from config.lasso_config import lasso_config
 from config.sgd_classifier_config import sgd_classifier_config
-from config.support_vector_machine_config import (
-    svc_config, 
-    svr_config,
-)
-from config.knn_config import (
-    knn_classifier_config,
-    knn_regressor_config,
-)
+from config.support_vector_machine_config import svc_config, svr_config
+from config.knn_config import knn_classifier_config, knn_regressor_config
 
 
 def get_xgboost(problem: str) -> Tuple[BaseModel, argparse.Namespace]:
@@ -94,12 +89,12 @@ def get_catboost(problem: str) -> Tuple[BaseModel, argparse.Namespace]:
         Const.MULTI_CLASS_CLASSIFICATION,
         Const.MULTI_LABEL_CLASSIFICATION,
     ]:
-        model = CatBoostClassifier()
+        model = CatBoost(CatBoostClassifier(), args)
     elif problem in [
         Const.SINGLE_COLUMN_REGRESSION,
         Const.MULTI_COLUMN_REGRESSION,
     ]:
-        model = CatBoostRegressor()
+        model = CatBoost(CatBoostRegressor(), args)
     else:
         raise ValueError(f"Invalid problem type: {problem}")
     return model, args
@@ -157,9 +152,10 @@ def get_extra_tree(problem: str) -> Tuple[BaseModel, argparse.Namespace]:
 
 def get_logistic_regression(problem: str) -> Tuple[BaseModel, argparse.Namespace]:
     args = logistic_regression_config()
-    if problem == "single_column_regression":
-        model = LogisticRegression()
-    elif problem == "multi_column_regression":
+    if problem in [
+        Const.SINGLE_COLUMN_REGRESSION,
+        Const.MULTI_COLUMN_REGRESSION,
+    ]:
         model = LogisticRegression()
     else:
         raise ValueError(f"Invalid problem type: {problem}")
