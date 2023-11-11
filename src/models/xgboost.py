@@ -1,13 +1,13 @@
 import pandas as pd
 import numpy as np
-from models.base import MLModel
+from models.base import BaseModel
 from dataclasses import dataclass
 from typing import Union, Dict
 from xgboost import XGBClassifier, XGBRegressor
 
 
 @dataclass
-class XGBoost(MLModel):
+class XGBoost(BaseModel):
     model: Union[XGBClassifier, XGBRegressor]
     config: Dict
     

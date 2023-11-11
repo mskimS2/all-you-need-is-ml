@@ -2,7 +2,8 @@ import pandas as pd
 import numpy as np
 from abc import ABC, abstractmethod
 
-class MLModel(ABC):
+
+class BaseModel(ABC):
     @abstractmethod
     def set_up(*args, **kwargs) -> None:
         pass

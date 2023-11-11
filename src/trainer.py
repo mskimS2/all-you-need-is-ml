@@ -6,19 +6,16 @@ from dataclasses import dataclass
 from typing import List
 from sklearn.model_selection import KFold, StratifiedKFold
 
-from models.base import MLModel
-from preprocessing import (
-    Encoder, 
-    Scaler, 
-    Preprocessor,
-)
+from models.base import BaseModel
+from preprocessing import Encoder, Scaler, Preprocessor
 from metrics import Metric
 from logger import logger
 from type import Problem, Task
+from const import Const
 
 @dataclass
 class Trainer:
-    model: MLModel
+    model: BaseModel
     config: dict
     scaler: Scaler
     encoder: Encoder
@@ -28,12 +25,13 @@ class Trainer:
     
     def fit(
         self, 
-        train_df: pd.DataFrame,
-        features: List[str],
-        targets: List[str],
+        train_df: pd.DataFrame = None,
+        test_df: pd.DataFrame = None,
+        features: List[str] = None,
+        targets: List[str] = None,
     ):
         self.columns = features
-        logger.info(f"configuration: {self.model}")
+        logger.info(f"configuration: {self.model.config}")
         metrics = Metric(self.config.problem_type)
         scores = []
         
@@ -46,9 +44,9 @@ class Trainer:
             targets,
         )
         
-        train_df, _ = self.preprocessor.fit_scaling(train_df, None, targets)
+        train_df, test_df = self.preprocessor.fit_scaling(train_df, test_df, targets)
         
-        train_df, _ = self.preprocessor.fit_encoding(train_df, None, targets)
+        train_df, test_df = self.preprocessor.fit_encoding(train_df, test_df, targets)
         
         for fold in range(self.config.num_folds):
             x_train = train_df[train_df["fold_id"]!=fold][features]
@@ -84,18 +82,30 @@ class Trainer:
         self.model_save(self.model)
         mean_metrics = self.dict_mean(scores)
         logger.info(f"Result metric score: {mean_metrics}")
-        return mean_metrics
+        
+        if test_df is None:
+            return mean_metrics, None
+        
+        ypred = self.predict(test_df, targets)
+        if self.config.use_predict_proba:
+            ypred = self.model.predict_proba(test_df)
+        else:
+            ypred = self.model.predict(test_df)
+            
+        return {
+            "training_metric": mean_metrics,
+            "prediction": ypred,
+        }
     
     def predict(
         self, 
         test_df: pd.DataFrame,
         targets: List[str],
         path: str = None,
-    ):
+    ) -> np.ndarray:
+        model = self.model
         if path is not None:
             model = self.model_load()
-        else:
-            model = self.model
         
         models = [model] * len(targets)
         ypred = []
@@ -110,7 +120,7 @@ class Trainer:
         with open(f"{self.config.output_path}/{self.config.model_name}.pickle", "wb") as f:
             pickle.dump(model, f)
             
-    def model_load(self) -> object:
+    def model_load(self) -> BaseModel:
         os.makedirs(self.config.output_path, exist_ok=True)
         with open(f"{self.config.output_path}/{self.config.model_name}.pickle", "rb") as f:
             model = pickle.load(f)
