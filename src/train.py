@@ -18,10 +18,10 @@ if __name__ == "__main__":
     cat, cat_args = get_model("catboost", "binary_classification")
     dt, dt_args = get_model("decision_tree", "binary_classification")
     rf, rf_args = get_model("random_forest", "binary_classification")
+    et, et_args = get_model("extra_tree", "binary_classification")
     
     train_df = pd.read_csv("dataset/binary_classification.csv")
-    train_df.sex = train_df.sex.apply(lambda x: "0" if x == "Male" else "1")
-    train_df.sex = train_df.sex.astype(int)
+    train_df.sex = train_df.sex.apply(lambda x: "0" if x == "Male" else "1").astype(int)
     test_df = None
     
     encoder = Encoder(encoder=LabelEncoder())
@@ -43,5 +43,9 @@ if __name__ == "__main__":
     print(trainer.feature_importacne())
     
     trainer = Trainer(rf, rf_args, scaler=None, encoder=encoder)
+    trainer.fit(train_df, test_df, ["age","education.num"], ["sex"])
+    print(trainer.feature_importacne())
+    
+    trainer = Trainer(et, et_args, scaler=None, encoder=encoder)
     trainer.fit(train_df, test_df, ["age","education.num"], ["sex"])
     print(trainer.feature_importacne())

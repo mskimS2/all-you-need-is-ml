@@ -47,9 +47,6 @@ class Scaler:
 
 @dataclass
 class Encoder:
-    # one_hot_encoder = OneHotEncoder(sparse=False)
-    # lable_encoder = LabelEncoder()
-    # oridinal_encoder = OrdinalEncoder()
     encoder: Union[OneHotEncoder, LabelEncoder, OrdinalEncoder]
     
     def fit(
@@ -63,9 +60,9 @@ class Encoder:
         
         for col in columns:
             if train_df is not None:
-                train_df[col] = self.encoder.fit_transform(train_df[col])
+                train_df[col] = self.encoder.fit_transform(train_df[col].ravel())
                 if test_df is not None:
-                    test_df[col] = self.encoder.transform(test_df[col])
+                    test_df[col] = self.encoder.transform(test_df[col].ravel())
 
         return train_df, test_df
     
@@ -90,9 +87,9 @@ class Preprocessor:
         
         for col in columns:
             if train_df is not None:
-                train_df[col] = self.scaler.fit_transform(train_df[col])
+                train_df[col] = self.scaler.fit_transform(train_df[col].ravel())
                 if test_df is not None:
-                    test_df[col] = self.scaler.transform(test_df[col])
+                    test_df[col] = self.scaler.transform(test_df[col].ravel())
             else:
                 raise ValueError("Train_df is None")
                     

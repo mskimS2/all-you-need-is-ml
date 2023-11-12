@@ -1,7 +1,7 @@
 import random
 import torch
 import numpy as np
-from src.logger import logger
+from logger import logger
 
 
 def set_randomness(random_seed: int = 42):

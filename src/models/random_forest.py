@@ -11,9 +11,9 @@ class RandomForest(BaseModel):
     config: Dict
     
     def __post_init__(self):
-        self.set_up()
+        self.setup()
     
-    def set_up(self):
+    def setup(self):
         self.model.n_estimation=self.config.n_estimation
         self.model.max_depth=self.config.max_depth
         self.model.min_samples_split=self.config.min_samples_split
@@ -33,18 +33,16 @@ class RandomForest(BaseModel):
     
     def fit(self, *args, **kwargs):
         return self.model.fit(
-            X=kwargs["X"],
-            y=kwargs["y"],
+            X=kwargs.get("X"),
+            y=kwargs.get("y"),
             sample_weight=kwargs.get("sample_weight"),
         )
     
     def predict(self, *args, **kwargs):
-        return self.model.predict(
-            X=kwargs["X"],
-        )
+        return self.model.predict(X=kwargs.get("X"))
     
     def predict_proba(self, *args, **kwargs):
-        return self.model.predict_proba(*args, **kwargs)
+        return self.model.predict_proba(X=kwargs.get("X"))
     
     def feature_importances(self, *args, **kwargs) -> pd.DataFrame:
         if kwargs.get("columns") is None:

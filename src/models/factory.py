@@ -35,6 +35,7 @@ from models.lightgbm import LightGBM
 from models.catboost import CatBoost
 from models.decision_tree import DecisionTree
 from models.random_forest import RandomForest
+from models.extra_tree import ExtraTree
 
 from config.xgboost_config import xgboost_args
 from config.catboost_config import catboost_args
@@ -143,12 +144,12 @@ def get_extra_tree(problem: str) -> Tuple[BaseModel, argparse.Namespace]:
         Const.MULTI_CLASS_CLASSIFICATION,
         Const.MULTI_LABEL_CLASSIFICATION,
     ]:
-        model = ExtraTreeClassifier()
+        model = ExtraTree(ExtraTreeClassifier(), args)
     elif problem in [
         Const.SINGLE_COLUMN_REGRESSION,
         Const.MULTI_COLUMN_REGRESSION,
     ]:
-        model = ExtraTreeRegressor()
+        model = ExtraTree(ExtraTreeRegressor(), args)
     else:
         raise ValueError(f"Invalid problem type: {problem}")
     return model, args

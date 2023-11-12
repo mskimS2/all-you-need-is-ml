@@ -11,9 +11,9 @@ class LightGBM(BaseModel):
     config: Dict
     
     def __post_init__(self):
-        self.set_up()
+        self.setup()
     
-    def set_up(self):
+    def setup(self):
         self.model.num_iterations = self.config.num_iterations
         self.model.num_leaves = self.config.num_leaves
         self.model.learning_rate = self.config.learning_rate
@@ -80,20 +80,52 @@ class LightGBM(BaseModel):
     
     def fit(self, *args, **kwargs):
         return self.model.fit(
-            X=kwargs["X"],
-            y=kwargs["y"],
-            eval_set=kwargs["eval_set"],
-            # *args, **kwargs,
+            X=kwargs.get("X"),
+            y=kwargs.get("y"),
+            eval_set=kwargs.get("eval_set"),
+            sample_weight=kwargs.get("sample_weight"),
+            init_score=kwargs.get("init_score"),
+            eval_names=kwargs.get("eval_names"),
+            eval_sample_weight=kwargs.get("eval_sample_weight"),
+            eval_init_score=kwargs.get("eval_init_score"),
+            eval_metric=kwargs.get("eval_metric"),
+            feature_name=kwargs.get("feature_name"),
+            categorical_feature=kwargs.get("categorical_feature"),
+            callbacks=kwargs.get("callbacks"),
+            init_model=kwargs.get("init_model"),
         )
     
     def predict(self, *args, **kwargs):
         return self.model.predict(
-            X=kwargs["X"],
-            # *args, **kwargs,
+            X=kwargs.get("X"),
+            raw_score=kwargs.get("raw_score"),
+            start_iteration=0, 
+            num_iteration=None, 
+            pred_leaf=False, 
+            pred_contrib=False, 
+            validate_features=False,
+            # start_iteration=kwargs.get("start_iteration"),
+            # num_iteration=kwargs.get("num_iteration"),
+            # pred_leaf=kwargs.get("pred_leaf"),
+            # pred_contrib=kwargs.get("pred_contrib"),
+            # validate_features=kwargs.get("validate_features"),
         )
     
     def predict_proba(self, *args, **kwargs):
-        return self.model.predict_proba(*args, **kwargs)
+        return self.model.predict_proba(
+            X=kwargs.get("X"),
+            raw_score=kwargs.get("raw_score"),
+            start_iteration=0, 
+            num_iteration=None, 
+            pred_leaf=False, 
+            pred_contrib=False, 
+            validate_features=False,
+            # start_iteration=kwargs.get("start_iteration"),
+            # num_iteration=kwargs.get("num_iteration"),
+            # pred_leaf=kwargs.get("pred_leaf"),
+            # pred_contrib=kwargs.get("pred_contrib"),
+            # validate_features=kwargs.get("validate_features"),
+        )
     
     def feature_importances(self, *args, **kwargs) -> pd.DataFrame:
         if kwargs.get("shap") is not None:

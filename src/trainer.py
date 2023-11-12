@@ -1,11 +1,13 @@
 import os
 import pickle
 import numpy as np
+import logging
 import pandas as pd
 from dataclasses import dataclass
 from typing import List
 from sklearn.model_selection import KFold, StratifiedKFold
 
+import utils
 from models.base import BaseModel
 from preprocessor import Encoder, Scaler, Preprocessor
 from metrics import Metric
@@ -30,11 +32,19 @@ class Trainer:
         test_df: pd.DataFrame = None,
         features: List[str] = None,
         targets: List[str] = None,
+        reduce_memory_usage=True,
     ):
-        self.columns = features
+        # logger = logging.getLogger(self.model.config.model_name)
         logger.info(f"configuration: {self.model.config}")
+        self.columns = features
         metrics = Metric(self.config.problem_type)
         scores = []
+        
+        if reduce_memory_usage:
+            if train_df is not None:
+                train_df = utils.reduce_memory_usage(train_df)
+            if test_df is not None:
+                test_df = utils.reduce_memory_usage(test_df)
         
         train_df = self.created_fold(
             train_df, 
@@ -50,10 +60,10 @@ class Trainer:
         train_df, test_df = self.preprocessor.fit_encoding(train_df, test_df, targets)
         
         for fold in range(self.config.num_folds):
-            x_train = train_df[train_df[Const.FOLD_ID]!=fold][features]
-            y_train = train_df[train_df[Const.FOLD_ID]!=fold][targets]
-            x_valid = train_df[train_df[Const.FOLD_ID]!=fold][features]
-            y_valid = train_df[train_df[Const.FOLD_ID]!=fold][targets]
+            x_train = train_df[train_df[Const.FOLD_ID]!=fold][features]#.astype(np.float32)
+            y_train = train_df[train_df[Const.FOLD_ID]!=fold][targets]#.astype(np.float32)
+            x_valid = train_df[train_df[Const.FOLD_ID]!=fold][features]#.astype(np.float32)
+            y_valid = train_df[train_df[Const.FOLD_ID]!=fold][targets]#.astype(np.float32)
 
             y_pred = []
             models = [self.model] * len(targets)
@@ -62,18 +72,20 @@ class Trainer:
                     X=x_train,
                     y=y_train,
                     eval_set=[(x_valid, y_valid)],
-                    verbose=self.config.verbose
+                    verbose=self.config.verbose,
+                    check_input=True,
+                    validate_features=True,
+                    raw_score=False,
+                    output_margin=False,
                 )
             
-                y_pred_temp = _m.predict_proba(x_valid)[:, 1]
+                if self.config.use_predict_proba:
+                    y_pred_temp = self.model.predict_proba(X=x_valid)
+                else:
+                    y_pred_temp = self.model.predict(X=x_valid)
                 y_pred.append(y_pred_temp)
             y_pred = np.column_stack(y_pred)
-
-            if self.config.use_predict_proba:
-                y_pred = self.model.predict_proba(X=x_valid)
-            else:
-                y_pred = self.model.predict(X=x_valid)
-
+            
             # calculate metric
             metric_dict = metrics.calculate(y_valid, y_pred)
             scores.append(metric_dict)
@@ -82,20 +94,20 @@ class Trainer:
 
         self.model_save(self.model)
         mean_metrics = self.dict_mean(scores)
-        logger.info(f"Result metric score: {mean_metrics}")
+        logger.info(f"`{self.model.config.model_name}` model metric score: {mean_metrics}")
         
-        if test_df is None:
-            return mean_metrics, None
-        
-        if self.config.use_predict_proba:
-            y_pred = self.model.predict_proba(test_df)  
-        else:
-            y_pred = self.model.predict(test_df)
-            
-        return {
+        res = {
             "training_metric": mean_metrics,
-            "prediction": y_pred,
         }
+        
+        if test_df is not None:
+            if self.config.use_predict_proba:
+                y_pred = self.model.predict_proba(X=test_df[features])
+            else:
+                y_pred = self.model.predict(X=test_df[features])
+            res["prediction"] = y_pred
+        
+        return res
     
     def predict(
         self, 
@@ -147,13 +159,13 @@ class Trainer:
         
         df[Const.FOLD_ID] = -1
         if problem in [Const.BINARY_CLASSIFICATION, Const.MULTI_CLASS_CLASSIFICATION]:
-            y = df[target_columns].values
+            y = df[target_columns].values.ravel()
             skf = StratifiedKFold(n_splits=n_splits, shuffle=shuffle, random_state=random_state)
             for fold, (_, valid_indicies) in enumerate(skf.split(X=df, y=y)):
                 df.loc[valid_indicies, Const.FOLD_ID] = fold
                 
         elif problem in [Const.SINGLE_COLUMN_REGRESSION]:
-            y = df[target_columns].values
+            y = df[target_columns].values.ravel()
             num_bins = min(int(np.floor(1 + np.log2(len(df)))), 10)
             skf = StratifiedKFold(n_splits=n_splits, shuffle=shuffle, random_state=random_state)
             df["bins"] = pd.cut(df[target_columns].values.ravel(), bins=num_bins, labels=False)
@@ -163,14 +175,14 @@ class Trainer:
             
         elif problem in [Const.MULTI_COLUMN_REGRESSION]:
             # Todo: MultilabelStratifiedKFold
-            y = df[target_columns].values
+            y = df[target_columns].values.ravel()
             kf = KFold(n_splits=n_splits, shuffle=shuffle, random_state=random_state)
             for fold, (_, valid_indicies) in enumerate(kf.split(X=df, y=y)):
                 df.loc[valid_indicies, Const.FOLD_ID] = fold
         
         elif problem in [Const.MULTI_LABEL_CLASSIFICATION]:
             # Todo: MultilabelStratifiedKFold
-            y = df[target_columns].values
+            y = df[target_columns].values.ravel()
             kf = KFold(n_splits=n_splits, shuffle=shuffle, random_state=random_state)
             for fold, (_, valid_indicies) in enumerate(kf.split(X=df, y=y)):
                 df.loc[valid_indicies, Const.FOLD_ID] = fold

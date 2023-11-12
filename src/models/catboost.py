@@ -11,9 +11,9 @@ class CatBoost(BaseModel):
     config: Dict
     
     def __post_init__(self):
-        self.set_up()
+        self.setup()
     
-    def set_up(self):
+    def setup(self):
         self.model.iterations=self.config.iterations
         self.model.learning_rate=self.config.learning_rate
         self.model.early_stopping_rounds=self.config.early_stopping_rounds
@@ -59,13 +59,52 @@ class CatBoost(BaseModel):
         self.model.task_type=self.config.device
     
     def fit(self, *args, **kwargs):
-        return self.model.fit(*args, **kwargs)
+        return self.model.fit(
+            X=kwargs.get("X"),
+            y=kwargs.get("y"), 
+            cat_features=kwargs.get("cat_features"), 
+            text_features=kwargs.get("text_features"), 
+            embedding_features=kwargs.get("embedding_features"), 
+            sample_weight=kwargs.get("sample_weight"), 
+            baseline=kwargs.get("baseline"), 
+            use_best_model=kwargs.get("use_best_model"),
+            eval_set=kwargs.get("eval_set"), 
+            verbose=kwargs.get("verbose"), 
+            logging_level=kwargs.get("logging_level"), 
+            plot=kwargs.get("plot"), 
+            plot_file=kwargs.get("plot_file"), 
+            column_description=kwargs.get("column_description"),
+            verbose_eval=kwargs.get("verbose_eval"), 
+            metric_period=kwargs.get("metric_period"), 
+            silent=kwargs.get("silent"), 
+            early_stopping_rounds=kwargs.get("early_stopping_rounds"),
+            save_snapshot=kwargs.get("save_snapshot"), 
+            snapshot_file=kwargs.get("snapshot_file"),
+            snapshot_interval=kwargs.get("snapshot_interval"), 
+            init_model=kwargs.get("init_model"), 
+            callbacks=kwargs.get("callbacks"),
+        )
     
     def predict(self, *args, **kwargs):
-        return self.model.predict(*args, **kwargs)
+        return self.model.predict(
+            data=kwargs.get("X"), 
+            prediction_type="Class", 
+            ntree_start=0, 
+            ntree_end=0, 
+            thread_count=-1, 
+            verbose=None, 
+            task_type="CPU",
+        )
     
     def predict_proba(self, *args, **kwargs):
-        return self.model.predict_proba(*args, **kwargs)
+        return self.model.predict_proba(
+            X=kwargs.get("X"), 
+            ntree_start=0, 
+            ntree_end=0, 
+            thread_count=-1, 
+            verbose=None, 
+            task_type="CPU",
+        )
     
     def feature_importances(self, *args, **kwargs) -> pd.DataFrame:
         if kwargs.get("shap") is not None:

@@ -11,9 +11,9 @@ class XGBoost(BaseModel):
     config: Dict
     
     def __post_init__(self):
-        self.set_up()
+        self.setup()
     
-    def set_up(self):
+    def setup(self):
         self.model.early_stopping_rounds=self.config.early_stopping_rounds
         self.model.learning_rate=self.config.learning_rate
         self.model.gamma=self.config.gamma
@@ -33,13 +33,38 @@ class XGBoost(BaseModel):
         self.model.device=self.config.device
     
     def fit(self, *args, **kwargs):
-        return self.model.fit(*args, **kwargs)
+        return self.model.fit(
+            X=kwargs.get("X"),
+            y=kwargs.get("y"),
+            sample_weight=kwargs.get("sample_weight"),
+            base_margin=kwargs.get("base_margin"),
+            eval_set=kwargs.get("eval_set"),
+            eval_metric=kwargs.get("eval_metric"),
+            early_stopping_rounds=kwargs.get("early_stopping_rounds"),
+            verbose=kwargs.get("verbose"),
+            xgb_model=kwargs.get("xgb_model"),
+            sample_weight_eval_set=kwargs.get("sample_weight_eval_set"),
+            base_margin_eval_set=kwargs.get("base_margin_eval_set"),
+            feature_weights=kwargs.get("feature_weights"),
+            callbacks=kwargs.get("callbacks"),
+        )
     
     def predict(self, *args, **kwargs):
-        return self.model.predict(*args, **kwargs)
+        return self.model.predict(
+            X=kwargs.get("X"),
+            output_margin=kwargs.get("output_margin"),
+            validate_features=kwargs.get("validate_features"),
+            base_margin=kwargs.get("base_margin"),
+            iteration_range=kwargs.get("iteration_range"),
+        )
     
     def predict_proba(self, *args, **kwargs):
-        return self.model.predict_proba(*args, **kwargs)
+        return self.model.predict_proba(
+            X=kwargs.get("X"),
+            validate_features=kwargs.get("validate_features"),
+            base_margin=kwargs.get("base_margin"),
+            iteration_range=kwargs.get("iteration_range"),
+        )
     
     def feature_importances(self, *args, **kwargs) -> pd.DataFrame:
         if kwargs.get("shap") is not None:
