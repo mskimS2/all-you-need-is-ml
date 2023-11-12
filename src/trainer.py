@@ -4,7 +4,7 @@ import numpy as np
 import logging
 import pandas as pd
 from dataclasses import dataclass
-from typing import List
+from typing import List, Tuple
 from sklearn.model_selection import KFold, StratifiedKFold
 
 import utils
@@ -45,6 +45,11 @@ class Trainer:
                 train_df = utils.reduce_memory_usage(train_df)
             if test_df is not None:
                 test_df = utils.reduce_memory_usage(test_df)
+                
+        problem_type, num_classes = self.check_problem_type(train_df, self.config.task, targets)
+        self.config.problem_type = problem_type
+        self.config.num_classes = num_classes
+        logger.info(f"problem type: {self.config.problem_type}, detected labels: {self.config.num_classes}")
         
         train_df = self.created_fold(
             train_df, 
@@ -80,9 +85,10 @@ class Trainer:
                 )
             
                 if self.config.use_predict_proba:
-                    y_pred_temp = self.model.predict_proba(X=x_valid)
+                    y_pred_temp = self.model.predict_proba(X=x_valid, **vars(self.config))
                 else:
-                    y_pred_temp = self.model.predict(X=x_valid)
+                    y_pred_temp = self.model.predict(X=x_valid, **vars(self.config))
+                    
                 y_pred.append(y_pred_temp)
             y_pred = np.column_stack(y_pred)
             
@@ -102,9 +108,9 @@ class Trainer:
         
         if test_df is not None:
             if self.config.use_predict_proba:
-                y_pred = self.model.predict_proba(X=test_df[features])
+                y_pred = self.model.predict_proba(X=test_df[features], **vars(self.config))
             else:
-                y_pred = self.model.predict(X=test_df[features])
+                y_pred = self.model.predict(X=test_df[features], **vars(self.config))
             res["prediction"] = y_pred
         
         return res
@@ -197,24 +203,23 @@ class Trainer:
         df: pd.DataFrame,
         task: Task,
         target_columns: List[str],
-    ):
+    ) -> Tuple[Problem, int]:
         num_labels = len(np.unique(df[target_columns].values))
-        if task is not None:
-            if task == Task.types.classification:
-                problem_type = Problem.type.multi_label_classification
+        if Task.type.get(task) is not None:
+            task = Task.type.get(task)
+            if task == Task.type[Const.CLASSIFICATION]:
+                problem_type = Const.MULTI_LABEL_CLASSIFICATION
                 if num_labels == 2:
-                    problem_type = Problem.type.binary_classification
+                    problem_type = Const.BINARY_CLASSIFICATION
                     
-            elif task == Task.types.regression:
-                problem_type = Problem.type.multi_column_regression
+            elif task == Task.type[Const.REGRESSION]:
+                problem_type = Const.MULTI_COLUMN_REGRESSION
                 if num_labels == 1:
-                    problem_type = Problem.type.single_column_regression
+                    problem_type = Const.SINGLE_COLUMN_REGRESSION
+        else:
+            raise Exception("Problem type not understood")
 
-            else:
-                raise Exception("Problem type not understood")
-
-        logger.info(f"problem type: {problem_type.name}, detected labels: {num_labels}")
-        return problem_type
+        return problem_type, num_labels
     
     def feature_importacne(self):
         return self.model.feature_importances(columns=self.columns)

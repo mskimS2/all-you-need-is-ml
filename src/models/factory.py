@@ -36,6 +36,7 @@ from models.catboost import CatBoost
 from models.decision_tree import DecisionTree
 from models.random_forest import RandomForest
 from models.extra_tree import ExtraTree
+from models.sgd_classifier import SgdClassifier
 
 from config.xgboost_config import xgboost_args
 from config.catboost_config import catboost_args
@@ -58,11 +59,13 @@ def get_xgboost(problem: str) -> Tuple[BaseModel, argparse.Namespace]:
         Const.MULTI_CLASS_CLASSIFICATION,
         Const.MULTI_LABEL_CLASSIFICATION,
     ]:
+        args.task = Const.CLASSIFICATION
         model = XGBoost(XGBClassifier(), args) 
     elif problem in [
         Const.SINGLE_COLUMN_REGRESSION,
         Const.MULTI_COLUMN_REGRESSION,
     ]:
+        args.task = Const.REGRESSION
         model = XGBoost(XGBRegressor(), args)
     else:
         raise ValueError(f"Invalid problem type: {problem}")
@@ -76,11 +79,13 @@ def get_lightgbm(problem: str) -> Tuple[BaseModel, argparse.Namespace]:
         Const.MULTI_CLASS_CLASSIFICATION,
         Const.MULTI_LABEL_CLASSIFICATION,
     ]:
+        args.task = Const.CLASSIFICATION
         model = LightGBM(LGBMClassifier(), args)
     elif problem in [
         Const.SINGLE_COLUMN_REGRESSION,
         Const.MULTI_COLUMN_REGRESSION,
     ]:
+        args.task = Const.REGRESSION
         model = LightGBM(LGBMRegressor(), args)
     else:
         raise ValueError(f"Invalid problem type: {problem}")
@@ -93,11 +98,13 @@ def get_catboost(problem: str) -> Tuple[BaseModel, argparse.Namespace]:
         Const.MULTI_CLASS_CLASSIFICATION,
         Const.MULTI_LABEL_CLASSIFICATION,
     ]:
+        args.task = Const.CLASSIFICATION
         model = CatBoost(CatBoostClassifier(), args)
     elif problem in [
         Const.SINGLE_COLUMN_REGRESSION,
         Const.MULTI_COLUMN_REGRESSION,
     ]:
+        args.task = Const.REGRESSION
         model = CatBoost(CatBoostRegressor(), args)
     else:
         raise ValueError(f"Invalid problem type: {problem}")
@@ -110,11 +117,13 @@ def get_random_forest(problem: str) -> Tuple[BaseModel, argparse.Namespace]:
         Const.MULTI_CLASS_CLASSIFICATION,
         Const.MULTI_LABEL_CLASSIFICATION,
     ]:
+        args.task = Const.CLASSIFICATION
         model = RandomForest(RandomForestClassifier(), args)
     elif problem in [
         Const.SINGLE_COLUMN_REGRESSION,
         Const.MULTI_COLUMN_REGRESSION,
     ]:
+        args.task = Const.REGRESSION
         model = RandomForest(RandomForestRegressor(), args)
     else:
         raise ValueError(f"Invalid problem type: {problem}")
@@ -127,11 +136,13 @@ def get_decision_tree(problem: str) -> Tuple[BaseModel, argparse.Namespace]:
         Const.MULTI_CLASS_CLASSIFICATION,
         Const.MULTI_LABEL_CLASSIFICATION,
     ]:
+        args.task = Const.CLASSIFICATION
         model = DecisionTree(DecisionTreeClassifier(), args)
     elif problem in [
         Const.SINGLE_COLUMN_REGRESSION,
         Const.MULTI_COLUMN_REGRESSION,
     ]:
+        args.task = Const.REGRESSION
         model = DecisionTree(DecisionTreeRegressor(), args)
     else:
         raise ValueError(f"Invalid problem type: {problem}")
@@ -144,11 +155,13 @@ def get_extra_tree(problem: str) -> Tuple[BaseModel, argparse.Namespace]:
         Const.MULTI_CLASS_CLASSIFICATION,
         Const.MULTI_LABEL_CLASSIFICATION,
     ]:
+        args.task = Const.CLASSIFICATION
         model = ExtraTree(ExtraTreeClassifier(), args)
     elif problem in [
         Const.SINGLE_COLUMN_REGRESSION,
         Const.MULTI_COLUMN_REGRESSION,
     ]:
+        args.task = Const.REGRESSION
         model = ExtraTree(ExtraTreeRegressor(), args)
     else:
         raise ValueError(f"Invalid problem type: {problem}")
@@ -160,6 +173,7 @@ def get_logistic_regression(problem: str) -> Tuple[BaseModel, argparse.Namespace
         Const.SINGLE_COLUMN_REGRESSION,
         Const.MULTI_COLUMN_REGRESSION,
     ]:
+        args.task = Const.REGRESSION
         model = LogisticRegression()
     else:
         raise ValueError(f"Invalid problem type: {problem}")
@@ -171,6 +185,7 @@ def get_linear_regression(problem: str) -> Tuple[BaseModel, argparse.Namespace]:
         Const.SINGLE_COLUMN_REGRESSION,
         Const.MULTI_COLUMN_REGRESSION,
     ]:
+        args.task = Const.REGRESSION
         model = LinearRegression()
     else:
         raise ValueError(f"Invalid problem type: {problem}")
@@ -182,6 +197,7 @@ def get_lasso(problem: str) -> Tuple[BaseModel, argparse.Namespace]:
         Const.SINGLE_COLUMN_REGRESSION,
         Const.MULTI_COLUMN_REGRESSION,
     ]:
+        args.task = Const.REGRESSION
         model = Lasso()
     else:
         raise ValueError(f"Invalid problem type: {problem}")
@@ -194,7 +210,8 @@ def get_sgd_classifier(problem: str) -> Tuple[BaseModel, argparse.Namespace]:
         Const.MULTI_CLASS_CLASSIFICATION,
         Const.MULTI_LABEL_CLASSIFICATION,
     ]:
-        model = SGDClassifier()
+        args.task = Const.CLASSIFICATION
+        model = SgdClassifier(SGDClassifier(), args)
     else:
         raise ValueError(f"Invalid problem type: {problem}")
     return model, args
@@ -205,12 +222,14 @@ def get_support_vector_machine(problem: str) -> Tuple[BaseModel, argparse.Namesp
         Const.MULTI_CLASS_CLASSIFICATION,
         Const.MULTI_LABEL_CLASSIFICATION,
     ]:
+        args.task = Const.CLASSIFICATION
         args = svc_config()
         model = SVC()
     elif problem in [
         Const.SINGLE_COLUMN_REGRESSION,
         Const.MULTI_COLUMN_REGRESSION,
     ]:
+        args.task = Const.REGRESSION
         args = svr_config()
         model = SVR()
     else:
@@ -223,12 +242,14 @@ def get_knn(problem: str) -> Tuple[BaseModel, argparse.Namespace]:
         Const.MULTI_CLASS_CLASSIFICATION,
         Const.MULTI_LABEL_CLASSIFICATION,
     ]:
+        args.task = Const.CLASSIFICATION
         args = knn_classifier_config()
         model = KNeighborsClassifier()
     elif problem in [
         Const.SINGLE_COLUMN_REGRESSION,
         Const.MULTI_COLUMN_REGRESSION,
     ]:
+        args.task = Const.REGRESSION
         args = knn_regressor_config()
         model = KNeighborsRegressor()
     else:
