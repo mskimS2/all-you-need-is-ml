@@ -1,9 +1,12 @@
 import pandas as pd
+import numpy as np
 from models.base import BaseModel
 from dataclasses import dataclass
-from typing import Union, Dict
+from typing import Union, Dict, List
+from sklearn import metrics
 from xgboost import XGBClassifier, XGBRegressor
 
+from const import Const
 
 @dataclass
 class XGBoost(BaseModel):
@@ -13,24 +16,11 @@ class XGBoost(BaseModel):
     def __post_init__(self):
         self.set_up()
     
-    def set_up(self):
-        self.model.early_stopping_rounds=self.config.early_stopping_rounds
-        self.model.learning_rate=self.config.learning_rate
-        self.model.gamma=self.config.gamma
-        self.model.max_depth=self.config.max_depth
-        self.model.max_child_weight=self.config.max_child_weight
-        self.model.max_delta_step=self.config.max_delta_step
-        self.model.subsample=self.config.subsample
-        self.model.sampling_method=self.config.sampling_method
-        self.model.colsample_bytree=self.config.colsample_bytree
-        self.model.alpha=self.config.alpha
-        self.model.tree_method=self.config.tree_method
-        self.model.scale_pos_weight=self.config.scale_pos_weight
-        self.model.grow_policy=self.config.grow_policy
-        self.model.max_leaves=self.config.max_leaves
-        self.model.random_state=self.config.random_seed
-        self.model.reg_lambda=self.config.reg_lambda
-        self.model.device=self.config.device
+    def set_up(self, *args, **kwargs):
+        if isinstance(self.model, XGBClassifier):
+            self.model = XGBClassifier(*args, **kwargs)
+        elif isinstance(self.model, XGBRegressor):
+            self.model = XGBRegressor(*args, **kwargs)
     
     def fit(self, *args, **kwargs):
         x = kwargs.get("X")
@@ -101,3 +91,55 @@ class XGBoost(BaseModel):
             columns=["feature_importance"],
             orient="index",
         )
+        
+    def optimize_hyper_params(
+        self, 
+        df: pd.DataFrame,
+        features: List[str],
+        targets: List[str], 
+        **hparams: Dict,
+    ):
+        config = {
+            "early_stopping_rounds": hparams.get("early_stopping_rounds", self.config.early_stopping_rounds),
+            "learning_rate": hparams.get("learning_rate", self.config.learning_rate),
+            "gamma": hparams.get("gamma", self.config.gamma),
+            "max_depth": hparams.get("max_depth", self.config.max_depth),
+            "max_child_weight": hparams.get("max_child_weight", self.config.max_child_weight),
+            "max_delta_step": hparams.get("max_delta_step", self.config.max_delta_step),
+            "subsample": hparams.get("subsample", self.config.subsample),
+            "sampling_method": hparams.get("sampling_method", self.config.sampling_method),
+            "colsample_bytree": hparams.get("colsample_bytree", self.config.colsample_bytree),
+            "alpha": hparams.get("alpha", self.config.alpha),
+            "tree_method": hparams.get("tree_method", self.config.tree_method),
+            "scale_pos_weight": hparams.get("scale_pos_weight", self.config.scale_pos_weight),
+            "grow_policy": hparams.get("grow_policy", self.config.grow_policy),
+            "max_leaves": hparams.get("max_leaves", self.config.max_leaves),
+            "random_seed": hparams.get("random_seed", self.config.random_seed),
+            "reg_lambda": hparams.get("reg_lambda", self.config.reg_lambda),
+            "device": hparams.get("device", self.config.device),
+        }
+        
+        if isinstance(model, XGBClassifier):
+            model = XGBClassifier(**config)
+        elif isinstance(model, XGBRegressor):
+            model = XGBRegressor(**config)
+        
+        accuaraies = []
+        for fold in range(self.config.num_folds):
+            x_train, y_train = df[df[Const.FOLD_ID]!=fold][features], df[df[Const.FOLD_ID]!=fold][targets]
+            x_valid, y_valid = df[df[Const.FOLD_ID]!=fold][features], df[df[Const.FOLD_ID]!=fold][targets]
+
+            model.fit(
+                X=x_train,
+                y=y_train,
+                eval_set=[(x_valid, y_valid)],
+                **config,
+            )
+            
+            if self.config.use_predict_proba:
+                y_pred = self.model.predict_proba(X=x_valid)
+            else:
+                y_pred = self.model.predict(X=x_valid)
+            accuaraies.append(metrics.accuracy_score(y_valid, y_pred))
+
+        return -1.0 * np.mean(accuaraies)

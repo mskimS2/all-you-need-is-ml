@@ -185,4 +185,5 @@ if __name__ == "__main__":
     study = optuna.create_study(direction="minimize")
     trial = study.optimize(optimization_function, n_trials=15)
     
+    # study.best_params
     

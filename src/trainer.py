@@ -3,6 +3,8 @@ import pickle
 import numpy as np
 import logging
 import pandas as pd
+import optuna
+from functools import partial
 from dataclasses import dataclass
 from typing import List, Tuple
 from sklearn.model_selection import KFold, StratifiedKFold
@@ -33,8 +35,8 @@ class Trainer:
         features: List[str] = None,
         targets: List[str] = None,
         reduce_memory_usage=True,
+        optimize_hyperparams=None,
     ):
-        # logger = logging.getLogger(self.model.config.model_name)
         logger.info(f"configuration: {self.model.config}")
         self.columns = features
         metrics = Metric(self.config.problem_type)
@@ -64,11 +66,19 @@ class Trainer:
         
         train_df, test_df = self.preprocessor.fit_encoding(train_df, test_df, targets)
         
+        if optimize_hyperparams is not None:
+            self.optimize_hyper_parameters(
+                df=train_df,
+                features=features,
+                targets=targets,
+                hparams=optimize_hyperparams,
+            )
+        
         for fold in range(self.config.num_folds):
-            x_train = train_df[train_df[Const.FOLD_ID]!=fold][features]#.astype(np.float32)
-            y_train = train_df[train_df[Const.FOLD_ID]!=fold][targets]#.astype(np.float32)
-            x_valid = train_df[train_df[Const.FOLD_ID]!=fold][features]#.astype(np.float32)
-            y_valid = train_df[train_df[Const.FOLD_ID]!=fold][targets]#.astype(np.float32)
+            x_train = train_df[train_df[Const.FOLD_ID]!=fold][features]
+            y_train = train_df[train_df[Const.FOLD_ID]!=fold][targets]
+            x_valid = train_df[train_df[Const.FOLD_ID]!=fold][features]
+            y_valid = train_df[train_df[Const.FOLD_ID]!=fold][targets]
 
             y_pred = []
             models = [self.model] * len(targets)
@@ -78,10 +88,10 @@ class Trainer:
                     y=y_train,
                     eval_set=[(x_valid, y_valid)],
                     verbose=self.config.verbose,
-                    check_input=True,
-                    validate_features=True,
-                    raw_score=False,
-                    output_margin=False,
+                    # check_input=True,
+                    # validate_features=True,
+                    # raw_score=False,
+                    # output_margin=False,
                     kwargs=self.config,
                 )
             
@@ -225,3 +235,27 @@ class Trainer:
     def feature_importacne(self):
         return self.model.feature_importances(columns=self.columns)
         
+    def optimize_hyper_parameters(
+        self, 
+        df: pd.DataFrame, 
+        features: List[str] = None,
+        targets: List[str] = None,
+        n_trials: int = 15,
+        direction: str = "minimize",
+    ):
+        logger.info(f"optimize hyperparameters")
+        
+        dir = -1 if direction == "minimize" else 1
+             
+        study = optuna.create_study(direction=direction)
+        study.optimize(
+            partial(
+                self.model.optimize_hyper_params*dir, 
+                df=df, 
+                features=features, 
+                targets=targets,
+            ), 
+            n_trials=n_trials,
+        )
+        self.model.set_up(**study.best_params)
+        logger.info(f"best parameters: ", **study.best_params)

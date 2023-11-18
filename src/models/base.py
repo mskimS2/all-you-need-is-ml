@@ -1,6 +1,7 @@
 import pandas as pd
 import numpy as np
 from abc import ABC, abstractmethod
+from typing import List, Dict
 
 
 class BaseModel(ABC):
@@ -18,4 +19,8 @@ class BaseModel(ABC):
     
     @abstractmethod
     def feature_importances(*args, **kwargs) -> pd.DataFrame:
+        pass
+    
+    @abstractmethod
+    def optimize_hyper_params(*args, **kwargs) -> None:
         pass

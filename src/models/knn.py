@@ -1,9 +1,12 @@
 import pandas as pd
+import numpy as np
 from models.base import BaseModel
 from dataclasses import dataclass
-from typing import Dict
+from typing import Dict, List
+from sklearn import metrics
 from sklearn.neighbors import KNeighborsClassifier, KNeighborsRegressor
 
+from const import Const
 
 @dataclass
 class KNNClassifier(BaseModel):
@@ -13,16 +16,8 @@ class KNNClassifier(BaseModel):
     def __post_init__(self):
         self.set_up()
     
-    def set_up(self):
-        self.model.n_neighbors=self.config.n_neighbors
-        self.model.weights=self.config.weights
-        self.model.algorithm=self.config.algorithm
-        self.model.gamma=self.config.gamma
-        self.model.leaf_size=self.config.leaf_size
-        self.model.p=self.config.p
-        self.model.metric=self.config.metric
-        self.model.metric_params=self.config.metric_params
-        self.model.n_jobs=self.config.n_jobs
+    def set_up(self, *args, **kwargs):
+        self.model = KNeighborsClassifier(*args, **kwargs)
     
     def fit(self, *args, **kwargs):
         x = kwargs.get("X")
@@ -62,6 +57,49 @@ class KNNClassifier(BaseModel):
             pass
         
         return None
+    
+    def optimize_hyper_params(
+        self, 
+        df: pd.DataFrame,
+        features: List[str],
+        targets: List[str], 
+        **hparams: Dict,
+    ):
+        config = {
+            "n_neighbors": hparams.get("n_neighbors", self.config.n_neighbors),
+            "weights": hparams.get("weights", self.config.weights),
+            "algorithm": hparams.get("algorithm", self.config.algorithm),
+            "gamma": hparams.get("gamma", self.config.gamma),
+            "leaf_size": hparams.get("leaf_size", self.config.leaf_size),
+            "p": hparams.get("p", self.config.p),
+            "metric": hparams.get("metric", self.config.metric),
+            "metric_params": hparams.get("metric_params", self.config.metric_params),
+            "n_jobs": hparams.get("n_jobs", self.config.n_jobs),
+        }
+        
+        model = KNeighborsRegressor(**config)
+        
+        accuaraies = []
+        for fold in range(self.config.num_folds):
+            x_train, y_train = df[df[Const.FOLD_ID]!=fold][features], df[df[Const.FOLD_ID]!=fold][targets]
+            x_valid, y_valid = df[df[Const.FOLD_ID]!=fold][features], df[df[Const.FOLD_ID]!=fold][targets]
+
+            y_pred = []
+            model.fit(
+                X=x_train,
+                y=y_train,
+                eval_set=[(x_valid, y_valid)],
+                **config,
+            )
+            
+            if self.config.use_predict_proba:
+                y_pred = self.model.predict_proba(X=x_valid)
+            else:
+                y_pred = self.model.predict(X=x_valid)
+            accuaraies.append(metrics.accuracy_score(y_valid, y_pred))
+
+        return -1.0 * np.mean(accuaraies)
+    
         
 @dataclass
 class KNNRegressor(BaseModel):
@@ -71,16 +109,8 @@ class KNNRegressor(BaseModel):
     def __post_init__(self):
         self.set_up()
     
-    def set_up(self):
-        self.model.n_neighbors=self.config.n_neighbors
-        self.model.weights=self.config.weights
-        self.model.algorithm=self.config.algorithm
-        self.model.gamma=self.config.gamma
-        self.model.leaf_size=self.config.leaf_size
-        self.model.p=self.config.p
-        self.model.metric=self.config.metric
-        self.model.metric_params=self.config.metric_params
-        self.model.n_jobs=self.config.n_jobs
+    def set_up(self, *args, **kwargs):
+        self.model = KNeighborsRegressor(*args, **kwargs)
     
     def fit(self, *args, **kwargs):
         x = kwargs.get("X")
@@ -115,3 +145,44 @@ class KNNRegressor(BaseModel):
             pass
         
         return None
+    
+    def optimize_hyper_params(
+        self, 
+        df: pd.DataFrame,
+        features: List[str],
+        targets: List[str], 
+        **hparams: Dict,
+    ):
+        config = {
+            "n_neighbors": hparams.get("n_neighbors", self.config.n_neighbors),
+            "weights": hparams.get("weights", self.config.weights),
+            "algorithm": hparams.get("algorithm", self.config.algorithm),
+            "gamma": hparams.get("gamma", self.config.gamma),
+            "leaf_size": hparams.get("leaf_size", self.config.leaf_size),
+            "p": hparams.get("p", self.config.p),
+            "metric": hparams.get("metric", self.config.metric),
+            "metric_params": hparams.get("metric_params", self.config.metric_params),
+            "n_jobs": hparams.get("n_jobs", self.config.n_jobs),
+        }
+        
+        model = KNeighborsRegressor(**config)
+        
+        accuaraies = []
+        for fold in range(self.config.num_folds):
+            x_train, y_train = df[df[Const.FOLD_ID]!=fold][features], df[df[Const.FOLD_ID]!=fold][targets]
+            x_valid, y_valid = df[df[Const.FOLD_ID]!=fold][features], df[df[Const.FOLD_ID]!=fold][targets]
+
+            model.fit(
+                X=x_train,
+                y=y_train,
+                eval_set=[(x_valid, y_valid)],
+                **config,
+            )
+            
+            if self.config.use_predict_proba:
+                y_pred = self.model.predict_proba(X=x_valid)
+            else:
+                y_pred = self.model.predict(X=x_valid)
+            accuaraies.append(metrics.accuracy_score(y_valid, y_pred))
+
+        return -1.0 * np.mean(accuaraies)

@@ -1,7 +1,10 @@
 import pandas as pd
+import numpy as np
+from const import Const
 from models.base import BaseModel
 from dataclasses import dataclass
-from typing import Union, Dict
+from typing import Dict, List
+from sklearn import metrics
 from sklearn.svm import SVC, SVR
 
 
@@ -13,21 +16,9 @@ class SVMClassifier(BaseModel):
     def __post_init__(self):
         self.set_up()
     
-    def set_up(self):
-        self.model.C=self.config.C
-        self.model.kernel=self.config.kernel
-        self.model.degree=self.config.degree
-        self.model.gamma=self.config.gamma
-        self.model.coef0=self.config.coef0
-        self.model.shrinking=self.config.shrinking
-        self.model.probability=self.config.probability
-        self.model.tol=self.config.tol
-        self.model.cache_size=self.config.cache_size
-        self.model.class_weight=self.config.class_weight
-        self.model.verbose=self.config.verbose
-        self.model.max_iter=self.config.max_iter
-        self.model.decision_function_shape=self.config.decision_function_shape
-    
+    def set_up(self, *args, **kwargs):
+        self.model = SVC(*args, **kwargs)
+        
     def fit(self, *args, **kwargs):
         x = kwargs.get("X")
         if x is None:
@@ -77,6 +68,50 @@ class SVMClassifier(BaseModel):
             orient="index",
         )
         
+    def optimize_hyper_params(
+        self, 
+        df: pd.DataFrame,
+        features: List[str],
+        targets: List[str], 
+        **hparams: Dict,
+    ):
+        config = {
+            "C": hparams.get("C", self.config.C),
+            "kernel": hparams.get("kernel", self.config.kernel),
+            "degree": hparams.get("degree", self.config.degree),
+            "gamma": hparams.get("gamma", self.config.gamma),
+            "coef0": hparams.get("coef0", self.config.coef0),
+            "shrinking": hparams.get("shrinking", self.config.shrinking),
+            "tol": hparams.get("tol", self.config.tol),
+            "cache_size": hparams.get("cache_size", self.config.cache_size),
+            "epsilon": hparams.get("epsilon", self.config.epsilon),
+            "verbose": hparams.get("verbose", self.config.verbose),
+            "max_iter": hparams.get("max_iter", self.config.max_iter),
+        }
+        
+        model = SVR(**config)
+        
+        accuaraies = []
+        for fold in range(self.config.num_folds):
+            x_train, y_train = df[df[Const.FOLD_ID]!=fold][features], df[df[Const.FOLD_ID]!=fold][targets]
+            x_valid, y_valid = df[df[Const.FOLD_ID]!=fold][features], df[df[Const.FOLD_ID]!=fold][targets]
+
+            model.fit(
+                X=x_train,
+                y=y_train,
+                eval_set=[(x_valid, y_valid)],
+                **config,
+            )
+            
+            if self.config.use_predict_proba:
+                y_pred = self.model.predict_proba(X=x_valid)
+            else:
+                y_pred = self.model.predict(X=x_valid)
+            accuaraies.append(metrics.accuracy_score(y_valid, y_pred))
+
+        return -1.0 * np.mean(accuaraies)
+    
+        
 @dataclass
 class SVMRegressor(BaseModel):
     model: SVR
@@ -85,18 +120,8 @@ class SVMRegressor(BaseModel):
     def __post_init__(self):
         self.set_up()
     
-    def set_up(self):
-        self.model.C=self.config.C
-        self.model.kernel=self.config.kernel
-        self.model.degree=self.config.degree
-        self.model.gamma=self.config.gamma
-        self.model.coef0=self.config.coef0
-        self.model.shrinking=self.config.shrinking
-        self.model.tol=self.config.tol
-        self.model.cache_size=self.config.cache_size
-        self.model.epsilon=self.config.epsilon
-        self.model.verbose=self.config.verbose
-        self.model.max_iter=self.config.max_iter
+    def set_up(self, *args, **kwargs):
+        self.model = SVR(*args, **kwargs)
     
     def fit(self, *args, **kwargs):
         x = kwargs.get("X")
@@ -139,3 +164,46 @@ class SVMRegressor(BaseModel):
             columns=["feature_importance"],
             orient="index",
         )
+    
+    def optimize_hyper_params(
+        self, 
+        df: pd.DataFrame,
+        features: List[str],
+        targets: List[str], 
+        **hparams: Dict,
+    ):
+        config = {
+            "C": hparams.get("C", self.config.C),
+            "kernel": hparams.get("kernel", self.config.kernel),
+            "degree": hparams.get("degree", self.config.degree),
+            "gamma": hparams.get("gamma", self.config.gamma),
+            "coef0": hparams.get("coef0", self.config.coef0),
+            "shrinking": hparams.get("shrinking", self.config.shrinking),
+            "tol": hparams.get("tol", self.config.tol),
+            "cache_size": hparams.get("cache_size", self.config.cache_size),
+            "epsilon": hparams.get("epsilon", self.config.epsilon),
+            "verbose": hparams.get("verbose", self.config.verbose),
+            "max_iter": hparams.get("max_iter", self.config.max_iter),
+        }
+        
+        model = SVR(**config)
+        
+        accuaraies = []
+        for fold in range(self.config.num_folds):
+            x_train, y_train = df[df[Const.FOLD_ID]!=fold][features], df[df[Const.FOLD_ID]!=fold][targets]
+            x_valid, y_valid = df[df[Const.FOLD_ID]!=fold][features], df[df[Const.FOLD_ID]!=fold][targets]
+
+            model.fit(
+                X=x_train,
+                y=y_train,
+                eval_set=[(x_valid, y_valid)],
+                **config,
+            )
+            
+            if self.config.use_predict_proba:
+                y_pred = self.model.predict_proba(X=x_valid)
+            else:
+                y_pred = self.model.predict(X=x_valid)
+            accuaraies.append(metrics.accuracy_score(y_valid, y_pred))
+
+        return -1.0 * np.mean(accuaraies)
