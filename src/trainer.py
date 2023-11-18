@@ -82,6 +82,7 @@ class Trainer:
                     validate_features=True,
                     raw_score=False,
                     output_margin=False,
+                    kwargs=self.config,
                 )
             
                 if self.config.use_predict_proba:

@@ -38,6 +38,7 @@ from models.random_forest import RandomForest
 from models.extra_tree import ExtraTree
 from models.sgd_classifier import SgdClassifier
 from models.svm import SVMClassifier, SVMRegressor
+from models.knn import KNNClassifier, KNNRegressor
 
 from config.xgboost_config import xgboost_args
 from config.catboost_config import catboost_args
@@ -245,14 +246,14 @@ def get_knn(problem: str) -> Tuple[BaseModel, argparse.Namespace]:
     ]:
         args = knn_classifier_config()
         args.task = Const.CLASSIFICATION
-        model = KNeighborsClassifier()
+        model = KNNClassifier(KNeighborsClassifier(), args)
     elif problem in [
         Const.SINGLE_COLUMN_REGRESSION,
         Const.MULTI_COLUMN_REGRESSION,
     ]:
         args = knn_regressor_config()
         args.task = Const.REGRESSION
-        model = KNeighborsRegressor()
+        model = KNNRegressor(KNeighborsRegressor(), args)
     else:
         raise ValueError(f"Invalid problem type: {problem}")
     return model, args
