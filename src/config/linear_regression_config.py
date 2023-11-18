@@ -21,6 +21,6 @@ def linear_regression_config() -> argparse.Namespace:
     p.add_argument("--fit_intercept", type=bool, default=True, choices=[True, False])
     p.add_argument("--copy_X", type=bool, default=True, choices=[True, False])
     p.add_argument("--n_job", type=int, default=None)
-    p.add_argument("--positive", type=bool, default=False)
+    p.add_argument("--positive", type=bool, default=False, choices=[True, False])
     
     return p.parse_args()

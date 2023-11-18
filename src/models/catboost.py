@@ -11,9 +11,9 @@ class CatBoost(BaseModel):
     config: Dict
     
     def __post_init__(self):
-        self.setup()
+        self.set_up()
     
-    def setup(self):
+    def set_up(self):
         self.model.iterations=self.config.iterations
         self.model.learning_rate=self.config.learning_rate
         self.model.early_stopping_rounds=self.config.early_stopping_rounds
@@ -59,9 +59,17 @@ class CatBoost(BaseModel):
         self.model.task_type=self.config.device
     
     def fit(self, *args, **kwargs):
+        x=kwargs.get("X")
+        if x is None:
+            raise ValueError("X is None")
+        
+        y=kwargs.get("y")
+        if y is None:
+            raise ValueError("y is None")
+        
         return self.model.fit(
-            X=kwargs.get("X"),
-            y=kwargs.get("y"), 
+            X=x,
+            y=y, 
             cat_features=kwargs.get("cat_features"), 
             text_features=kwargs.get("text_features"), 
             embedding_features=kwargs.get("embedding_features"), 
@@ -86,35 +94,47 @@ class CatBoost(BaseModel):
         )
     
     def predict(self, *args, **kwargs):
+        x=kwargs.get("X")
+        if x is None:
+            raise ValueError("X is None")
+        
         return self.model.predict(
-            data=kwargs.get("X"), 
-            prediction_type="Class", 
-            ntree_start=0, 
-            ntree_end=0, 
-            thread_count=-1, 
-            verbose=None, 
-            task_type="CPU",
+            data=x, 
+            prediction_type=kwargs.get("prediction_type", "Class"),
+            ntree_start=kwargs.get("ntree_start", 0),
+            ntree_end=kwargs.get("ntree_end", 0), 
+            thread_count=kwargs.get("thread_count", -1), 
+            verbose=kwargs.get("verbose"), 
+            task_type=kwargs.get("task_type", "CPU"), 
         )
     
     def predict_proba(self, *args, **kwargs):
+        x=kwargs.get("X")
+        if x is None:
+            raise ValueError("X is None")
+        
         return self.model.predict_proba(
-            X=kwargs.get("X"), 
-            ntree_start=0, 
-            ntree_end=0, 
-            thread_count=-1, 
-            verbose=None, 
-            task_type="CPU",
+            X=x, 
+            ntree_start=kwargs.get("ntree_start", 0),
+            ntree_end=kwargs.get("ntree_end", 0), 
+            thread_count=kwargs.get("thread_count", -1), 
+            verbose=kwargs.get("verbose"), 
+            task_type=kwargs.get("task_type", "CPU"), 
         )
     
     def feature_importances(self, *args, **kwargs) -> pd.DataFrame:
-        if kwargs.get("shap") is not None:
-            # TODO: shap value
-            pass
-        
         if kwargs.get("columns") is None:
             raise ValueError("Train_df columns is None")
         
         assert len(kwargs["columns"]) == len(self.model.feature_importances_)
+        
+        if kwargs.get("shap") is not None:
+            # TODO: shap value
+            pass
+        
+        if kwargs.get("lime") is not None:
+            # TODO: lime value
+            pass
         
         return pd.DataFrame.from_dict(
             {c: [v] for c, v in zip(kwargs["columns"], self.model.feature_importances_)}, 

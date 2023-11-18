@@ -11,9 +11,9 @@ class XGBoost(BaseModel):
     config: Dict
     
     def __post_init__(self):
-        self.setup()
+        self.set_up()
     
-    def setup(self):
+    def set_up(self):
         self.model.early_stopping_rounds=self.config.early_stopping_rounds
         self.model.learning_rate=self.config.learning_rate
         self.model.gamma=self.config.gamma
@@ -33,9 +33,17 @@ class XGBoost(BaseModel):
         self.model.device=self.config.device
     
     def fit(self, *args, **kwargs):
+        x = kwargs.get("X")
+        if x is None:
+            raise ValueError("X is None")
+        
+        y = kwargs.get("y")        
+        if y is None:
+            raise ValueError("y is None")
+        
         return self.model.fit(
-            X=kwargs.get("X"),
-            y=kwargs.get("y"),
+            X=x,
+            y=y,
             sample_weight=kwargs.get("sample_weight"),
             base_margin=kwargs.get("base_margin"),
             eval_set=kwargs.get("eval_set"),
@@ -50,31 +58,43 @@ class XGBoost(BaseModel):
         )
     
     def predict(self, *args, **kwargs):
+        x = kwargs.get("X")
+        if x is None:
+            raise ValueError("X is None")
+        
         return self.model.predict(
-            X=kwargs.get("X"),
-            output_margin=kwargs.get("output_margin"),
-            validate_features=kwargs.get("validate_features"),
+            X=x,
+            output_margin=kwargs.get("output_margin", False),
+            validate_features=kwargs.get("validate_features", True),
             base_margin=kwargs.get("base_margin"),
             iteration_range=kwargs.get("iteration_range"),
         )
     
     def predict_proba(self, *args, **kwargs):
+        x = kwargs.get("X")
+        if x is None:
+            raise ValueError("X is None")
+        
         return self.model.predict_proba(
-            X=kwargs.get("X"),
-            validate_features=kwargs.get("validate_features"),
+            X=x,
+            validate_features=kwargs.get("validate_features", True),
             base_margin=kwargs.get("base_margin"),
             iteration_range=kwargs.get("iteration_range"),
         )
     
     def feature_importances(self, *args, **kwargs) -> pd.DataFrame:
-        if kwargs.get("shap") is not None:
-            # TODO: shap value
-            pass
-        
         if kwargs.get("columns") is None:
             raise ValueError("Train_df columns is None")
         
         assert len(kwargs["columns"]) == len(self.model.feature_importances_)
+        
+        if kwargs.get("shap") is not None:
+            # TODO: shap value
+            pass
+        
+        if kwargs.get("lime") is not None:
+            # TODO: lime value
+            pass
         
         return pd.DataFrame.from_dict(
             {c: [v] for c, v in zip(kwargs["columns"], self.model.feature_importances_)}, 

@@ -12,9 +12,9 @@ class DecisionTree(BaseModel):
     config: Dict
     
     def __post_init__(self):
-        self.setup()
+        self.set_up()
     
-    def setup(self):
+    def set_up(self):
         self.model.criterion=self.config.criterion
         self.model.splitter=self.config.splitter
         self.model.max_depth=self.config.max_depth
@@ -35,13 +35,13 @@ class DecisionTree(BaseModel):
         
         for col in x.columns:
             if x[col].dtypes != np.float32:
-                x[col] = x[col].astype("float32")
+                x[col] = x[col].astype(np.float32)
             
         return self.model.fit(
             X=x,
             y=kwargs.get("y"),
             sample_weight=kwargs.get("sample_weight"),
-            check_input=kwargs.get("check_input"),
+            check_input=kwargs.get("check_input", True),
         )
     
     def predict(self, *args, **kwargs):
@@ -51,11 +51,11 @@ class DecisionTree(BaseModel):
         
         for col in x.columns:
             if x[col].dtypes != np.float32:
-                x[col] = x[col].astype("float32")
+                x[col] = x[col].astype(np.float32)
                 
         return self.model.predict(
             X=x,
-            check_input=kwargs.get("check_input"),
+            check_input=kwargs.get("check_input", True),
         )
     
     def predict_proba(self, *args, **kwargs):
@@ -65,22 +65,26 @@ class DecisionTree(BaseModel):
         
         for col in x.columns:
             if x[col].dtypes != np.float32:
-                x[col] = x[col].astype("float32")
+                x[col] = x[col].astype(np.float32)
                 
         return self.model.predict_proba(
             X=x.values,
-            check_input=kwargs.get("check_input"),
+            check_input=kwargs.get("check_input", True),
         )
     
     def feature_importances(self, *args, **kwargs) -> pd.DataFrame:
-        if kwargs.get("shap") is not None:
-            # TODO: shap value
-            pass
-        
         if kwargs.get("columns") is None:
             raise ValueError("Train_df columns is None")
         
         assert len(kwargs["columns"]) == len(self.model.feature_importances_)
+        
+        if kwargs.get("shap") is not None:
+            # TODO: shap value
+            pass
+        
+        if kwargs.get("lime") is not None:
+            # TODO: lime value
+            pass
         
         return pd.DataFrame.from_dict(
             {c: [v] for c, v in zip(kwargs["columns"], self.model.feature_importances_)}, 

@@ -11,9 +11,9 @@ class LightGBM(BaseModel):
     config: Dict
     
     def __post_init__(self):
-        self.setup()
+        self.set_up()
     
-    def setup(self):
+    def set_up(self):
         self.model.num_iterations = self.config.num_iterations
         self.model.num_leaves = self.config.num_leaves
         self.model.learning_rate = self.config.learning_rate
@@ -79,9 +79,17 @@ class LightGBM(BaseModel):
         self.model.stochastic_rounding = self.config.stochastic_rounding
     
     def fit(self, *args, **kwargs):
+        x = kwargs.get("X")
+        if x is None:
+            raise ValueError("X is None")
+        
+        y = kwargs.get("y")        
+        if y is None:
+            raise ValueError("y is None")
+        
         return self.model.fit(
-            X=kwargs.get("X"),
-            y=kwargs.get("y"),
+            X=x,
+            y=y,
             eval_set=kwargs.get("eval_set"),
             sample_weight=kwargs.get("sample_weight"),
             init_score=kwargs.get("init_score"),
@@ -96,46 +104,48 @@ class LightGBM(BaseModel):
         )
     
     def predict(self, *args, **kwargs):
+        x = kwargs.get("X")
+        if x is None:
+            raise ValueError("X is None")
+        
         return self.model.predict(
-            X=kwargs.get("X"),
-            raw_score=kwargs.get("raw_score"),
-            start_iteration=0, 
-            num_iteration=None, 
-            pred_leaf=False, 
-            pred_contrib=False, 
-            validate_features=False,
-            # start_iteration=kwargs.get("start_iteration"),
-            # num_iteration=kwargs.get("num_iteration"),
-            # pred_leaf=kwargs.get("pred_leaf"),
-            # pred_contrib=kwargs.get("pred_contrib"),
-            # validate_features=kwargs.get("validate_features"),
+            X=x,
+            raw_score=kwargs.get("raw_score", False),
+            start_iteration=kwargs.get("start_iteration", 0),
+            num_iteration=kwargs.get("num_iteration", None),
+            pred_leaf=kwargs.get("pred_leaf", False),
+            pred_contrib=kwargs.get("pred_contrib", False),
+            validate_features=kwargs.get("validate_features", False),
         )
     
     def predict_proba(self, *args, **kwargs):
+        x = kwargs.get("X")
+        if x is None:
+            raise ValueError("X is None")
+        
         return self.model.predict_proba(
-            X=kwargs.get("X"),
-            raw_score=kwargs.get("raw_score"),
-            start_iteration=0, 
-            num_iteration=None, 
-            pred_leaf=False, 
-            pred_contrib=False, 
-            validate_features=False,
-            # start_iteration=kwargs.get("start_iteration"),
-            # num_iteration=kwargs.get("num_iteration"),
-            # pred_leaf=kwargs.get("pred_leaf"),
-            # pred_contrib=kwargs.get("pred_contrib"),
-            # validate_features=kwargs.get("validate_features"),
+            X=x,
+            raw_score=kwargs.get("raw_score", False),
+            start_iteration=kwargs.get("start_iteration", 0),
+            num_iteration=kwargs.get("num_iteration", None),
+            pred_leaf=kwargs.get("pred_leaf", False),
+            pred_contrib=kwargs.get("pred_contrib", False),
+            validate_features=kwargs.get("validate_features", False),
         )
     
     def feature_importances(self, *args, **kwargs) -> pd.DataFrame:
-        if kwargs.get("shap") is not None:
-            # TODO: shap value
-            pass
-        
         if kwargs.get("columns") is None:
             raise ValueError("Train_df columns is None")
         
         assert len(kwargs["columns"]) == len(self.model.feature_importances_)
+        
+        if kwargs.get("shap") is not None:
+            # TODO: shap value
+            pass
+        
+        if kwargs.get("lime") is not None:
+            # TODO: lime value
+            pass
         
         return pd.DataFrame.from_dict(
             {c: [v] for c, v in zip(kwargs["columns"], self.model.feature_importances_)}, 

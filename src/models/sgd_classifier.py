@@ -12,9 +12,9 @@ class SgdClassifier(BaseModel):
     config: Dict
     
     def __post_init__(self):
-        self.setup()
+        self.set_up()
     
-    def setup(self):
+    def set_up(self):
         self.model.loss=self.config.loss
         self.model.penalty=self.config.penalty
         self.model.alpha=self.config.alpha
@@ -47,10 +47,9 @@ class SgdClassifier(BaseModel):
             for col in x.columns:
                 if x[col].dtypes != np.float32:
                     x[col] = x[col].astype("float32")
-            x = x.values
                     
         return self.model.fit(
-            X=x,
+            X=x.values,
             y=kwargs.get("y"),
             sample_weight=kwargs.get("sample_weight"),
             coef_init=kwargs.get("coef_init"), 
@@ -66,12 +65,13 @@ class SgdClassifier(BaseModel):
             for col in x.columns:
                 if x[col].dtypes != np.float32:
                     x[col] = x[col].astype("float32")
-            x = x.values
         
-        oh = OneHotEncoder(
-            sparse=False,
-        ).fit([[i] for i in range(kwargs.get("num_classes"))])
-        pred = self.model.predict(X=x)
+        num_classes = kwargs.get("num_classes")
+        if num_classes is None:
+            raise ValueError("num_classes is None")
+        
+        oh = OneHotEncoder(sparse=False).fit([[i] for i in range(num_classes)])
+        pred = self.model.predict(X=x.values)
         return oh.transform(pred.reshape(-1, 1))
     
     def predict_proba(self, *args, **kwargs):
@@ -82,14 +82,17 @@ class SgdClassifier(BaseModel):
         if isinstance(x, pd.DataFrame):
             for col in x.columns:
                 if x[col].dtypes != np.float32:
-                    x[col] = x[col].astype("float32")
-            x = x.values
+                    x[col] = x[col].astype(np.float32)
         
-        return self.model.predict_proba(X=x)
+        return self.model.predict_proba(X=x.values)
     
     def feature_importances(self, *args, **kwargs) -> pd.DataFrame:
         if kwargs.get("shap") is not None:
             # TODO: shap value
+            pass
+        
+        if kwargs.get("lime") is not None:
+            # TODO: lime value
             pass
         
         if kwargs.get("columns") is None:

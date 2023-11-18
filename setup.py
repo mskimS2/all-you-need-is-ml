@@ -1,4 +1,4 @@
-from setuptools import find_packages, setup
+from set_uptools import find_packages, set_up
 
 
 with open("README.md") as f:
@@ -21,7 +21,7 @@ INSTALL_REQUIRES = [
 ]
 
 if __name__ == "__main__":
-    setup(
+    set_up(
         name="all you need is ml",
         description="all you need is ml",
         long_description=long_description,

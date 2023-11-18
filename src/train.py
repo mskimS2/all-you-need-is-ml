@@ -20,6 +20,7 @@ if __name__ == "__main__":
     rf, rf_args = get_model("random_forest", "binary_classification")
     et, et_args = get_model("extra_tree", "binary_classification")
     sgd, sgd_args = get_model("sgd_classifier", "binary_classification")
+    svc, svc_args = get_model("support_vector_machine", "binary_classification")
     
     train_df = pd.read_csv("dataset/binary_classification.csv")
     train_df.sex = train_df.sex.apply(lambda x: "0" if x == "Male" else "1").astype(int)
@@ -47,10 +48,14 @@ if __name__ == "__main__":
     # trainer.fit(train_df, test_df, ["age","education.num"], ["sex"])
     # print(trainer.feature_importacne())
     
-    trainer = Trainer(et, et_args, scaler=None, encoder=encoder)
-    trainer.fit(train_df, test_df, ["age","education.num"], ["sex"])
-    print(trainer.feature_importacne())
+    # trainer = Trainer(et, et_args, scaler=None, encoder=encoder)
+    # trainer.fit(train_df, test_df, ["age","education.num"], ["sex"])
+    # print(trainer.feature_importacne())
     
-    trainer = Trainer(sgd, sgd_args, scaler=None, encoder=encoder)
+    # trainer = Trainer(sgd, sgd_args, scaler=None, encoder=encoder)
+    # trainer.fit(train_df, test_df, ["age","education.num"], ["sex"])
+    # print(trainer.feature_importacne())
+
+    trainer = Trainer(svc, svc_args, scaler=None, encoder=encoder)
     trainer.fit(train_df, test_df, ["age","education.num"], ["sex"])
     print(trainer.feature_importacne())

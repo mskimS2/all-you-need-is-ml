@@ -37,6 +37,7 @@ from models.decision_tree import DecisionTree
 from models.random_forest import RandomForest
 from models.extra_tree import ExtraTree
 from models.sgd_classifier import SgdClassifier
+from models.svm import SVMClassifier, SVMRegressor
 
 from config.xgboost_config import xgboost_args
 from config.catboost_config import catboost_args
@@ -222,16 +223,16 @@ def get_support_vector_machine(problem: str) -> Tuple[BaseModel, argparse.Namesp
         Const.MULTI_CLASS_CLASSIFICATION,
         Const.MULTI_LABEL_CLASSIFICATION,
     ]:
-        args.task = Const.CLASSIFICATION
         args = svc_config()
-        model = SVC()
+        args.task = Const.CLASSIFICATION
+        model = SVMClassifier(SVC(), args)
     elif problem in [
         Const.SINGLE_COLUMN_REGRESSION,
         Const.MULTI_COLUMN_REGRESSION,
     ]:
-        args.task = Const.REGRESSION
         args = svr_config()
-        model = SVR()
+        args.task = Const.REGRESSION
+        model = SVMRegressor(SVR(), args)
     else:
         raise ValueError(f"Invalid problem type: {problem}")
     return model, args
@@ -242,15 +243,15 @@ def get_knn(problem: str) -> Tuple[BaseModel, argparse.Namespace]:
         Const.MULTI_CLASS_CLASSIFICATION,
         Const.MULTI_LABEL_CLASSIFICATION,
     ]:
-        args.task = Const.CLASSIFICATION
         args = knn_classifier_config()
+        args.task = Const.CLASSIFICATION
         model = KNeighborsClassifier()
     elif problem in [
         Const.SINGLE_COLUMN_REGRESSION,
         Const.MULTI_COLUMN_REGRESSION,
     ]:
-        args.task = Const.REGRESSION
         args = knn_regressor_config()
+        args.task = Const.REGRESSION
         model = KNeighborsRegressor()
     else:
         raise ValueError(f"Invalid problem type: {problem}")

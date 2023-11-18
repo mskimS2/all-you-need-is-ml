@@ -5,7 +5,7 @@ from abc import ABC, abstractmethod
 
 class BaseModel(ABC):
     @abstractmethod
-    def setup(*args, **kwargs) -> None:
+    def set_up(*args, **kwargs) -> None:
         pass
     
     @abstractmethod
