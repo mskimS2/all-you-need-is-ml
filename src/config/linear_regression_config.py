@@ -23,4 +23,5 @@ def linear_regression_config() -> argparse.Namespace:
     p.add_argument("--n_job", type=int, default=None)
     p.add_argument("--positive", type=bool, default=False, choices=[True, False])
     
-    return p.parse_args()
+    args, _ = p.parse_known_args(args=[])
+    return args

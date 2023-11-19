@@ -29,4 +29,5 @@ def lasso_config() -> argparse.Namespace:
     p.add_argument("--random_state", type=int, default=42)
     p.add_argument("--selection", type=str, default="cyclic", choices=["cyclic", "random"])
     
-    return p.parse_args()
+    args, _ = p.parse_known_args(args=[])
+    return args

@@ -28,4 +28,5 @@ def logistic_regression_config() -> argparse.Namespace:
     p.add_argument("--random_state", type=int, default=42)
     p.add_argument("--solver", type=str, default="lbfgs", choices=["newton-cg", "newton-cholesky", "lbfgs", "liblinear", "sag", "saga"])
     
-    return p.parse_args()
+    args, _ = p.parse_known_args(args=[])
+    return args

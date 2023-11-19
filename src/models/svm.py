@@ -17,7 +17,23 @@ class SVMClassifier(BaseModel):
         self.set_up()
     
     def set_up(self, *args, **kwargs):
-        self.model = SVC(*args, **kwargs)
+        self.model = SVC(
+            C=kwargs.get("C", self.config.C),
+            kernel=kwargs.get("kernel", self.config.kernel),
+            degree=kwargs.get("degree", self.config.degree),
+            gamma=kwargs.get("gamma", self.config.gamma),
+            coef0=kwargs.get("coef0", self.config.coef0),
+            shrinking=kwargs.get("shrinking", self.config.shrinking),
+            probability=kwargs.get("probability", self.config.probability),
+            tol=kwargs.get("tol", self.config.tol),
+            cache_size=kwargs.get("cache_size", self.config.cache_size),
+            class_weight=kwargs.get("class_weight", self.config.class_weight),
+            verbose=kwargs.get("verbose", self.config.verbose),
+            max_iter=kwargs.get("max_iter", self.config.max_iter),
+            decision_function_shape=kwargs.get("decision_function_shape", self.config.decision_function_shape),
+            break_ties=kwargs.get("break_ties", self.config.break_ties),
+            random_state=kwargs.get("random_state", self.config.random_state),
+        )
         
     def fit(self, *args, **kwargs):
         x = kwargs.get("X")

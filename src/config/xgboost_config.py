@@ -34,4 +34,5 @@ def xgboost_args() -> argparse.Namespace:
     p.add_argument("--grow_policy", type=str, default="depthwise", help="(depthwise, lossguide)")
     p.add_argument("--max_leaves", type=int, default=0, help="Maximum number of nodes to be added. Not used by exact tree method.")
     
-    return p.parse_args()
+    args, _ = p.parse_known_args(args=[])
+    return args

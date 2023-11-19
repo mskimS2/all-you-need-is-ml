@@ -31,4 +31,5 @@ def decision_tree_config() -> argparse.Namespace:
     p.add_argument("--class_weight", type=float, default=None, choices=["balanced", "balanced_subsample"])
     p.add_argument("--ccp_alpha", type=float, default=0.)
     
-    return p.parse_args()
+    args, _ = p.parse_known_args(args=[])
+    return args

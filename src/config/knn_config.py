@@ -28,7 +28,8 @@ def knn_classifier_config() -> argparse.Namespace:
     p.add_argument("--metric_params", type=str, default=None)
     p.add_argument("--n_jobs", type=int, default=None)
     
-    return p.parse_args()
+    args, _ = p.parse_known_args(args=[])
+    return args
 
 def knn_regressor_config():
     p = argparse.ArgumentParser(description="knn_regressor")
@@ -57,4 +58,5 @@ def knn_regressor_config():
     p.add_argument("--metric_params", type=str, default=None)
     p.add_argument("--n_jobs", type=int, default=None)
     
-    return p.parse_args()
+    args, _ = p.parse_known_args(args=[])
+    return args

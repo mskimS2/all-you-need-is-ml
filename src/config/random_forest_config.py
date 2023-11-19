@@ -34,4 +34,5 @@ def random_forest_config() -> argparse.Namespace:
     p.add_argument("--ccp_alpha", type=float, default=0.)
     p.add_argument("--max_samples", type=float, default=None)
     
-    return p.parse_args()
+    args, _ = p.parse_known_args(args=[])
+    return args

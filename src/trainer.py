@@ -88,10 +88,10 @@ class Trainer:
                     y=y_train,
                     eval_set=[(x_valid, y_valid)],
                     verbose=self.config.verbose,
-                    # check_input=True,
-                    # validate_features=True,
-                    # raw_score=False,
-                    # output_margin=False,
+                    check_input=True,
+                    validate_features=True,
+                    raw_score=False,
+                    output_margin=False,
                     kwargs=self.config,
                 )
             

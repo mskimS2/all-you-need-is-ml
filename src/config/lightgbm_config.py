@@ -27,8 +27,8 @@ def lightgbm_args() -> argparse.Namespace:
     p.add_argument("--seed", type=int, default=42)
     p.add_argument("--deterministic", type=bool, default=False, choices=[True, False])
     p.add_argument("--early_stopping_round", type=int, default=0)
-    p.add_argument("--force_col_wise", type=bool, default=False, choices=[True, False], help="used only with cpu device type")
-    p.add_argument("--force_row_wise", type=bool, default=False, choices=[True, False], help="used only with cpu device type")
+    p.add_argument("--force_col_wise", type=bool, default=False, choices=[True, False])
+    p.add_argument("--force_row_wise", type=bool, default=False, choices=[True, False])
     p.add_argument("--histogram_pool_size", type=float, default=-1.)
     p.add_argument("--max_depth", type=int, default=-1)
     p.add_argument("--min_data_in_leaf", type=int, default=20)
@@ -81,4 +81,5 @@ def lightgbm_args() -> argparse.Namespace:
     p.add_argument("--quant_train_renew_leaf", type=bool, default=False, choices=[True, False])
     p.add_argument("--stochastic_rounding", type=bool, default=False, choices=[True, False])
      
-    return p.parse_args()
+    args, _ = p.parse_known_args(args=[])
+    return args

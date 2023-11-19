@@ -33,7 +33,8 @@ def svc_config() -> argparse.Namespace:
     p.add_argument("--break_ties", type=bool, default=False, choices=[True, False])
     p.add_argument("--random_state", type=int, default=42)
     
-    return p.parse_args()
+    args, _ = p.parse_known_args(args=[])
+    return args
 
 def svr_config() -> argparse.Namespace:
     p = argparse.ArgumentParser(description="SVR")
@@ -63,4 +64,5 @@ def svr_config() -> argparse.Namespace:
     p.add_argument("--verbose", type=bool, default=False, choices=[True, False])
     p.add_argument("--max_iter", type=int, default=-1)
     
-    return p.parse_args()
+    args, _ = p.parse_known_args(args=[])
+    return args

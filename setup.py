@@ -18,6 +18,16 @@ INSTALL_REQUIRES = [
     "catboost==1.2.2",
     "scikit-optimize==0.9.0",
     "pyaml==23.9.7",
+    "easydict==1.11",
+    "llvmlite==0.41.1",
+    "numba==0.58.1",
+    "numpy==1.26.2",
+    "shap==0.43.0",
+    "slicer==0.0.7",
+    "lazy_loader==0.3",
+    "lime==0.2.0.1",
+    "scikit-image==0.22.0",
+    "tifffile==2023.9.26"
 ]
 
 if __name__ == "__main__":

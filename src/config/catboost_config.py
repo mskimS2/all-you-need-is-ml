@@ -60,4 +60,5 @@ def catboost_args() -> argparse.Namespace:
     p.add_argument("--auto_class_weights", type=str, default=None)
     p.add_argument("--score_function", type=str, default="Cosine", choices=["Cosine", "L2", "NewtonL2"])
     
-    return p.parse_args()
+    args, _ = p.parse_known_args(args=[])
+    return args
