@@ -62,8 +62,8 @@ class Trainer:
             targets,
         )
         
+        # FIXME: sklearn.pipeline
         train_df, test_df = self.preprocessor.fit_scaling(train_df, test_df, targets)
-        
         train_df, test_df = self.preprocessor.fit_encoding(train_df, test_df, targets)
         
         if optimize_hyperparams is not None:
@@ -232,7 +232,7 @@ class Trainer:
 
         return problem_type, num_labels
     
-    def feature_importacne(self):
+    def feature_importance(self):
         return self.model.feature_importances(columns=self.columns)
         
     def optimize_hyper_parameters(
@@ -257,5 +257,7 @@ class Trainer:
             ), 
             n_trials=n_trials,
         )
-        self.model.set_up(**study.best_params)
+        
         logger.info(f"best parameters: ", **study.best_params)
+        for k, v in study.best_params.items():
+            setattr(self.model.config, k, v)

@@ -8,6 +8,7 @@ from sklearn import metrics
 from sklearn.linear_model import SGDClassifier
 from sklearn.preprocessing import OneHotEncoder
 
+
 @dataclass
 class SgdClassifier(BaseModel):
     model: SGDClassifier
@@ -17,29 +18,12 @@ class SgdClassifier(BaseModel):
         self.set_up()
     
     def set_up(self, *args, **kwargs):
-        self.model = SGDClassifier(
-            loss=kwargs.get("loss", self.config.loss),
-            penalty=kwargs.get("penalty", self.config.penalty),
-            alpha=kwargs.get("alpha", self.config.alpha),
-            l1_ratio=kwargs.get("l1_ratio", self.config.l1_ratio),
-            fit_intercept=kwargs.get("fit_intercept", self.config.fit_intercept),
-            max_iter=kwargs.get("max_iter", self.config.max_iter),
-            tol=kwargs.get("tol", self.config.tol),
-            shuffle=kwargs.get("shuffle", self.config.shuffle),
-            verbose=kwargs.get("verbose", self.config.verbose),
-            epsilon=kwargs.get("epsilon", self.config.epsilon),
-            n_jobs=kwargs.get("n_jobs", self.config.n_jobs),
-            random_state=kwargs.get("random_state", self.config.random_state),
-            learning_rate=kwargs.get("learning_rate", self.config.learning_rate),
-            eta0=kwargs.get("eta0", self.config.eta0),
-            power_t=kwargs.get("power_t", self.config.power_t),
-            early_stopping=kwargs.get("early_stopping", self.config.early_stopping),
-            validation_fraction=kwargs.get("validation_fraction", self.config.validation_fraction),
-            n_iter_no_change=kwargs.get("n_iter_no_change", self.config.n_iter_no_change),
-            class_weight=kwargs.get("class_weight", self.config.class_weight),
-            warm_start=kwargs.get("warm_start", self.config.warm_start),
-            average=kwargs.get("average", self.config.average),
-        )
+        if kwargs is not None:
+            for k, v in kwargs.items():
+                setattr(self.model, k, v)
+            
+        for k, v in vars(self.config).items():
+            setattr(self.model, k, v)
     
     def fit(self, *args, **kwargs):
         x=kwargs.get("X")

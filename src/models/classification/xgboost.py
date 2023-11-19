@@ -4,59 +4,26 @@ from models.base import BaseModel
 from dataclasses import dataclass
 from typing import Union, Dict, List
 from sklearn import metrics
-from xgboost import XGBClassifier, XGBRegressor
+from xgboost import XGBClassifier
+from sklearn.preprocessing import OneHotEncoder
 
 from const import Const
 
 @dataclass
-class XGBoost(BaseModel):
-    model: Union[XGBClassifier, XGBRegressor]
+class XGBoostClassifier(BaseModel):
+    model: XGBClassifier
     config: Dict
     
     def __post_init__(self):
         self.set_up()
     
     def set_up(self, *args, **kwargs):
-        if isinstance(self.model, XGBClassifier):
-            self.model = XGBClassifier(
-                early_stopping_rounds=kwargs.get("early_stopping_rounds", self.config.early_stopping_rounds),
-                learning_rate=kwargs.get("learning_rate", self.config.learning_rate),
-                gamma=kwargs.get("gamma", self.config.gamma),
-                max_depth=kwargs.get("max_depth", self.config.max_depth),
-                max_child_weight=kwargs.get("max_child_weight", self.config.max_child_weight),
-                max_delta_step=kwargs.get("max_delta_step", self.config.max_delta_step),
-                subsample=kwargs.get("subsample", self.config.subsample),
-                sampling_method=kwargs.get("sampling_method", self.config.sampling_method),
-                colsample_bytree=kwargs.get("colsample_bytree", self.config.colsample_bytree),
-                alpha=kwargs.get("alpha", self.config.alpha),
-                tree_method=kwargs.get("tree_method", self.config.tree_method),
-                scale_pos_weight=kwargs.get("scale_pos_weight", self.config.scale_pos_weight),
-                grow_policy=kwargs.get("grow_policy", self.config.grow_policy),
-                max_leaves=kwargs.get("max_leaves", self.config.max_leaves),
-                random_state=kwargs.get("random_state", self.config.random_seed),
-                reg_lambda=kwargs.get("reg_lambda", self.config.reg_lambda),
-                device=kwargs.get("device", self.config.device),
-            )
-        elif isinstance(self.model, XGBRegressor):
-            self.model = XGBRegressor(
-                early_stopping_rounds=kwargs.get("early_stopping_rounds", self.config.early_stopping_rounds),
-                learning_rate=kwargs.get("learning_rate", self.config.learning_rate),
-                gamma=kwargs.get("gamma", self.config.gamma),
-                max_depth=kwargs.get("max_depth", self.config.max_depth),
-                max_child_weight=kwargs.get("max_child_weight", self.config.max_child_weight),
-                max_delta_step=kwargs.get("max_delta_step", self.config.max_delta_step),
-                subsample=kwargs.get("subsample", self.config.subsample),
-                sampling_method=kwargs.get("sampling_method", self.config.sampling_method),
-                colsample_bytree=kwargs.get("colsample_bytree", self.config.colsample_bytree),
-                alpha=kwargs.get("alpha", self.config.alpha),
-                tree_method=kwargs.get("tree_method", self.config.tree_method),
-                scale_pos_weight=kwargs.get("scale_pos_weight", self.config.scale_pos_weight),
-                grow_policy=kwargs.get("grow_policy", self.config.grow_policy),
-                max_leaves=kwargs.get("max_leaves", self.config.max_leaves),
-                random_state=kwargs.get("random_state", self.config.random_seed),
-                reg_lambda=kwargs.get("reg_lambda", self.config.reg_lambda),
-                device=kwargs.get("device", self.config.device),
-            )
+        if kwargs is not None:
+            for k, v in kwargs.items():
+                setattr(self.model, k, v)
+            
+        for k, v in vars(self.config).items():
+            setattr(self.model, k, v)
     
     def fit(self, *args, **kwargs):
         x = kwargs.get("X")
@@ -88,13 +55,19 @@ class XGBoost(BaseModel):
         if x is None:
             raise ValueError("X is None")
         
-        return self.model.predict(
+        num_classes = kwargs.get("num_classes")
+        if num_classes is None:
+            raise ValueError("num_classes is None")
+        
+        oh = OneHotEncoder(sparse=False).fit([[i] for i in range(num_classes)])
+        pred = self.model.predict(
             X=x,
             output_margin=kwargs.get("output_margin", False),
             validate_features=kwargs.get("validate_features", True),
             base_margin=kwargs.get("base_margin"),
             iteration_range=kwargs.get("iteration_range"),
         )
+        return oh.transform(pred.reshape(-1, 1))
     
     def predict_proba(self, *args, **kwargs):
         x = kwargs.get("X")
@@ -157,8 +130,6 @@ class XGBoost(BaseModel):
         
         if isinstance(model, XGBClassifier):
             model = XGBClassifier(**config)
-        elif isinstance(model, XGBRegressor):
-            model = XGBRegressor(**config)
         
         accuaraies = []
         for fold in range(self.config.num_folds):

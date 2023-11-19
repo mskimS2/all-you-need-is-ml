@@ -2,52 +2,28 @@ import numpy as np
 import pandas as pd
 from models.base import BaseModel
 from dataclasses import dataclass
-from typing import Union, Dict, List
-from sklearn.tree import DecisionTreeClassifier, DecisionTreeRegressor
+from typing import Dict, List
+from sklearn.tree import DecisionTreeRegressor
 from sklearn import metrics
 
 from const import Const
 
 
 @dataclass
-class DecisionTree(BaseModel):
-    model: Union[DecisionTreeClassifier, DecisionTreeRegressor]
+class DecisionTreeRegressor(BaseModel):
+    model: DecisionTreeRegressor
     config: Dict
     
     def __post_init__(self):
         self.set_up()
     
     def set_up(self, *args, **kwargs):
-        if isinstance(self.model, DecisionTreeClassifier):
-            self.model = DecisionTreeClassifier(
-                criterion=kwargs.get("criterion", self.config.criterion),
-                splitter=kwargs.get("splitter", self.config.splitter),
-                max_depth=kwargs.get("max_depth", self.config.max_depth),
-                min_samples_split=kwargs.get("min_samples_split", self.config.min_samples_split),
-                min_samples_leaf=kwargs.get("min_samples_leaf", self.config.min_samples_leaf),
-                min_weight_fraction_leaf=kwargs.get("min_weight_fraction_leaf", self.config.min_weight_fraction_leaf),
-                max_features=kwargs.get("max_features", self.config.max_features),
-                max_leaf_nodes=kwargs.get("max_leaf_nodes", self.config.max_leaf_nodes),
-                min_impurity_decrease=kwargs.get("min_impurity_decrease", self.config.min_impurity_decrease),
-                random_state=kwargs.get("random_state", self.config.random_state),
-                class_weight=kwargs.get("class_weight", self.config.class_weight),
-                ccp_alpha=kwargs.get("ccp_alpha", self.config.ccp_alpha),
-            )
-        elif isinstance(self.model, DecisionTreeRegressor):
-            self.model = DecisionTreeRegressor(
-                criterion=kwargs.get("criterion", self.config.criterion),
-                splitter=kwargs.get("splitter", self.config.splitter),
-                max_depth=kwargs.get("max_depth", self.config.max_depth),
-                min_samples_split=kwargs.get("min_samples_split", self.config.min_samples_split),
-                min_samples_leaf=kwargs.get("min_samples_leaf", self.config.min_samples_leaf),
-                min_weight_fraction_leaf=kwargs.get("min_weight_fraction_leaf", self.config.min_weight_fraction_leaf),
-                max_features=kwargs.get("max_features", self.config.max_features),
-                max_leaf_nodes=kwargs.get("max_leaf_nodes", self.config.max_leaf_nodes),
-                min_impurity_decrease=kwargs.get("min_impurity_decrease", self.config.min_impurity_decrease),
-                random_state=kwargs.get("random_state", self.config.random_state),
-                class_weight=kwargs.get("class_weight", self.config.class_weight),
-                ccp_alpha=kwargs.get("ccp_alpha", self.config.ccp_alpha),
-            )
+        if kwargs is not None:
+            for k, v in kwargs.items():
+                setattr(self.model, k, v)
+            
+        for k, v in vars(self.config).items():
+            setattr(self.model, k, v)
     
     def fit(self, *args, **kwargs):
         x=kwargs.get("X")
@@ -139,15 +115,15 @@ class DecisionTree(BaseModel):
             "ccp_alpha": hparams.get("ccp_alpha", self.config.ccp_alpha),
         }
         
-        if isinstance(self.model, DecisionTreeClassifier):
-            model = DecisionTreeClassifier(**config)
-        elif isinstance(self.model, DecisionTreeRegressor):
+        if isinstance(self.model, DecisionTreeRegressor):
             model = DecisionTreeRegressor(**config)
         
         accuaraies = []
         for fold in range(self.config.num_folds):
-            x_train, y_train = df[df[Const.FOLD_ID]!=fold][features], df[df[Const.FOLD_ID]!=fold][targets]
-            x_valid, y_valid = df[df[Const.FOLD_ID]!=fold][features], df[df[Const.FOLD_ID]!=fold][targets]
+            x_train = df[df[Const.FOLD_ID]!=fold][features]
+            y_train = df[df[Const.FOLD_ID]!=fold][targets]
+            x_valid = df[df[Const.FOLD_ID]!=fold][features]
+            y_valid = df[df[Const.FOLD_ID]!=fold][targets]
 
             model.fit(
                 X=x_train,

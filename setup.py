@@ -27,7 +27,26 @@ INSTALL_REQUIRES = [
     "lazy_loader==0.3",
     "lime==0.2.0.1",
     "scikit-image==0.22.0",
-    "tifffile==2023.9.26"
+    "tifffile==2023.9.26",
+    "databricks-cli-0.18.0",
+    "docker-6.1.3",
+    "entrypoints-0.4",
+    "mlflow-2.8.1",
+    "pyarrow-14.0.1",
+    "pyjwt-2.8.0",
+    "querystring-parser-1.2.4",
+    "sqlparse-0.4.4",
+    "tabulate-0.9.0",
+    "waitress-2.1.2",
+    "websocket-client-1.6.4",
+    "annotated-types-0.6.0",
+    "anyio-3.7.1",
+    "fastapi-0.104.1",
+    "pydantic-2.5.1",
+    "pydantic-core-2.14.3",
+    "sniffio-1.3.0",
+    "starlette-0.27.0",
+    "typing-extensions-4.8.0",
 ]
 
 if __name__ == "__main__":

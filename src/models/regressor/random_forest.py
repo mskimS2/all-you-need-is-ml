@@ -3,57 +3,27 @@ import pandas as pd
 from dataclasses import dataclass
 from typing import Union, Dict, List
 from sklearn import metrics
-from sklearn.ensemble import RandomForestClassifier, RandomForestRegressor
+from sklearn.ensemble import RandomForestRegressor
 
 from const import Const
 from models.base import BaseModel
 
 
 @dataclass
-class RandomForest(BaseModel):
-    model: Union[RandomForestClassifier, RandomForestRegressor]
+class RandomForestRegressor(BaseModel):
+    model: RandomForestRegressor
     config: Dict
     
     def __post_init__(self):
         self.set_up()
     
     def set_up(self, *args, **kwargs):
-        if isinstance(self.model, RandomForestClassifier):
-            self.model = RandomForestClassifier(
-                max_depth=kwargs.get("max_depth", self.config.max_depth),
-                min_samples_split=kwargs.get("min_samples_split", self.config.min_samples_split),
-                min_samples_leaf=kwargs.get("min_samples_leaf", self.config.min_samples_leaf),
-                min_weight_fraction_leaf=kwargs.get("min_weight_fraction_leaf", self.config.min_weight_fraction_leaf),
-                max_features=kwargs.get("max_features", self.config.max_features),
-                max_leaf_nodes=kwargs.get("max_leaf_nodes", self.config.max_leaf_nodes),
-                min_impurity_decrease=kwargs.get("min_impurity_decrease", self.config.min_impurity_decrease),
-                bootstrap=kwargs.get("bootstrap", self.config.bootstrap),
-                oob_score=kwargs.get("oob_score", self.config.oob_score),
-                n_jobs=kwargs.get("n_jobs", self.config.n_jobs),
-                random_state=kwargs.get("random_state", self.config.random_state),
-                verbose=kwargs.get("verbose", self.config.verbose),
-                warm_start=kwargs.get("warm_start", self.config.warm_start),
-                ccp_alpha=kwargs.get("ccp_alpha", self.config.ccp_alpha),
-                max_samples=kwargs.get("max_samples", self.config.max_samples),
-            )
-        elif isinstance(self.model, RandomForestRegressor):
-            self.model = RandomForestRegressor(
-                max_depth=kwargs.get("max_depth", self.config.max_depth),
-                min_samples_split=kwargs.get("min_samples_split", self.config.min_samples_split),
-                min_samples_leaf=kwargs.get("min_samples_leaf", self.config.min_samples_leaf),
-                min_weight_fraction_leaf=kwargs.get("min_weight_fraction_leaf", self.config.min_weight_fraction_leaf),
-                max_features=kwargs.get("max_features", self.config.max_features),
-                max_leaf_nodes=kwargs.get("max_leaf_nodes", self.config.max_leaf_nodes),
-                min_impurity_decrease=kwargs.get("min_impurity_decrease", self.config.min_impurity_decrease),
-                bootstrap=kwargs.get("bootstrap", self.config.bootstrap),
-                oob_score=kwargs.get("oob_score", self.config.oob_score),
-                n_jobs=kwargs.get("n_jobs", self.config.n_jobs),
-                random_state=kwargs.get("random_state", self.config.random_state),
-                verbose=kwargs.get("verbose", self.config.verbose),
-                warm_start=kwargs.get("warm_start", self.config.warm_start),
-                ccp_alpha=kwargs.get("ccp_alpha", self.config.ccp_alpha),
-                max_samples=kwargs.get("max_samples", self.config.max_samples),
-            )
+        if kwargs is not None:
+            for k, v in kwargs.items():
+                setattr(self.model, k, v)
+            
+        for k, v in vars(self.config).items():
+            setattr(self.model, k, v)
     
     def fit(self, *args, **kwargs):
         x = kwargs.get("X")
@@ -133,12 +103,14 @@ class RandomForest(BaseModel):
             "max_samples": hparams.get("max_samples", self.config.max_samples),
         }
         
-        model = RandomForestClassifier(**config)
+        model = RandomForestRegressor(**config)
         
         accuaraies = []
         for fold in range(self.config.num_folds):
-            x_train, y_train = df[df[Const.FOLD_ID]!=fold][features], df[df[Const.FOLD_ID]!=fold][targets]
-            x_valid, y_valid = df[df[Const.FOLD_ID]!=fold][features], df[df[Const.FOLD_ID]!=fold][targets]
+            x_train = df[df[Const.FOLD_ID]!=fold][features]
+            y_train = df[df[Const.FOLD_ID]!=fold][targets]
+            x_valid = df[df[Const.FOLD_ID]!=fold][features]
+            y_valid = df[df[Const.FOLD_ID]!=fold][targets]
 
             model.fit(
                 X=x_train,

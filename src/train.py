@@ -31,36 +31,36 @@ if __name__ == "__main__":
     
     trainer = Trainer(xgb, xgb_args, scaler=None, encoder=encoder)
     trainer.fit(train_df, test_df, ["age","education.num"], ["sex"])
-    print(trainer.feature_importacne())
+    print(trainer.feature_importance())
     
     trainer = Trainer(lgbm, lgbm_args, scaler=None, encoder=encoder)
     trainer.fit(train_df, test_df, ["age","education.num"], ["sex"])
-    print(trainer.feature_importacne())
+    print(trainer.feature_importance())
     
     trainer = Trainer(cat, cat_args, scaler=None, encoder=encoder)
     trainer.fit(train_df, test_df, ["age","education.num"], ["sex"])
-    print(trainer.feature_importacne())
+    print(trainer.feature_importance())
     
     trainer = Trainer(dt, dt_args, scaler=None, encoder=encoder)
     trainer.fit(train_df, test_df, ["age","education.num"], ["sex"])
-    print(trainer.feature_importacne())
+    print(trainer.feature_importance())
     
     trainer = Trainer(rf, rf_args, scaler=None, encoder=encoder)
     trainer.fit(train_df, test_df, ["age","education.num"], ["sex"])
-    print(trainer.feature_importacne())
+    print(trainer.feature_importance())
     
     trainer = Trainer(et, et_args, scaler=None, encoder=encoder)
     trainer.fit(train_df, test_df, ["age","education.num"], ["sex"])
-    print(trainer.feature_importacne())
+    print(trainer.feature_importance())
     
     trainer = Trainer(sgd, sgd_args, scaler=None, encoder=encoder)
     trainer.fit(train_df, test_df, ["age","education.num"], ["sex"])
-    print(trainer.feature_importacne())
+    print(trainer.feature_importance())
 
     trainer = Trainer(svc, svc_args, scaler=None, encoder=encoder)
     trainer.fit(train_df, test_df, ["age","education.num"], ["sex"])
-    print(trainer.feature_importacne())
+    print(trainer.feature_importance())
 
     trainer = Trainer(knn, knn_args, scaler=None, encoder=encoder)
     trainer.fit(train_df, test_df, ["age","education.num"], ["sex"])
-    print(trainer.feature_importacne())
+    print(trainer.feature_importance())

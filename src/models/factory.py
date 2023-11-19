@@ -1,60 +1,16 @@
 import argparse
 from typing import Tuple
-from xgboost import XGBClassifier, XGBRegressor
-from lightgbm import LGBMClassifier, LGBMRegressor
-from catboost import CatBoostClassifier, CatBoostRegressor
-from sklearn.svm import (
-    SVC, 
-    SVR,
-)
-from sklearn.tree import (
-    DecisionTreeClassifier, 
-    DecisionTreeRegressor,
-    ExtraTreeClassifier,
-    ExtraTreeRegressor,
-)
-from sklearn.linear_model import (
-    LogisticRegression, 
-    LinearRegression,
-    SGDClassifier,
-    Lasso,
-)
-from sklearn.ensemble import (
-    RandomForestClassifier,  
-    RandomForestRegressor,
-)
-from sklearn.neighbors import (
-    KNeighborsClassifier,
-    KNeighborsRegressor,
-)
 
 from const import Const
 from models.base import BaseModel
-from models.xgboost import XGBoost
-from models.lightgbm import LightGBM
-from models.catboost import CatBoost
-from models.decision_tree import DecisionTree
-from models.random_forest import RandomForest
-from models.extra_tree import ExtraTree
-from models.sgd_classifier import SgdClassifier
-from models.svm import SVMClassifier, SVMRegressor
-from models.knn import KNNClassifier, KNNRegressor
-
-from config.xgboost_config import xgboost_args
-from config.catboost_config import catboost_args
-from config.lightgbm_config import lightgbm_args
-from config.random_forest_config import random_forest_config
-from config.extra_tree_config import extra_tree_config
-from config.decision_tree_config import decision_tree_config
-from config.logistic_regression_config import logistic_regression_config
-from config.linear_regression_config import linear_regression_config
-from config.lasso_config import lasso_config
-from config.sgd_classifier_config import sgd_classifier_config
-from config.support_vector_machine_config import svc_config, svr_config
-from config.knn_config import knn_classifier_config, knn_regressor_config
 
 
 def get_xgboost(problem: str) -> Tuple[BaseModel, argparse.Namespace]:
+    from xgboost import XGBClassifier, XGBRegressor
+    from models.classification.xgboost import XGBoostClassifier
+    from models.regressor.xgboost import XGBoostRegressor
+    from config.xgboost_config import xgboost_args
+    
     args = xgboost_args()
     if problem in [
         Const.BINARY_CLASSIFICATION,
@@ -62,19 +18,24 @@ def get_xgboost(problem: str) -> Tuple[BaseModel, argparse.Namespace]:
         Const.MULTI_LABEL_CLASSIFICATION,
     ]:
         args.task = Const.CLASSIFICATION
-        model = XGBoost(XGBClassifier(), args) 
+        model = XGBoostClassifier(XGBClassifier(), args) 
     elif problem in [
         Const.SINGLE_COLUMN_REGRESSION,
         Const.MULTI_COLUMN_REGRESSION,
     ]:
         args.task = Const.REGRESSION
-        model = XGBoost(XGBRegressor(), args)
+        model = XGBoostRegressor(XGBRegressor(), args)
     else:
         raise ValueError(f"Invalid problem type: {problem}")
     
     return model, args
 
 def get_lightgbm(problem: str) -> Tuple[BaseModel, argparse.Namespace]:
+    from lightgbm import LGBMClassifier, LGBMRegressor
+    from models.classification.lightgbm import LightGBMClassifier
+    from models.regressor.lightgbm import LightGBMRegressor
+    from config.lightgbm_config import lightgbm_args
+    
     args = lightgbm_args()
     if problem in [
         Const.BINARY_CLASSIFICATION,
@@ -82,18 +43,23 @@ def get_lightgbm(problem: str) -> Tuple[BaseModel, argparse.Namespace]:
         Const.MULTI_LABEL_CLASSIFICATION,
     ]:
         args.task = Const.CLASSIFICATION
-        model = LightGBM(LGBMClassifier(), args)
+        model = LightGBMClassifier(LGBMClassifier(), args)
     elif problem in [
         Const.SINGLE_COLUMN_REGRESSION,
         Const.MULTI_COLUMN_REGRESSION,
     ]:
         args.task = Const.REGRESSION
-        model = LightGBM(LGBMRegressor(), args)
+        model = LightGBMRegressor(LGBMRegressor(), args)
     else:
         raise ValueError(f"Invalid problem type: {problem}")
     return model, args
 
 def get_catboost(problem: str) -> Tuple[BaseModel, argparse.Namespace]:
+    from catboost import CatBoostClassifier, CatBoostRegressor
+    from models.classification.catboost import CatBoostClassifier as CBC
+    from models.regressor.catboost import CatBoostRegressor as CRC
+    from config.catboost_config import catboost_args
+    
     args = catboost_args()
     if problem in [
         Const.BINARY_CLASSIFICATION,
@@ -101,18 +67,23 @@ def get_catboost(problem: str) -> Tuple[BaseModel, argparse.Namespace]:
         Const.MULTI_LABEL_CLASSIFICATION,
     ]:
         args.task = Const.CLASSIFICATION
-        model = CatBoost(CatBoostClassifier(), args)
+        model = CBC(CatBoostClassifier(), args)
     elif problem in [
         Const.SINGLE_COLUMN_REGRESSION,
         Const.MULTI_COLUMN_REGRESSION,
     ]:
         args.task = Const.REGRESSION
-        model = CatBoost(CatBoostRegressor(), args)
+        model = CRC(CatBoostRegressor(), args)
     else:
         raise ValueError(f"Invalid problem type: {problem}")
     return model, args
 
 def get_random_forest(problem: str) -> Tuple[BaseModel, argparse.Namespace]:
+    from sklearn.ensemble import RandomForestClassifier, RandomForestRegressor
+    from models.classification.random_forest import RandomForestClassifier as RFC
+    from models.regressor.random_forest import RandomForestRegressor as RFR
+    from config.random_forest_config import random_forest_config
+    
     args = random_forest_config()
     if problem in [
         Const.BINARY_CLASSIFICATION,
@@ -120,18 +91,23 @@ def get_random_forest(problem: str) -> Tuple[BaseModel, argparse.Namespace]:
         Const.MULTI_LABEL_CLASSIFICATION,
     ]:
         args.task = Const.CLASSIFICATION
-        model = RandomForest(RandomForestClassifier(), args)
+        model = RFC(RandomForestClassifier(), args)
     elif problem in [
         Const.SINGLE_COLUMN_REGRESSION,
         Const.MULTI_COLUMN_REGRESSION,
     ]:
         args.task = Const.REGRESSION
-        model = RandomForest(RandomForestRegressor(), args)
+        model = RFR(RandomForestRegressor(), args)
     else:
         raise ValueError(f"Invalid problem type: {problem}")
     return model, args
 
 def get_decision_tree(problem: str) -> Tuple[BaseModel, argparse.Namespace]:
+    from sklearn.tree import DecisionTreeClassifier, DecisionTreeRegressor
+    from models.classification.decision_tree import DecisionTreeClassifier as DTC
+    from models.regressor.decision_tree import DecisionTreeRegressor as DTR
+    from config.decision_tree_config import decision_tree_config
+    
     args = decision_tree_config()
     if problem in [
         Const.BINARY_CLASSIFICATION,
@@ -139,18 +115,23 @@ def get_decision_tree(problem: str) -> Tuple[BaseModel, argparse.Namespace]:
         Const.MULTI_LABEL_CLASSIFICATION,
     ]:
         args.task = Const.CLASSIFICATION
-        model = DecisionTree(DecisionTreeClassifier(), args)
+        model = DTC(DecisionTreeClassifier(), args)
     elif problem in [
         Const.SINGLE_COLUMN_REGRESSION,
         Const.MULTI_COLUMN_REGRESSION,
     ]:
         args.task = Const.REGRESSION
-        model = DecisionTree(DecisionTreeRegressor(), args)
+        model = DTR(DecisionTreeRegressor(), args)
     else:
         raise ValueError(f"Invalid problem type: {problem}")
     return model, args
 
 def get_extra_tree(problem: str) -> Tuple[BaseModel, argparse.Namespace]:
+    from sklearn.tree import ExtraTreeClassifier, ExtraTreeRegressor
+    from models.classification.extra_tree import ExtraTreeClassifier as ETC
+    from models.regressor.extra_tree import ExtraTreeRegressor as ETR
+    from config.extra_tree_config import extra_tree_config
+    
     args = extra_tree_config()
     if problem in [
         Const.BINARY_CLASSIFICATION,
@@ -158,18 +139,21 @@ def get_extra_tree(problem: str) -> Tuple[BaseModel, argparse.Namespace]:
         Const.MULTI_LABEL_CLASSIFICATION,
     ]:
         args.task = Const.CLASSIFICATION
-        model = ExtraTree(ExtraTreeClassifier(), args)
+        model = ETC(ExtraTreeClassifier(), args)
     elif problem in [
         Const.SINGLE_COLUMN_REGRESSION,
         Const.MULTI_COLUMN_REGRESSION,
     ]:
         args.task = Const.REGRESSION
-        model = ExtraTree(ExtraTreeRegressor(), args)
+        model = ETR(ExtraTreeRegressor(), args)
     else:
         raise ValueError(f"Invalid problem type: {problem}")
     return model, args
 
 def get_logistic_regression(problem: str) -> Tuple[BaseModel, argparse.Namespace]:
+    from sklearn.linear_model import LogisticRegression
+    from config.logistic_regression_config import logistic_regression_config
+    
     args = logistic_regression_config()
     if problem in [
         Const.SINGLE_COLUMN_REGRESSION,
@@ -182,6 +166,9 @@ def get_logistic_regression(problem: str) -> Tuple[BaseModel, argparse.Namespace
     return model, args
 
 def get_linear_regression(problem: str) -> Tuple[BaseModel, argparse.Namespace]:
+    from sklearn.linear_model import LinearRegression
+    from config.linear_regression_config import linear_regression_config
+    
     args = linear_regression_config()
     if problem in [
         Const.SINGLE_COLUMN_REGRESSION,
@@ -194,6 +181,9 @@ def get_linear_regression(problem: str) -> Tuple[BaseModel, argparse.Namespace]:
     return model, args
 
 def get_lasso(problem: str) -> Tuple[BaseModel, argparse.Namespace]:
+    from sklearn.linear_model import Lasso
+    from config.lasso_config import lasso_config
+    
     args = lasso_config()
     if problem in [
         Const.SINGLE_COLUMN_REGRESSION,
@@ -206,6 +196,10 @@ def get_lasso(problem: str) -> Tuple[BaseModel, argparse.Namespace]:
     return model, args
 
 def get_sgd_classifier(problem: str) -> Tuple[BaseModel, argparse.Namespace]:
+    from sklearn.linear_model import SGDClassifier
+    from models.classification.sgd_classifier import SgdClassifier
+    from config.sgd_classifier_config import sgd_classifier_config
+    
     args = sgd_classifier_config()
     if problem in [
         Const.BINARY_CLASSIFICATION,
@@ -219,6 +213,11 @@ def get_sgd_classifier(problem: str) -> Tuple[BaseModel, argparse.Namespace]:
     return model, args
 
 def get_support_vector_machine(problem: str) -> Tuple[BaseModel, argparse.Namespace]:
+    from sklearn.svm import SVC, SVR
+    from models.classification.svm import SVMClassifier
+    from models.regressor.svm import SVMRegressor
+    from config.support_vector_machine_config import svc_config, svr_config
+    
     if problem in [
         Const.BINARY_CLASSIFICATION,
         Const.MULTI_CLASS_CLASSIFICATION,
@@ -239,6 +238,11 @@ def get_support_vector_machine(problem: str) -> Tuple[BaseModel, argparse.Namesp
     return model, args
 
 def get_knn(problem: str) -> Tuple[BaseModel, argparse.Namespace]:
+    from sklearn.neighbors import KNeighborsClassifier, KNeighborsRegressor
+    from models.regressor.knn import KNNRegressor
+    from models.classification.knn import KNNClassifier
+    from config.knn_config import knn_classifier_config, knn_regressor_config
+    
     if problem in [
         Const.BINARY_CLASSIFICATION,
         Const.MULTI_CLASS_CLASSIFICATION,

@@ -1,13 +1,11 @@
 import os
 
 try:
-    from dataclasses import dataclass
-    from loguru import logger    
     import logging
+    from loguru import logger    
 except ImportError:
     os.system("pip install loguru")
     import logging
-    from dataclasses import dataclass
     from loguru import logger
 
     handler = logging.StreamHandler()
