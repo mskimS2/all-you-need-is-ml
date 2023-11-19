@@ -1,4 +1,6 @@
 import argparse
+from dataclasses import dataclass
+from config.base import BaseConfig
 
 
 def catboost_args() -> argparse.Namespace:
@@ -12,14 +14,14 @@ def catboost_args() -> argparse.Namespace:
     p.add_argument("--verbose", type=bool, default=False)
     p.add_argument("--problem_type", type=str, default="binary_classification")
     p.add_argument("--train_data", type=str, default="dataset/binary_classification.csv")
-    p.add_argument("--device", type=str, default="cpu", choices=["cpu", "gpu"])
+    p.add_argument("--device", type=str, default="CPU", choices=["CPU", "CPU"])
     p.add_argument("--only_one_train", type=bool, default=True)
     p.add_argument("--output_path", type=str, default="results")
     
     # parameters 
     # - https://catboost.ai/en/docs/references/training-parameters/
     p.add_argument("--iterations", type=float, default=1000, help="[1, inf]")
-    p.add_argument("--learning_rate", type=float, default=0., help="learning_rate, (0, inf]")
+    p.add_argument("--learning_rate", type=float, default=0.1, help="learning_rate, (0, inf]")
     p.add_argument("--early_stopping_rounds", type=int, default=50)
     p.add_argument("--l2_leaf_reg", type=float, default=3.)
     p.add_argument("--bootstrap_type", type=str, default="Bayesian", choices=["Bayesian", "Bernoulli", "MVS", "Poisson", "No"])

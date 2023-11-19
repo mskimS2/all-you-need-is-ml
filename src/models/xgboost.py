@@ -33,7 +33,7 @@ class XGBoost(BaseModel):
                 scale_pos_weight=kwargs.get("scale_pos_weight", self.config.scale_pos_weight),
                 grow_policy=kwargs.get("grow_policy", self.config.grow_policy),
                 max_leaves=kwargs.get("max_leaves", self.config.max_leaves),
-                random_state=kwargs.get("random_state", self.config.random_state),
+                random_state=kwargs.get("random_state", self.config.random_seed),
                 reg_lambda=kwargs.get("reg_lambda", self.config.reg_lambda),
                 device=kwargs.get("device", self.config.device),
             )
@@ -53,7 +53,7 @@ class XGBoost(BaseModel):
                 scale_pos_weight=kwargs.get("scale_pos_weight", self.config.scale_pos_weight),
                 grow_policy=kwargs.get("grow_policy", self.config.grow_policy),
                 max_leaves=kwargs.get("max_leaves", self.config.max_leaves),
-                random_state=kwargs.get("random_state", self.config.random_state),
+                random_state=kwargs.get("random_state", self.config.random_seed),
                 reg_lambda=kwargs.get("reg_lambda", self.config.reg_lambda),
                 device=kwargs.get("device", self.config.device),
             )

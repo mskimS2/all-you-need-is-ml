@@ -26,7 +26,7 @@ def lightgbm_args() -> argparse.Namespace:
     p.add_argument("--num_threads", type=int, default=0)
     p.add_argument("--seed", type=int, default=42)
     p.add_argument("--deterministic", type=bool, default=False, choices=[True, False])
-    p.add_argument("--early_stopping_round", type=int, default=0)
+    p.add_argument("--early_stopping_round", type=int, default=50)
     p.add_argument("--force_col_wise", type=bool, default=False, choices=[True, False])
     p.add_argument("--force_row_wise", type=bool, default=False, choices=[True, False])
     p.add_argument("--histogram_pool_size", type=float, default=-1.)

@@ -20,7 +20,6 @@ class RandomForest(BaseModel):
     def set_up(self, *args, **kwargs):
         if isinstance(self.model, RandomForestClassifier):
             self.model = RandomForestClassifier(
-                n_estimation=kwargs.get("n_estimation", self.config.n_estimation),
                 max_depth=kwargs.get("max_depth", self.config.max_depth),
                 min_samples_split=kwargs.get("min_samples_split", self.config.min_samples_split),
                 min_samples_leaf=kwargs.get("min_samples_leaf", self.config.min_samples_leaf),
@@ -39,7 +38,6 @@ class RandomForest(BaseModel):
             )
         elif isinstance(self.model, RandomForestRegressor):
             self.model = RandomForestRegressor(
-                n_estimation=kwargs.get("n_estimation", self.config.n_estimation),
                 max_depth=kwargs.get("max_depth", self.config.max_depth),
                 min_samples_split=kwargs.get("min_samples_split", self.config.min_samples_split),
                 min_samples_leaf=kwargs.get("min_samples_leaf", self.config.min_samples_leaf),
@@ -118,7 +116,6 @@ class RandomForest(BaseModel):
             "n_estimators": hparams.get("n_estimators", self.config.max_features),
             "max_depth": hparams.get("max_depth", self.config.max_features),
             "max_features": hparams.get("max_features", self.config.max_features),
-            "n_estimation": hparams.get("n_estimation", self.config.n_estimation),
             "max_depth": hparams.get("max_depth", self.config.max_depth),
             "min_samples_split": hparams.get("min_samples_split", self.config.min_samples_split),
             "min_samples_leaf": hparams.get("min_samples_leaf", self.config.min_samples_leaf),
