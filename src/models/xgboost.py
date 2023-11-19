@@ -18,9 +18,45 @@ class XGBoost(BaseModel):
     
     def set_up(self, *args, **kwargs):
         if isinstance(self.model, XGBClassifier):
-            self.model = XGBClassifier(*args, **kwargs)
+            self.model = XGBClassifier(
+                early_stopping_rounds=kwargs.get("early_stopping_rounds", self.config.early_stopping_rounds),
+                learning_rate=kwargs.get("learning_rate", self.config.learning_rate),
+                gamma=kwargs.get("gamma", self.config.gamma),
+                max_depth=kwargs.get("max_depth", self.config.max_depth),
+                max_child_weight=kwargs.get("max_child_weight", self.config.max_child_weight),
+                max_delta_step=kwargs.get("max_delta_step", self.config.max_delta_step),
+                subsample=kwargs.get("subsample", self.config.subsample),
+                sampling_method=kwargs.get("sampling_method", self.config.sampling_method),
+                colsample_bytree=kwargs.get("colsample_bytree", self.config.colsample_bytree),
+                alpha=kwargs.get("alpha", self.config.alpha),
+                tree_method=kwargs.get("tree_method", self.config.tree_method),
+                scale_pos_weight=kwargs.get("scale_pos_weight", self.config.scale_pos_weight),
+                grow_policy=kwargs.get("grow_policy", self.config.grow_policy),
+                max_leaves=kwargs.get("max_leaves", self.config.max_leaves),
+                random_state=kwargs.get("random_state", self.config.random_state),
+                reg_lambda=kwargs.get("reg_lambda", self.config.reg_lambda),
+                device=kwargs.get("device", self.config.device),
+            )
         elif isinstance(self.model, XGBRegressor):
-            self.model = XGBRegressor(*args, **kwargs)
+            self.model = XGBRegressor(
+                early_stopping_rounds=kwargs.get("early_stopping_rounds", self.config.early_stopping_rounds),
+                learning_rate=kwargs.get("learning_rate", self.config.learning_rate),
+                gamma=kwargs.get("gamma", self.config.gamma),
+                max_depth=kwargs.get("max_depth", self.config.max_depth),
+                max_child_weight=kwargs.get("max_child_weight", self.config.max_child_weight),
+                max_delta_step=kwargs.get("max_delta_step", self.config.max_delta_step),
+                subsample=kwargs.get("subsample", self.config.subsample),
+                sampling_method=kwargs.get("sampling_method", self.config.sampling_method),
+                colsample_bytree=kwargs.get("colsample_bytree", self.config.colsample_bytree),
+                alpha=kwargs.get("alpha", self.config.alpha),
+                tree_method=kwargs.get("tree_method", self.config.tree_method),
+                scale_pos_weight=kwargs.get("scale_pos_weight", self.config.scale_pos_weight),
+                grow_policy=kwargs.get("grow_policy", self.config.grow_policy),
+                max_leaves=kwargs.get("max_leaves", self.config.max_leaves),
+                random_state=kwargs.get("random_state", self.config.random_state),
+                reg_lambda=kwargs.get("reg_lambda", self.config.reg_lambda),
+                device=kwargs.get("device", self.config.device),
+            )
     
     def fit(self, *args, **kwargs):
         x = kwargs.get("X")

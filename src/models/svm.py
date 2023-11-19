@@ -137,7 +137,19 @@ class SVMRegressor(BaseModel):
         self.set_up()
     
     def set_up(self, *args, **kwargs):
-        self.model = SVR(*args, **kwargs)
+        self.model = SVR(
+            C=kwargs.get("C", self.config.C),
+            kernel=kwargs.get("kernel", self.config.kernel),
+            degree=kwargs.get("degree", self.config.degree),
+            gamma=kwargs.get("gamma", self.config.gamma),
+            coef0=kwargs.get("coef0", self.config.coef0),
+            shrinking=kwargs.get("shrinking", self.config.shrinking),
+            tol=kwargs.get("tol", self.config.tol),
+            cache_size=kwargs.get("cache_size", self.config.cache_size),
+            epsilon=kwargs.get("epsilon", self.config.epsilon),
+            verbose=kwargs.get("verbose", self.config.verbose),
+            max_iter=kwargs.get("max_iter", self.config.max_iter),
+        )
     
     def fit(self, *args, **kwargs):
         x = kwargs.get("X")

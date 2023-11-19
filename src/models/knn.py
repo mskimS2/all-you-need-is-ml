@@ -17,7 +17,17 @@ class KNNClassifier(BaseModel):
         self.set_up()
     
     def set_up(self, *args, **kwargs):
-        self.model = KNeighborsClassifier(*args, **kwargs)
+        self.model = KNeighborsClassifier(
+            n_neighbors=kwargs.get("n_neighbors", self.config.n_neighbors),
+            weights=kwargs.get("weights", self.config.weights),
+            algorithm=kwargs.get("algorithm", self.config.algorithm),
+            gamma=kwargs.get("gamma", self.config.gamma),
+            leaf_size=kwargs.get("leaf_size", self.config.leaf_size),
+            p=kwargs.get("p", self.config.p),
+            metric=kwargs.get("metric", self.config.metric),
+            metric_params=kwargs.get("metric_params", self.config.metric_params),
+            n_jobs=kwargs.get("n_jobs", self.config.n_jobs),
+        )
     
     def fit(self, *args, **kwargs):
         x = kwargs.get("X")
@@ -110,7 +120,17 @@ class KNNRegressor(BaseModel):
         self.set_up()
     
     def set_up(self, *args, **kwargs):
-        self.model = KNeighborsRegressor(*args, **kwargs)
+        self.model = KNeighborsRegressor(
+            n_neighbors=kwargs.get("n_neighbors", self.config.n_neighbors),
+            weights=kwargs.get("weights", self.config.weights),
+            algorithm=kwargs.get("algorithm", self.config.algorithm),
+            gamma=kwargs.get("gamma", self.config.gamma),
+            leaf_size=kwargs.get("leaf_size", self.config.leaf_size),
+            p=kwargs.get("p", self.config.p),
+            metric=kwargs.get("metric", self.config.metric),
+            metric_params=kwargs.get("metric_params", self.config.metric_params),
+            n_jobs=kwargs.get("n_jobs", self.config.n_jobs),
+        )
     
     def fit(self, *args, **kwargs):
         x = kwargs.get("X")
