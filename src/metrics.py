@@ -47,8 +47,9 @@ class Metric:
     metric = {
         Const.BINARY_CLASSIFICATION: BinaryClassificationMetric(),
         Const.MULTI_CLASS_CLASSIFICATION: MultiLabelClassificationMetric(),
-        Const.REGRESSION: RegressionMetric(),
+        Const.SINGLE_COLUMN_REGRESSION: RegressionMetric(),
         Const.MULTI_LABEL_CLASSIFICATION: MultiLabelClassificationMetric(),
+        Const.MULTI_COLUMN_REGRESSION: RegressionMetric(),
     }
     
     def __post_init__(self):

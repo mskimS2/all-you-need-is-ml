@@ -12,55 +12,51 @@ from utils import set_randomness
 if __name__ == "__main__":
     set_randomness(2023)
     
-    # test code
-    xgb, xgb_args = get_model("xgboost", "binary_classification")
-    lgbm, lgbm_args = get_model("lightgbm", "binary_classification")
-    cat, cat_args = get_model("catboost", "binary_classification")
-    dt, dt_args = get_model("decision_tree", "binary_classification")
-    rf, rf_args = get_model("random_forest", "binary_classification")
-    et, et_args = get_model("extra_tree", "binary_classification")
-    sgd, sgd_args = get_model("sgd_classifier", "binary_classification")
-    svc, svc_args = get_model("support_vector_machine", "binary_classification")
-    knn, knn_args = get_model("knn", "binary_classification")
-    
-    train_df = pd.read_csv("dataset/binary_classification.csv")
-    train_df.sex = train_df.sex.apply(lambda x: "0" if x == "Male" else "1").astype(int)
-    test_df = None
-    
+    # binary classification test code
     encoder = Encoder(encoder=LabelEncoder())
+    problem = "binary_classification"
+    for model_name  in [
+        "xgboost",
+        "lightgbm",
+        "catboost",
+        "decision_tree",
+        "random_forest",
+        "extra_tree",
+        "support_vector_machine",
+        "knn",
+    ]:
+        train_df = pd.read_csv("dataset/binary_classification.csv")
+        train_df.sex = train_df.sex.apply(lambda x: "0" if x == "Male" else "1").astype(int)
+        test_df = None
     
-    trainer = Trainer(xgb, xgb_args, scaler=None, encoder=encoder)
-    trainer.fit(train_df, test_df, ["age","education.num"], ["sex"])
-    print(trainer.feature_importance())
+        model, config = get_model(model_name, problem)
+        trainer = Trainer(model, config, scaler=None, encoder=encoder)
+        trainer.fit(train_df=train_df, test_df=test_df, features=["age","education.num"], targets=["sex"])
+        print(trainer.feature_importance())
     
-    trainer = Trainer(lgbm, lgbm_args, scaler=None, encoder=encoder)
-    trainer.fit(train_df, test_df, ["age","education.num"], ["sex"])
-    print(trainer.feature_importance())
     
-    trainer = Trainer(cat, cat_args, scaler=None, encoder=encoder)
-    trainer.fit(train_df, test_df, ["age","education.num"], ["sex"])
-    print(trainer.feature_importance())
     
-    trainer = Trainer(dt, dt_args, scaler=None, encoder=encoder)
-    trainer.fit(train_df, test_df, ["age","education.num"], ["sex"])
-    print(trainer.feature_importance())
+    # from sklearn.datasets import load_iris
+    # iris = load_iris()
     
-    trainer = Trainer(rf, rf_args, scaler=None, encoder=encoder)
-    trainer.fit(train_df, test_df, ["age","education.num"], ["sex"])
-    print(trainer.feature_importance())
+    # encoder = Encoder(encoder=LabelEncoder())
     
-    trainer = Trainer(et, et_args, scaler=None, encoder=encoder)
-    trainer.fit(train_df, test_df, ["age","education.num"], ["sex"])
-    print(trainer.feature_importance())
+    # problem = "single_column_regression"
+    # for model_name  in [
+    #     "xgboost",
+    #     "lightgbm",
+    #     # "catboost",
+    #     # "decision_tree",
+    #     "random_forest",
+    #     # "extra_tree",
+    #     "logistic_regression",
+    #     "support_vector_machine",
+    #     "knn",
+    # ]:
+    #     train_df = pd.DataFrame(iris["data"], columns=iris['feature_names'])
+    #     train_df["target"] = iris["target"]
+    #     test_df = None
     
-    trainer = Trainer(sgd, sgd_args, scaler=None, encoder=encoder)
-    trainer.fit(train_df, test_df, ["age","education.num"], ["sex"])
-    print(trainer.feature_importance())
-
-    trainer = Trainer(svc, svc_args, scaler=None, encoder=encoder)
-    trainer.fit(train_df, test_df, ["age","education.num"], ["sex"])
-    print(trainer.feature_importance())
-
-    trainer = Trainer(knn, knn_args, scaler=None, encoder=encoder)
-    trainer.fit(train_df, test_df, ["age","education.num"], ["sex"])
-    print(trainer.feature_importance())
+    #     model, config = get_model(model_name, problem)
+    #     trainer = Trainer(model, config, scaler=None, encoder=encoder)
+    #     trainer.fit(train_df=train_df, test_df=test_df, features=iris['feature_names'], targets=["target"])

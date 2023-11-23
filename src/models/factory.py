@@ -24,6 +24,7 @@ def get_xgboost(problem: str) -> Tuple[BaseModel, argparse.Namespace]:
         Const.MULTI_COLUMN_REGRESSION,
     ]:
         args.task = Const.REGRESSION
+        args.predict_proba = False
         model = XGBoostRegressor(XGBRegressor(), args)
     else:
         raise ValueError(f"Invalid problem type: {problem}")
@@ -49,6 +50,7 @@ def get_lightgbm(problem: str) -> Tuple[BaseModel, argparse.Namespace]:
         Const.MULTI_COLUMN_REGRESSION,
     ]:
         args.task = Const.REGRESSION
+        args.predict_proba = False
         model = LightGBMRegressor(LGBMRegressor(), args)
     else:
         raise ValueError(f"Invalid problem type: {problem}")
@@ -73,6 +75,7 @@ def get_catboost(problem: str) -> Tuple[BaseModel, argparse.Namespace]:
         Const.MULTI_COLUMN_REGRESSION,
     ]:
         args.task = Const.REGRESSION
+        args.predict_proba = False
         model = CRC(CatBoostRegressor(), args)
     else:
         raise ValueError(f"Invalid problem type: {problem}")
@@ -97,6 +100,7 @@ def get_random_forest(problem: str) -> Tuple[BaseModel, argparse.Namespace]:
         Const.MULTI_COLUMN_REGRESSION,
     ]:
         args.task = Const.REGRESSION
+        args.predict_proba = False
         model = RFR(RandomForestRegressor(), args)
     else:
         raise ValueError(f"Invalid problem type: {problem}")
@@ -121,6 +125,7 @@ def get_decision_tree(problem: str) -> Tuple[BaseModel, argparse.Namespace]:
         Const.MULTI_COLUMN_REGRESSION,
     ]:
         args.task = Const.REGRESSION
+        args.predict_proba = False
         model = DTR(DecisionTreeRegressor(), args)
     else:
         raise ValueError(f"Invalid problem type: {problem}")
@@ -128,8 +133,8 @@ def get_decision_tree(problem: str) -> Tuple[BaseModel, argparse.Namespace]:
 
 def get_extra_tree(problem: str) -> Tuple[BaseModel, argparse.Namespace]:
     from sklearn.tree import ExtraTreeClassifier, ExtraTreeRegressor
-    from models.classification.extra_tree import ExtraTreeClassifier as ETC
-    from models.regressor.extra_tree import ExtraTreeRegressor as ETR
+    from models.classification.extra_tree import ExtraTree
+    from models.regressor.extra_tree import ExtraTree
     from config.extra_tree_config import extra_tree_config
     
     args = extra_tree_config()
@@ -139,13 +144,14 @@ def get_extra_tree(problem: str) -> Tuple[BaseModel, argparse.Namespace]:
         Const.MULTI_LABEL_CLASSIFICATION,
     ]:
         args.task = Const.CLASSIFICATION
-        model = ETC(ExtraTreeClassifier(), args)
+        model = ExtraTree(ExtraTreeClassifier(), args)
     elif problem in [
         Const.SINGLE_COLUMN_REGRESSION,
         Const.MULTI_COLUMN_REGRESSION,
     ]:
         args.task = Const.REGRESSION
-        model = ETR(ExtraTreeRegressor(), args)
+        args.predict_proba = False
+        model = ExtraTree(ExtraTreeRegressor(), args)
     else:
         raise ValueError(f"Invalid problem type: {problem}")
     return model, args
@@ -153,6 +159,7 @@ def get_extra_tree(problem: str) -> Tuple[BaseModel, argparse.Namespace]:
 def get_logistic_regression(problem: str) -> Tuple[BaseModel, argparse.Namespace]:
     from sklearn.linear_model import LogisticRegression
     from config.logistic_regression_config import logistic_regression_config
+    from models.regressor.logisitc_regression import LogisiticRegressor
     
     args = logistic_regression_config()
     if problem in [
@@ -160,7 +167,8 @@ def get_logistic_regression(problem: str) -> Tuple[BaseModel, argparse.Namespace
         Const.MULTI_COLUMN_REGRESSION,
     ]:
         args.task = Const.REGRESSION
-        model = LogisticRegression()
+        args.predict_proba = False
+        model = LogisiticRegressor(LogisticRegression(), args)
     else:
         raise ValueError(f"Invalid problem type: {problem}")
     return model, args
@@ -175,6 +183,7 @@ def get_linear_regression(problem: str) -> Tuple[BaseModel, argparse.Namespace]:
         Const.MULTI_COLUMN_REGRESSION,
     ]:
         args.task = Const.REGRESSION
+        args.predict_proba = False
         model = LinearRegression()
     else:
         raise ValueError(f"Invalid problem type: {problem}")
@@ -190,6 +199,7 @@ def get_lasso(problem: str) -> Tuple[BaseModel, argparse.Namespace]:
         Const.MULTI_COLUMN_REGRESSION,
     ]:
         args.task = Const.REGRESSION
+        args.predict_proba = False
         model = Lasso()
     else:
         raise ValueError(f"Invalid problem type: {problem}")
@@ -232,6 +242,7 @@ def get_support_vector_machine(problem: str) -> Tuple[BaseModel, argparse.Namesp
     ]:
         args = svr_config()
         args.task = Const.REGRESSION
+        args.predict_proba = False
         model = SVMRegressor(SVR(), args)
     else:
         raise ValueError(f"Invalid problem type: {problem}")
@@ -257,6 +268,7 @@ def get_knn(problem: str) -> Tuple[BaseModel, argparse.Namespace]:
     ]:
         args = knn_regressor_config()
         args.task = Const.REGRESSION
+        args.predict_proba = False
         model = KNNRegressor(KNeighborsRegressor(), args)
     else:
         raise ValueError(f"Invalid problem type: {problem}")

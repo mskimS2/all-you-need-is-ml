@@ -19,12 +19,12 @@ class CatBoostClassifier(BaseModel):
         self.set_up()
     
     def set_up(self, *args, **kwargs):
+        for k, v in vars(self.config).items():
+            setattr(self.model, k, v)
+            
         if kwargs is not None:
             for k, v in kwargs.items():
                 setattr(self.model, k, v)
-            
-        for k, v in vars(self.config).items():
-            setattr(self.model, k, v)
     
     def fit(self, *args, **kwargs):
         x=kwargs.get("X")

@@ -4,14 +4,13 @@ from models.base import BaseModel
 from dataclasses import dataclass
 from typing import Dict, List
 from sklearn import metrics
-from sklearn.neighbors import KNeighborsRegressor
+from sklearn.linear_model import LogisticRegression
 
 from const import Const
 
-
 @dataclass
-class KNNRegressor(BaseModel):
-    model: KNeighborsRegressor
+class LogisiticRegressor(BaseModel):
+    model: LogisticRegression
     config: Dict
     
     def __post_init__(self):
@@ -30,11 +29,15 @@ class KNNRegressor(BaseModel):
         if x is None:
             raise ValueError("X is None")
         
-        y = kwargs.get("y")
+        y = kwargs.get("y")        
         if y is None:
             raise ValueError("y is None")
         
-        return self.model.fit(X=x, y=y)
+        return self.model.fit(
+            X=x,
+            y=y,
+            sample_weight=kwargs.get("sample_weight"),
+        )
     
     def predict(self, *args, **kwargs):
         x = kwargs.get("X")
@@ -46,8 +49,6 @@ class KNNRegressor(BaseModel):
     def feature_importances(self, *args, **kwargs) -> pd.DataFrame:
         if kwargs.get("columns") is None:
             raise ValueError("Train_df columns is None")
-
-        assert len("columns") == len(self.model.feature_importances_)
                 
         if kwargs.get("shap") is not None:
             # TODO: shap value
@@ -57,8 +58,12 @@ class KNNRegressor(BaseModel):
             # TODO: lime value
             pass
         
-        return None
-    
+        return pd.DataFrame.from_dict(
+            {c: [v] for c, v in zip(kwargs["columns"], self.model.coef_)}, 
+            columns=["feature_importance"],
+            orient="index",
+        )
+        
     def optimize_hyper_params(
         self, 
         df: pd.DataFrame,
@@ -67,17 +72,19 @@ class KNNRegressor(BaseModel):
         **hparams: Dict,
     ):
         config = {
-            "n_neighbors": hparams.get("n_neighbors", self.config.n_neighbors),
-            "weights": hparams.get("weights", self.config.weights),
-            "algorithm": hparams.get("algorithm", self.config.algorithm),
-            "leaf_size": hparams.get("leaf_size", self.config.leaf_size),
-            "p": hparams.get("p", self.config.p),
-            "metric": hparams.get("metric", self.config.metric),
-            "metric_params": hparams.get("metric_params", self.config.metric_params),
-            "n_jobs": hparams.get("n_jobs", self.config.n_jobs),
+            "penalty": hparams.get("penalty", self.config.penalty),
+            "dual": hparams.get("dual", self.config.dual),
+            "tol": hparams.get("tol", self.config.tol),
+            "C": hparams.get("C", self.config.C),
+            "fit_intercept": hparams.get("fit_intercept", self.config.fit_intercept),
+            "intercept_scaling": hparams.get("intercept_scaling", self.config.intercept_scaling),
+            "class_weight": hparams.get("class_weight", self.config.class_weight),
+            "random_state": hparams.get("random_state", self.config.random_state),
+            "solver": hparams.get("solver", self.config.solver),
         }
         
-        model = KNeighborsRegressor(**config)
+        if isinstance(model, LogisticRegression):
+            model = LogisticRegression(**config)
         
         accuaraies = []
         for fold in range(self.config.num_folds):
@@ -93,10 +100,7 @@ class KNNRegressor(BaseModel):
                 **config,
             )
             
-            if self.config.use_predict_proba:
-                y_pred = self.model.predict_proba(X=x_valid)
-            else:
-                y_pred = self.model.predict(X=x_valid)
+            y_pred = self.model.predict(X=x_valid)
             accuaraies.append(metrics.accuracy_score(y_valid, y_pred))
 
         return -1.0 * np.mean(accuaraies)

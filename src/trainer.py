@@ -39,19 +39,24 @@ class Trainer:
     ):
         logger.info(f"configuration: {self.model.config}")
         self.columns = features
-        metrics = Metric(self.config.problem_type)
         scores = []
         
         if reduce_memory_usage:
             if train_df is not None:
+                if not isinstance(train_df, pd.DataFrame):
+                    train_df = pd.DataFrame(train_df)
                 train_df = utils.reduce_memory_usage(train_df)
             if test_df is not None:
+                if not isinstance(test_df, pd.DataFrame):
+                    test_df = pd.DataFrame(test_df)
                 test_df = utils.reduce_memory_usage(test_df)
                 
         problem_type, num_classes = self.check_problem_type(train_df, self.config.task, targets)
         self.config.problem_type = problem_type
         self.config.num_classes = num_classes
         logger.info(f"problem type: {self.config.problem_type}, detected labels: {self.config.num_classes}")
+        
+        metrics = Metric(self.config.problem_type)
         
         train_df = self.created_fold(
             train_df, 
@@ -95,7 +100,7 @@ class Trainer:
                     kwargs=self.config,
                 )
             
-                if self.config.use_predict_proba:
+                if vars(self.config).get("use_predict_proba") and self.config.use_predict_proba:
                     y_pred_temp = self.model.predict_proba(X=x_valid, **vars(self.config))
                 else:
                     y_pred_temp = self.model.predict(X=x_valid, **vars(self.config))
@@ -184,7 +189,7 @@ class Trainer:
         elif problem in [Const.SINGLE_COLUMN_REGRESSION]:
             y = df[target_columns].values.ravel()
             num_bins = min(int(np.floor(1 + np.log2(len(df)))), 10)
-            skf = StratifiedKFold(n_splits=n_splits, shuffle=shuffle, random_state=random_state)
+            kf = KFold(n_splits=n_splits, shuffle=shuffle, random_state=random_state)
             df["bins"] = pd.cut(df[target_columns].values.ravel(), bins=num_bins, labels=False)
             for fold, (_, valid_indicies) in enumerate(kf.split(X=df, y=df.bins.values)):
                 df.loc[valid_indicies, Const.FOLD_ID] = fold
