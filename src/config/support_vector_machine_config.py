@@ -1,10 +1,11 @@
 import argparse
 
 
-def svc_config() -> argparse.Namespace:
+def svc_classifier_config() -> argparse.Namespace:
     p = argparse.ArgumentParser(description="SVC")
     
     p.add_argument("--model_name", type=str, default="SVC")
+    p.add_argument("--task", type=str, default="classification")
     p.add_argument("--num_folds", type=int, default=5)
     p.add_argument("--random_seed", type=int, default=42)
     p.add_argument("--use_predict_proba", type=bool, default=True, choices=[True, False])
@@ -36,10 +37,11 @@ def svc_config() -> argparse.Namespace:
     args, _ = p.parse_known_args(args=[])
     return args
 
-def svr_config() -> argparse.Namespace:
+def svr_regressor_config() -> argparse.Namespace:
     p = argparse.ArgumentParser(description="SVR")
     
     p.add_argument("--model_name", type=str, default="SVR")
+    p.add_argument("--task", type=str, default="regression")
     p.add_argument("--num_folds", type=int, default=5)
     p.add_argument("--random_seed", type=int, default=42)
     p.add_argument("--use_predict_proba", type=bool, default=True, choices=[True, False])

@@ -1,10 +1,11 @@
 import argparse
 
 
-def logistic_regression_config() -> argparse.Namespace:
+def logistic_regression_regressor_config() -> argparse.Namespace:
     p = argparse.ArgumentParser(description="logistic_regression")
     
     p.add_argument("--model_name", type=str, default="logistic_regression")
+    p.add_argument("--task", type=str, default="regression")
     p.add_argument("--num_folds", type=int, default=5)
     p.add_argument("--random_seed", type=int, default=42)
     p.add_argument("--use_predict_proba", type=bool, default=True)

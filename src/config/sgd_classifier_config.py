@@ -5,6 +5,7 @@ def sgd_classifier_config() -> argparse.Namespace:
     p = argparse.ArgumentParser(description="sgd_classifier")
     
     p.add_argument("--model_name", type=str, default="sgd_classifier")
+    p.add_argument("--task", type=str, default="classification")
     p.add_argument("--num_folds", type=int, default=5)
     p.add_argument("--random_seed", type=int, default=42)
     p.add_argument("--use_predict_proba", type=bool, default=False)
