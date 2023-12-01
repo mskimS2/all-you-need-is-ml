@@ -197,13 +197,14 @@ def get_linear_regression(problem: str) -> Tuple[BaseModel, argparse.Namespace]:
 def get_lasso(problem: str) -> Tuple[BaseModel, argparse.Namespace]:
     from sklearn.linear_model import Lasso
     from config.lasso_config import lasso_regressor_config
+    from models.regressor.lasso import Lasso
     
     if problem in [
         Const.SINGLE_COLUMN_REGRESSION,
         Const.MULTI_COLUMN_REGRESSION,
     ]:
         args = lasso_regressor_config()
-        model = Lasso()
+        model = Lasso(Lasso(), args)
 
     else:
         raise ValueError(f"Invalid problem type: {problem}")
