@@ -42,7 +42,6 @@ def decision_tree_regressor_config() -> argparse.Namespace:
     p.add_argument("--task", type=str, default="regression")
     p.add_argument("--num_folds", type=int, default=5)
     p.add_argument("--random_seed", type=int, default=42)
-    p.add_argument("--use_predict_proba", type=bool, default=True)
     p.add_argument("--shuffle", type=bool, default=True)
     p.add_argument("--verbose", type=bool, default=False)
     p.add_argument("--problem_type", type=str, default="binary_classification")
@@ -52,8 +51,8 @@ def decision_tree_regressor_config() -> argparse.Namespace:
     p.add_argument("--output_path", type=str, default="results")
     
     # parameters 
-    # - https://scikit-learn.org/stable/modules/generated/sklearn.tree.DecisionTreeClassifier.html
-    p.add_argument("--criterion", type=str, default="gini", choices=["gini", "entropy", "log_loss"])
+    # https://scikit-learn.org/stable/modules/generated/sklearn.tree.DecisionTreeRegressor.html#sklearn.tree.DecisionTreeRegressor
+    p.add_argument("--criterion", type=str, default="squared_error", choices=["poisson", "absolute_error", "friedman_mse", "squared_error"])
     p.add_argument("--splitter", type=str, default="best", choices=["best", "random"])
     p.add_argument("--max_depth", type=int, default=None)
     p.add_argument("--min_samples_split", type=int, default=2)

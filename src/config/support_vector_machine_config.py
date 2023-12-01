@@ -44,7 +44,6 @@ def svr_regressor_config() -> argparse.Namespace:
     p.add_argument("--task", type=str, default="regression")
     p.add_argument("--num_folds", type=int, default=5)
     p.add_argument("--random_seed", type=int, default=42)
-    p.add_argument("--use_predict_proba", type=bool, default=True, choices=[True, False])
     p.add_argument("--shuffle", type=bool, default=True)
     p.add_argument("--problem_type", type=str, default="binary_classification")
     p.add_argument("--train_data", type=str, default="dataset/binary_classification.csv")

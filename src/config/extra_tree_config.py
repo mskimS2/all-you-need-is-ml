@@ -55,9 +55,9 @@ def extra_tree_regressor_config() -> argparse.Namespace:
     p.add_argument("--output_path", type=str, default="results")
     
     # parameters 
-    # - https://scikit-learn.org/stable/modules/generated/sklearn.ensemble.ExtraTreesClassifier.html
+    # https://scikit-learn.org/stable/modules/generated/sklearn.ensemble.ExtraTreesRegressor.html#sklearn.ensemble.ExtraTreesRegressor
     p.add_argument("--n_estimation", type=int, default=100)
-    p.add_argument("--criterion", type=str, default="gini", choices=["gini", "entropy", "log_loss"])
+    p.add_argument("--criterion", type=str, default="squared_error", choices=["poisson", "absolute_error", "friedman_mse", "squared_error"])
     p.add_argument("--max_depth", type=int, default=None)
     p.add_argument("--min_samples_split", type=int, default=2)
     p.add_argument("--min_samples_leaf", type=int, default=1)

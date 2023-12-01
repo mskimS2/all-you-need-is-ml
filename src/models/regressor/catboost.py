@@ -63,14 +63,14 @@ class CatBoostRegressor(BaseModel):
         x=kwargs.get("X")
         if x is None:
             raise ValueError("X is None")
-        
+
         return self.model.predict(
-            data=x, 
-            prediction_type=kwargs.get("prediction_type", "Class"),
+            data=x.values, 
+            prediction_type=kwargs.get("prediction_type", None),
             ntree_start=kwargs.get("ntree_start", 0),
             ntree_end=kwargs.get("ntree_end", 0), 
             thread_count=kwargs.get("thread_count", -1), 
-            verbose=kwargs.get("verbose"), 
+            verbose=kwargs.get("verbose", None), 
             task_type=kwargs.get("task_type", "CPU"), 
         )
     

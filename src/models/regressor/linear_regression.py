@@ -4,14 +4,14 @@ from models.base import BaseModel
 from dataclasses import dataclass
 from typing import Dict, List
 from sklearn import metrics
-from sklearn.linear_model import Lasso
+from sklearn.linear_model import LinearRegression
 
 from const import Const
 
 
 @dataclass
-class Lasso(BaseModel):
-    model: Lasso
+class LinearRegression(BaseModel):
+    model: LinearRegression
     config: Dict
     
     def __post_init__(self):
@@ -26,6 +26,7 @@ class Lasso(BaseModel):
                 setattr(self.model, k, v)
     
     def fit(self, *args, **kwargs):
+        
         x = kwargs.get("X")
         if x is None:
             raise ValueError("X is None")
@@ -38,7 +39,6 @@ class Lasso(BaseModel):
             X=x,
             y=y,
             sample_weight=kwargs.get("sample_weight"),
-            check_input=kwargs.get("check_input", True),
         )
     
     def predict(self, *args, **kwargs):
@@ -74,20 +74,14 @@ class Lasso(BaseModel):
         **hparams: Dict,
     ):
         config = {
-            "alpha": hparams.get("alpha", self.config.alpha),
             "fit_intercept": hparams.get("fit_intercept", self.config.fit_intercept),
-            "precompute": hparams.get("precompute", self.config.precompute),
             "copy_X": hparams.get("copy_X", self.config.copy_X),
-            "max_iter": hparams.get("max_iter", self.config.max_iter),
-            "tol": hparams.get("tol", self.config.tol),
-            "warm_start": hparams.get("warm_start", self.config.warm_start),
+            "n_job": hparams.get("n_job", self.config.n_job),
             "positive": hparams.get("positive", self.config.positive),
-            "random_state": hparams.get("random_state", self.config.random_state),
-            "selection": hparams.get("selection", self.config.selection),
         }
         
-        if isinstance(model, Lasso):
-            model = Lasso(**config)
+        if isinstance(model, LinearRegression):
+            model = LinearRegression(**config)
         
         accuaraies = []
         for fold in range(self.config.num_folds):
