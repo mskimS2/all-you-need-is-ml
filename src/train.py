@@ -60,3 +60,4 @@ if __name__ == "__main__":
         model, config = get_model(model_name, problem)
         trainer = Trainer(model, config, scaler=None, encoder=encoder)
         trainer.fit(train_df=train_df, test_df=test_df, features=iris['feature_names'], targets=["target"])
+        print(trainer.feature_importance())

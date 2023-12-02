@@ -1,16 +1,9 @@
-from dataclasses import dataclass
-from typing import Dict, List
+from omegaconf import DictConfig, OmegaConf
+import hydra
 
-
-@dataclass
-class BaseConfig:
-    model_name: str = "catboost"
-    num_folds: int = 5
-    random_seed: int = 42
-    use_predict_proba: bool = True
-    shuffle: bool = True
-    verbose: bool = False
-    problem_type: str = "binary_classification"
-    train_data: str = "dataset/binary_classification.csv"
-    only_one_train: bool = True
-    output_path: str = "results"
+@hydra.main(config_path=".", config_name="test")
+def model_config(cfg: DictConfig) -> None:
+    print(OmegaConf.to_yaml(cfg))
+    
+if __name__ == "__main__":
+    model_config()

@@ -47,8 +47,6 @@ class KNNRegressor(BaseModel):
         if kwargs.get("columns") is None:
             raise ValueError("Train_df columns is None")
 
-        assert len("columns") == len(self.model.feature_importances_)
-                
         if kwargs.get("shap") is not None:
             # TODO: shap value
             pass
