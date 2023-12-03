@@ -1,0 +1,17 @@
+regressor:
+    # - https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.Lasso.html
+    arguments:
+        - task: "regression"
+        - model_name: "linear_regression"
+        - num_folds: 5
+        - random_seed: 42
+        - shuffle: True
+        - problem_type: "regression"
+        - device: "CPU"
+        - verbose: False
+        - only_one_train: True
+        - output_path: "results"
+        - fit_intercept: True # [True, False]
+        - copy_X: True # [True, False]
+        - n_job: None
+        - positive: False # [True, False]

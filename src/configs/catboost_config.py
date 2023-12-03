@@ -1,6 +1,5 @@
 import argparse
 from dataclasses import dataclass
-from config.base import BaseConfig
 
 
 def catboost_classifier_args() -> argparse.Namespace:

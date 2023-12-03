@@ -1,0 +1,37 @@
+classification:
+    dataset:
+        - train_data: "dataset/binary_classification.csv"
+    
+    # - https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.SGDClassifier.html
+    arguments:
+        - model_name: "sgd_classifier"
+        - task: "classification"
+        - num_folds: 5
+        - random_seed: 42
+        - shuffle: True
+        - verbose: False
+        - problem_type: "binary_classification"
+        - device: "cpu"
+        - only_one_train: True
+        - output_path: "results"
+
+        - loss: "log_loss" # ["squared_hinge", "modified_huber", "epsilon_insensitive", "hinge", "squared_error", "huber", "squared_epsilon_insensitive", "perceptron", "log_loss"]
+        - penalty: "l2" # ["l2", "l1", "elasticnet", "None"]
+        - alpha: 0.0001
+        - copy_X: True # [True, False]
+        - l1_ratio: 0.15
+        - fit_intercept: False # [True, False]
+        - max_iter: 1000
+        - tol: 0.001
+        - verbose: 0
+        - epsilon: 0.1
+        - n_jobs: None
+        - learning_rate: "optimal" 
+        - eta0: 0.
+        - power_t: 0.5
+        - early_stopping: False # [True, False]
+        - validation_fraction: 0.1
+        - n_iter_no_change: 5
+        - class_weight: None # ["balanced", "None"]
+        - warm_start: False # [True, False]
+        - average: False # [True, False]

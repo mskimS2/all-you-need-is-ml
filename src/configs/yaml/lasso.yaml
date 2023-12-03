@@ -1,0 +1,22 @@
+regressor:
+    # - https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.Lasso.html
+    arguments:
+        - task: "regression"
+        - model_name: "catboost"
+        - num_folds: 5
+        - random_seed: 42
+        - shuffle: True
+        - problem_type: "regression"
+        - device: "CPU"
+        - verbose: False
+        - only_one_train: True
+        - output_path: "results"
+        - alpha: 1.
+        - fit_intercept: True # [True, False]
+        - precompute: False # [True, False]
+        - copy_X: True # [True, False]
+        - max_iter: 1000
+        - tol: 1e-4
+        - warm_start: False # [True, False]
+        - positive: False # [True, False]
+        - selection: "cyclic" # ["cyclic", "random"]

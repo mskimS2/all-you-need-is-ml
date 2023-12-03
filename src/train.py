@@ -5,7 +5,7 @@ from sklearn.preprocessing import LabelEncoder
 
 from trainer import Trainer
 from preprocessor import Encoder
-from models.factory import get_model
+from factory import get_model
 from utils import set_randomness
 
 
@@ -43,7 +43,7 @@ if __name__ == "__main__":
     for model_name  in [
         "xgboost",
         "lightgbm",
-        "catboost",
+        # "catboost",
         "decision_tree",
         "random_forest",
         "extra_tree",
@@ -57,7 +57,8 @@ if __name__ == "__main__":
         train_df["target"] = iris["target"]
         test_df = None
     
-        model, config = get_model(model_name, problem)
-        trainer = Trainer(model, config, scaler=None, encoder=encoder)
+        model = get_model(model_name, problem)
+        print(model)
+        trainer = Trainer(model, model.config, scaler=None, encoder=encoder)
         trainer.fit(train_df=train_df, test_df=test_df, features=iris['feature_names'], targets=["target"])
         print(trainer.feature_importance())

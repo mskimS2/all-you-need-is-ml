@@ -1,0 +1,6 @@
+defaults:
+  - task: classifier
+  - model: catboost
+  - _self_
+
+experiment:

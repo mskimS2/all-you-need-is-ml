@@ -1,0 +1,49 @@
+classification:
+    dataset:
+        - train_data: "dataset/binary_classification.csv"
+    
+    # - https://xgboost.readthedocs.io/en/stable/parameter.html
+    arguments:
+        - model_name: "knn"
+        - task: "classification"
+        - num_folds: 5
+        - random_seed: 42
+        - shuffle: True
+        - verbose: False
+        - problem_type: "binary_classification"
+        - device: "cpu"
+        - only_one_train: True
+        - output_path: "results"
+        - n_neighbors: 5
+        - weights: "uniform" # ["uniform", "distance"]
+        - algorithm: "auto" # ["auto", "ball_tree", "kd_tree", "brute"]
+        - leaf_size: 30
+        - p: 2
+        - metric: "minkowski"
+        - metric_params: None
+        - n_jobs: None
+
+regression:
+    dataset:
+        - train_data: ""
+    
+    # - https://catboost.ai/en/docs/references/training-parameters/
+    arguments:
+        - model_name: "knn"
+        - task: "regression"
+        - num_folds: 5
+        - random_seed: 42
+        - shuffle: True
+        - verbose: False
+        - problem_type: "single_column_regression"
+        - device: "cpu"
+        - only_one_train: True
+        - output_path: "results"
+        - n_neighbors: 5
+        - weights: "uniform" # ["uniform", "distance"]
+        - algorithm: "auto" # ["auto", "ball_tree", "kd_tree", "brute"]
+        - leaf_size: 30
+        - p: 2
+        - metric: "minkowski"
+        - metric_params: None
+        - n_jobs: None

@@ -1,0 +1,63 @@
+classifier:
+    dataset:
+        - train_data: ""
+    # - https://scikit-learn.org/stable/modules/generated/sklearn.ensemble.ExtraTreesClassifier.html
+    arguments:
+        - model_name: "extra_tree"
+        - task: "classification"
+        - num_folds: 5
+        - random_seed: 42
+        - shuffle: True
+        - problem_type: "binary_classification"
+        - device: "cpu"
+        - only_one_train: True
+        - output_path: "results"
+        - criterion: "squared_error" # ["poisson", "absolute_error", "friedman_mse", "squared_error"]
+        - splitter: "best" # "best", "random"
+        - max_depth: None
+        - min_samples_split: 2
+        - min_samples_leaf: 1
+        - min_weight_fraction_leaf: 0.
+        - max_leaf_nodes: None
+        - min_impurity_decrease: 0.
+        - class_weight: None # "balanced", "balanced_subsample"
+        - bootstrap: True # [True, False]
+        - oob_score: False # [True, False]
+        - n_jobs: None
+        - verbose: 0
+        - warm_start: False # [True, False]
+        - class_weight: None # "balanced", "balanced_subsample"
+        - ccp_alpha: 0.
+        - max_samples: None
+
+regressor:
+    dataset:
+        - train_data: ""
+    # https://scikit-learn.org/stable/modules/generated/sklearn.ensemble.ExtraTreesRegressor.html#sklearn.ensemble.ExtraTreesRegressor
+    arguments:
+        - model_name: "extra_tree"
+        - task: "regression"
+        - num_folds: 5
+        - random_seed: 42
+        - shuffle: True # [True, False]
+        - problem_type: "single_column_regression"
+        - device: "cpu"
+        - only_one_train: True # [True, False]
+        - output_path: "results"
+        - criterion: "squared_error" # ["poisson", "absolute_error", "friedman_mse", "squared_error"]
+        - splitter: "best" # "best", "random"
+        - max_depth: None
+        - min_samples_split: 2
+        - min_samples_leaf: 1
+        - min_weight_fraction_leaf: 0.
+        - max_leaf_nodes: None
+        - min_impurity_decrease: 0.
+        - class_weight: None # "balanced", "balanced_subsample"
+        - bootstrap: True # [True, False]
+        - oob_score: False # [True, False]
+        - n_jobs: None
+        - verbose: 0
+        - warm_start: False # [True, False]
+        - class_weight: None # "balanced", "balanced_subsample"
+        - ccp_alpha: 0.
+        - max_samples: None

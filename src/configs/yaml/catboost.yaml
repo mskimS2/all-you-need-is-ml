@@ -1,0 +1,112 @@
+classification:
+    dataset:
+        - train_data: "dataset/binary_classification.csv"
+    
+    # - https://catboost.ai/en/docs/references/training-parameters/
+    arguments:
+        - model_name: "catboost"
+        - task: classification
+        - num_folds: 5
+        - random_seed: 42
+        - shuffle: True # [True, False]
+        - problem_type: "classification" # ["classification", "regression"]
+        - device: "CPU" # ["CPU", "GPU"]
+        - only_one_train: True # [True, False]
+        - output_path: "results"
+        - use_predict_proba: True # [True, False]
+        - verbose: False # [True, False]
+        - iterations: 1000 # [1, inf]
+        - learning_rate: 0.1 # (0, inf]
+        - early_stopping_rounds: 50 # [1, inf]
+        - l2_leaf_reg: 3. # [0, inf]
+        - bootstrap_type: "Bayesian" # ["Bayesian", "Bernoulli", "MVS", "Poisson", "No"]
+        - bagging_temperature: 1. # (0, inf]
+        - subsample: 1 # (0, 1]
+        - sampling_frequency: "PerTreeLevel" # ["PerTreeLevel", "PerTree"]
+        - sampling_unit: "Object" # ["Object", "Group"]
+        - mvs_reg: 0. # [0, inf]
+        - random_strength: 1. # [0, inf]
+        - use_best_model: False # [True, False]
+        - best_model_min_trees: None # [1, inf]
+        - depth: 6 # [1, inf]
+        - grow_policy: "SymmetricTree" # ["SymmetricTree", "Depthwise", "Lossguide"]
+        - min_data_in_leaf: 1 # [1, inf]
+        - max_leaves: 31 # [1, inf]
+        - ignore_features: [] # list of str
+        - scale_pos_weight: 1. # [0, inf]
+        - one_hot_max_size: None # [1, inf]
+        - has_time: False # [True, False]
+        - rsm: None # (0, 1]
+        - nan_mode: "Min" # ["Forbidden", "Min", "Max"]
+        - input_border: None # float
+        - output_borders: None # list of float
+        - fold_permutation_block: 1 # [1, inf]
+        - leaf_estimation_method: "Newton" # ["Newton", "Gradient", "Exact"]
+        - leaf_estimation_iterations: None # [1, inf]
+        - leaf_estimation_backtracking: "AnyImprovement" # ["No", "AnyImprovement", "Armijo"]
+        - fold_len_multiplier: 2. # (0, inf]
+        - approx_on_full_history: False # [True, False]
+        - boosting_type: "Ordered" # ["Ordered", "Plain"]
+        - boost_from_average: True # [True, False]
+        - langevin: False # [True, False]
+        - diffusion_temperature: 10000. # [0, inf]
+        - posterior_sampling: False # [True, False]
+        - allow_const_label: False # [True, False]
+        - class_weights: {} # dict
+        - class_name: None # str
+        - auto_class_weights: None # str
+        - score_function: "Cosine" # ["Cosine", "L2", "NewtonL2"]
+
+regression:
+    dataset:
+        - train_data: ""
+    
+    # - https://catboost.ai/en/docs/references/training-parameters/
+    arguments:
+        - model_name: "catboost"
+        - task: regression
+        - num_folds: 5
+        - random_seed: 42
+        - shuffle: True # [True, False]
+        - problem_type: "regression" # ["classification", "regression"]
+        - device: "CPU" # ["CPU", "GPU"]
+        - verbose: False # [True, False]
+        - only_one_train: True # [True, False]
+        - output_path: "results"
+        - iterations: None # [1, inf]
+        - learning_rate: None # (0, inf]
+        - early_stopping_rounds: None # [1, inf]
+        - l2_leaf_reg: None # [0, inf]
+        - bootstrap_type: None # ["Bayesian", "Bernoulli", "MVS", "Poisson", "No"]
+        - bagging_temperature: None # (0, inf]
+        - subsample: None # (0, 1]
+        - sampling_frequency: None # ["PerTreeLevel", "PerTree"]
+        - sampling_unit: None # ["Object", "Group"]
+        - mvs_reg: None # [0, inf]
+        - random_strength: None # [0, inf]
+        - use_best_model: None # [True, False]
+        - best_model_min_trees: None # [1, inf]
+        - depth: None # [1, inf]
+        - grow_policy: None # ["SymmetricTree", "Depthwise", "Lossguide"]
+        - min_data_in_leaf: None # [1, inf]
+        - max_leaves: None # [1, inf]
+        - ignore_features: [] # list of str
+        - one_hot_max_size: None # [1, inf]
+        - has_time: False # [True, False]
+        - rsm: None # (0, 1]
+        - nan_mode: None # ["Forbidden", "Min", "Max"]
+        - input_border: None # float
+        - output_borders: None # list of float
+        - fold_permutation_block: None # [1, inf]
+        - leaf_estimation_method: None # ["Newton", "Gradient", "Exact"]
+        - leaf_estimation_iterations: None # [1, inf]
+        - leaf_estimation_backtracking: None # ["No", "AnyImprovement", "Armijo"]
+        - fold_len_multiplier: None # (0, inf]
+        - approx_on_full_history: None # [True, False]
+        - boosting_type: None # ["Ordered", "Plain"]
+        - boost_from_average: None # [True, False]
+        - langevin: None # [True, False]
+        - diffusion_temperature: None # [0, inf]
+        - posterior_sampling: None # [True, False]
+        - allow_const_label: None # [True, False]
+        - score_function: None # ["Cosine", "L2", "NewtonL2"]

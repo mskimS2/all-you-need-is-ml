@@ -1,6 +1,7 @@
 import os
 import pickle
 import numpy as np
+from omegaconf import DictConfig
 import logging
 import pandas as pd
 import optuna
@@ -21,11 +22,14 @@ from const import Const
 @dataclass
 class Trainer:
     model: BaseModel
-    config: dict
+    config: DictConfig
     scaler: Scaler
     encoder: Encoder
     
     def __post_init__(self):
+        if self.config is None:
+            self.config = self.model.config
+        print("self.config: ", self.config)
         self.preprocessor = Preprocessor(self.scaler, self.encoder)
     
     def fit(
@@ -50,13 +54,13 @@ class Trainer:
                 if not isinstance(test_df, pd.DataFrame):
                     test_df = pd.DataFrame(test_df)
                 test_df = utils.reduce_memory_usage(test_df)
-                
-        problem_type, num_classes = self.check_problem_type(train_df, self.config.task, targets)
-        self.config.problem_type = problem_type
-        self.config.num_classes = num_classes
-        logger.info(f"problem type: {self.config.problem_type}, detected labels: {self.config.num_classes}")
         
-        metrics = Metric(self.config.problem_type)
+        problem_type, num_classes = self.check_problem_type(train_df, self.config.task, targets)
+        self.problem_type = problem_type
+        self.num_classes = num_classes
+        logger.info(f"problem type: {problem_type}, detected labels: {num_classes}")
+        
+        metrics = Metric(problem_type)
         
         train_df = self.created_fold(
             train_df, 
@@ -100,7 +104,7 @@ class Trainer:
                     kwargs=self.config,
                 )
             
-                if vars(self.config).get("use_predict_proba") and self.config.use_predict_proba:
+                if self.config.use_predict_proba is not None:
                     y_pred_temp = self.model.predict_proba(X=x_valid, **vars(self.config))
                 else:
                     y_pred_temp = self.model.predict(X=x_valid, **vars(self.config))
@@ -238,7 +242,11 @@ class Trainer:
         return problem_type, num_labels
     
     def feature_importance(self):
-        return self.model.feature_importances(columns=self.columns)
+        return self.model.feature_importances(
+            columns=self.columns, 
+            problem_type=self.problem_type, 
+            num_classes=self.num_classes, 
+        )
         
     def optimize_hyper_parameters(
         self, 

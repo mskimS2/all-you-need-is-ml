@@ -1,0 +1,59 @@
+classification:
+    dataset:
+        - train_data: "dataset/binary_classification.csv"    
+    # - https://xgboost.readthedocs.io/en/stable/parameter.html
+    arguments:
+        - model_name: "svc"
+        - task: "classification"
+        - num_folds: 5
+        - random_seed: 42
+        - shuffle: True
+        - verbose: False
+        - problem_type: "binary_classification"
+        - device: "cpu"
+        - only_one_train: True
+        - output_path: "results"
+        - C: 1.
+        - kernel: "linear" # ["linear", "poly", "rbf", "sigmoid", "precomputed"]
+        - degree: 3
+        - gamma: "scale" # ["scale", "auto"]
+        - coef0: 0.0
+        - shrinking: False # [True, False]
+        - probability: True # [True, False]
+        - tol: 0.001
+        - cache_size: 200
+        - class_weight: None # ["balanced", "None"]
+        - verbose: False # [True, False]
+        - max_iter: -1
+        - decision_function_shape: "ovr" # ["ovr", "ovo"]
+        - break_ties: False # [True, False]
+
+regression:
+    dataset:
+        - train_data: ""
+    # - https://catboost.ai/en/docs/references/training-parameters/
+    arguments:
+        - model_name: "svr"
+        - task: "regression"
+        - num_folds: 5
+        - random_seed: 42
+        - shuffle: True
+        - verbose: False
+        - problem_type: "single_column_regression"
+        - device: "cpu"
+        - only_one_train: True
+        - output_path: "results"
+        - C: 1.
+        - kernel: "linear" # ["linear", "poly", "rbf", "sigmoid", "precomputed"]
+        - degree: 3
+        - gamma: "scale" # ["scale", "auto"]
+        - coef0: 0.0
+        - shrinking: False # [True, False]
+        - probability: True # [True, False]
+        - tol: 0.001
+        - cache_size: 200
+        - class_weight: None # ["balanced", "None"]
+        - verbose: False # [True, False]
+        - max_iter: -1
+        - decision_function_shape: "ovr" # ["ovr", "ovo"]
+        - break_ties: False # [True, False]
