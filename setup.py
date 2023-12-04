@@ -73,6 +73,7 @@ INSTALL_REQUIRES = [
     "shellingham-1.5.4",
     "tomlkit-0.12.3",
     "trove-classifiers-2023.11.22",
+    "hydra-core==1.3.2",
 ]
 
 if __name__ == "__main__":

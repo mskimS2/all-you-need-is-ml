@@ -33,7 +33,7 @@ class LogisticRegressionClassifierTemplate(ClassifierTemplate):
     def __init__(
         self, 
         experiment, 
-        logger, 
+        logger: Any, 
         use_gpu: bool = False,
         args: Dict[str, Any] = {},
         shap: Union[bool, str] = False,
@@ -252,7 +252,6 @@ class RidgeClassifierTemplate(ClassifierTemplate):
             shap=shap,
             is_ealry_stop=is_ealry_stop,
         )
-        
 
 
 class RandomForestClassifierTemplate(ClassifierTemplate):
@@ -278,8 +277,6 @@ class RandomForestClassifierTemplate(ClassifierTemplate):
             shap=shap,
             is_ealry_stop=is_ealry_stop,
         )
-        
-        
 
 class QuadraticDiscriminantAnalysisTemplate(ClassifierTemplate):
     def __init__(
@@ -304,7 +301,6 @@ class QuadraticDiscriminantAnalysisTemplate(ClassifierTemplate):
             shap=shap,
             is_ealry_stop=is_ealry_stop,
         )
-        
 
 class AdaBoostClassifierTemplate(ClassifierTemplate):
     def __init__(
@@ -330,7 +326,6 @@ class AdaBoostClassifierTemplate(ClassifierTemplate):
             is_ealry_stop=is_ealry_stop,
         )        
 
-
 class GradientBoostingClassifierTemplate(ClassifierTemplate):
     def __init__(
         self,
@@ -354,7 +349,6 @@ class GradientBoostingClassifierTemplate(ClassifierTemplate):
             shap=shap,
             is_ealry_stop=is_ealry_stop,
         )
-
 
 class LinearDiscriminantAnalysisTemplate(ClassifierTemplate):
     def __init__(
@@ -380,7 +374,6 @@ class LinearDiscriminantAnalysisTemplate(ClassifierTemplate):
             is_ealry_stop=is_ealry_stop,
         )
         
-
 class ExtraTreesClassifierTemplate(ClassifierTemplate):
     def __init__(
         self,
@@ -404,7 +397,6 @@ class ExtraTreesClassifierTemplate(ClassifierTemplate):
             shap=shap,
             is_ealry_stop=is_ealry_stop,
         )
-
 
 class XGBClassifierTemplate(ClassifierTemplate):
     def __init__(
@@ -505,7 +497,8 @@ class DummyClassifierTemplate(ClassifierTemplate):
             shap=shap,
             is_ealry_stop=is_ealry_stop,
         )
-        
+
+
 class BaggingClassifierTemplate(ClassifierTemplate):
     def __init__(
         self,
@@ -529,7 +522,7 @@ class BaggingClassifierTemplate(ClassifierTemplate):
             shap=shap,
             is_ealry_stop=is_ealry_stop,
         )
-        
+
 
 class StackingClassifierTemplate(ClassifierTemplate):
     def __init__(
