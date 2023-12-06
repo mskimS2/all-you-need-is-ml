@@ -26,14 +26,6 @@ class transform_pipeline:
     
     def __exit__(self, type, value, traceback):
         return
-    
-
-@dataclass
-class Pipeline(Pipeline):
-    pipeline: Pipeline
-    
-    def _fit(self, X, y=None, **fit_params):
-        pipeline.fit(X, y, **fit_params)
 
 
 if __name__ == "__main__":

@@ -26,19 +26,5 @@ class Const:
     RMSLE: Final = "rmsle"
     MLOG_LOSS: Final = "mlogloss"
     
-    # model
-    XGBOOST: Final = "xgboost"
-    CATBOOST: Final = "catboost"
-    LIGHTGBM: Final = "lightgbm"
-    RANDOM_FOREST: Final = "random_forest"
-    DECISION_TREE: Final = "decision_tree"
-    EXTRA_TREE: Final = "extra_tree"
-    LOGISTIC_REGRESSION: Final = "logistic_regression"
-    LINEAR_REGRESSION: Final = "linear_regression"
-    LASSO: Final = "lasso"
-    SGD_CLASSIFIER: Final = "sgd_classifier"
-    SVM: Final = "support_vector_machine"
-    KNN: Final = "knn"
-    
     # column name
     FOLD_ID: Final = "fold_id"

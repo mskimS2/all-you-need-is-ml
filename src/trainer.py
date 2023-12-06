@@ -1,20 +1,18 @@
 import os
 import pickle
 import numpy as np
-from omegaconf import DictConfig
-import logging
 import pandas as pd
 import optuna
+from omegaconf import DictConfig
 from functools import partial
 from dataclasses import dataclass
 from typing import List, Tuple
 from sklearn.model_selection import KFold, StratifiedKFold
 
 import utils
-from models.base import BaseModel
+from src.models.engine import BaseModel
 from preprocessor import Encoder, Scaler, Preprocessor
 from metrics import Metric
-from logger import logger
 from type import Problem, Task
 from const import Const
 
@@ -41,7 +39,7 @@ class Trainer:
         reduce_memory_usage=True,
         optimize_hyperparams=None,
     ):
-        logger.info(f"configuration: {self.model.config}")
+        print(f"configuration: {self.model.config}")
         self.columns = features
         scores = []
         
@@ -58,7 +56,7 @@ class Trainer:
         problem_type, num_classes = self.check_problem_type(train_df, self.config.task, targets)
         self.problem_type = problem_type
         self.num_classes = num_classes
-        logger.info(f"problem type: {problem_type}, detected labels: {num_classes}")
+        print(f"problem type: {problem_type}, detected labels: {num_classes}")
         
         metrics = Metric(problem_type)
         
@@ -120,7 +118,7 @@ class Trainer:
 
         self.model_save(self.model)
         mean_metrics = self.dict_mean(scores)
-        logger.info(f"`{self.model.config.model_name}` model metric score: {mean_metrics}")
+        print(f"`{self.model.config.model_name}` model metric score: {mean_metrics}")
         
         res = {
             "training_metric": mean_metrics,
@@ -180,7 +178,7 @@ class Trainer:
         target_columns: List[str],
     ):
         if Const.FOLD_ID in df.columns:
-            logger.info("`fold_id` column already exists from input dataframe.")
+            print("`fold_id` column already exists from input dataframe.")
             return df
         
         df[Const.FOLD_ID] = -1
@@ -256,7 +254,7 @@ class Trainer:
         n_trials: int = 15,
         direction: str = "minimize",
     ):
-        logger.info(f"optimize hyperparameters")
+        print(f"optimize hyperparameters")
         
         dir = -1 if direction == "minimize" else 1
              
@@ -271,6 +269,6 @@ class Trainer:
             n_trials=n_trials,
         )
         
-        logger.info(f"best parameters: ", **study.best_params)
+        print(f"best parameters: ", **study.best_params)
         for k, v in study.best_params.items():
             setattr(self.model.config, k, v)

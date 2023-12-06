@@ -74,6 +74,7 @@ INSTALL_REQUIRES = [
     "tomlkit-0.12.3",
     "trove-classifiers-2023.11.22",
     "hydra-core==1.3.2",
+    "wandb==0.15.11",
 ]
 
 if __name__ == "__main__":
