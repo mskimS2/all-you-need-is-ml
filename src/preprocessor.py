@@ -1,28 +1,34 @@
+from sklearn.pipeline import Pipeline
+import numpy as np
 import pandas as pd
 from typing import List, Union, Tuple
 from dataclasses import dataclass
+from sklearn.model_selection import KFold, StratifiedKFold
 from sklearn.preprocessing import (
-    # encoder
     LabelEncoder, 
     OneHotEncoder, 
     OrdinalEncoder,
-    # scaler
     StandardScaler,
     MaxAbsScaler,
     MinMaxScaler,
     RobustScaler,
 )
 
+import utils
+from type import Problem, Task
+from const import Const
+
 NUMERICAL_TYPES = ["int8", "int16", "int32", "int64", "float16", "float32", "float64"]
 
 @dataclass
 class Scaler:
-    scaler_name: str
-    scaler_params: dict
-    features: List[str]
     
-    def __post_init__(self):
-        self.scaler = self._get_scaler(self.scaler_name, **self.scaler_params)
+    def __init__(
+        self,
+        scaler_name: str,
+        scaler_params: dict,
+    ):
+        self.scaler = self._get_scaler(scaler_name, scaler_params)
         
     def _get_scaler(self, scaler_name: str, scaler_params: dict):
         if scaler_name == "standard":
@@ -36,75 +42,157 @@ class Scaler:
         else:
             raise ValueError(f"Invalid scaler name: {scaler_name}")
         
-    def fit(self, df: pd.DataFrame):
-        return self.scaler.fit(df[self.features])
+    def fit(self, X: np.ndarray):
+        return self.scaler.fit(X)
     
-    def transform(self, df: pd.DataFrame):
-        return self.scaler.transform(df[self.features])
+    def transform(self, X: np.ndarray):
+        return self.scaler.transform(X)
     
-    def fit_transform(self, df: pd.DataFrame):
-        return self.scaler.fit_transform(df[self.features])
+    def fit_transform(self, X: np.ndarray):
+        return self.scaler.fit_transform(X)
 
-@dataclass
 class Encoder:
-    encoder: Union[OneHotEncoder, LabelEncoder, OrdinalEncoder]
     
-    def fit(
+    def __init__(
         self,
-        train_df: pd.DataFrame,
-        test_df: pd.DataFrame,
-        columns: List[str],
-    ):
-        if self.encoder is None:
-            raise ValueError("Encoder is None")
+        encoder_name: str,
+        encoder_params: dict,
+    ) -> None:
+        self.encoder = self._get_encoder(encoder_name, encoder_params)
         
-        for col in columns:
-            if train_df is not None:
-                train_df[col] = self.encoder.fit_transform(train_df[col].ravel())
-                if test_df is not None:
-                    test_df[col] = self.encoder.transform(test_df[col].ravel())
-
-        return train_df, test_df
+    def _get_encoder(self, encoder_name: str, encoder_params: dict):
+        if encoder_name == "onehot":
+            return OneHotEncoder(**encoder_params)
+        elif encoder_name == "label":
+            return LabelEncoder(**encoder_params)
+        elif encoder_name == "ordinal":
+            return OrdinalEncoder(**encoder_params)
+        else:
+            raise ValueError(f"Invalid encoder name: {encoder_name}")
+    
+    def fit(self, X: np.ndarray):
+        return self.encoder.fit(X)
+    
+    def transform(self, X: np.ndarray):
+        return self.encoder.transform(X)
+    
+    def fit_transform(self, X: np.ndarray):
+        return self.encoder.fit_transform(X)
     
 @dataclass
 class Preprocessor:
-    scaler: Scaler = None
-    encoder: Encoder = None
-    EPS = 1e-8
-    
-    # Todo:
-    # 1. Remove Outliers
-    # 2. Remove Target Imbalance
-    
-    def fit_scaling(
+
+    def fit(
         self,
-        train_df: pd.DataFrame,
-        test_df: pd.DataFrame,
-        columns: List[str],
-    ):
-        if self.scaler is None:
-            return train_df, test_df
+        df: pd.DataFrame,
+        feature_columns: List[str],
+        target_columns: List[str],
+        problem: Problem,
+        n_splits: int,
+        shuffle: bool,
+        random_state: int,
+        encoder: Union[OneHotEncoder, LabelEncoder, OrdinalEncoder],
+        scaler_name: str = "standard",
+        scaler_params: dict = {},
+        encoder_name: str = "onehot",
+        encoder_params: dict = {},
+        reduce_memory_usage: bool = True,
+    ) -> Tuple(pd.DataFrame, Pipeline):
         
-        for col in columns:
-            if train_df is not None:
-                train_df[col] = self.scaler.fit_transform(train_df[col].ravel())
-                if test_df is not None:
-                    test_df[col] = self.scaler.transform(test_df[col].ravel())
-            else:
-                raise ValueError("Train_df is None")
+        if reduce_memory_usage:
+            if df is not None:
+                if not isinstance(df, pd.DataFrame):
+                    df = pd.DataFrame(df)
+                df = utils.reduce_memory_usage(df)
+                
+        df = self.created_fold(
+            df=df,
+            problem=problem,
+            n_splits=n_splits,
+            shuffle=shuffle,
+            random_state=random_state,
+            target_columns=target_columns,
+        )
+        
+        pipeline = Pipeline(
+            [
+                ("scaler", Scaler(scaler_name, scaler_params)),
+                ("encoder", Encoder(encoder_name, encoder_params)),
+            ] 
+        )
+        
+        return df, pipeline
+    
+    def check_problem_type(
+        self,
+        df: pd.DataFrame,
+        task: Task,
+        target_columns: List[str],
+    ) -> Tuple[Problem, int]:
+        num_labels = len(np.unique(df[target_columns].values))
+        if Task.type.get(task) is not None:
+            task = Task.type.get(task)
+            if task == Task.type[Const.CLASSIFICATION]:
+                problem_type = Const.MULTI_LABEL_CLASSIFICATION
+                if num_labels == 2:
+                    problem_type = Const.BINARY_CLASSIFICATION
                     
-        return train_df, test_df
-    
-    def fit_encoding(
-        self,
-        train_df: pd.DataFrame,
-        test_df: pd.DataFrame,
-        columns: List[str],
-    ):
-        if train_df is None:
-            raise ValueError("Train_df is None")
+            elif task == Task.type[Const.REGRESSION]:
+                problem_type = Const.MULTI_COLUMN_REGRESSION
+                if num_labels == 1:
+                    problem_type = Const.SINGLE_COLUMN_REGRESSION
+        else:
+            raise Exception("Problem type not understood")
+
+        return problem_type, num_labels
         
-        return self.encoder.fit(train_df, test_df, columns)
+    def created_fold(
+        self,
+        df: pd.DataFrame,
+        problem: Problem,
+        n_splits: int,
+        shuffle: bool,
+        random_state: int,
+        target_columns: List[str],
+    ):
+        if Const.FOLD_ID in df.columns:
+            print("`fold_id` column already exists from input dataframe.")
+            return df
+        
+        df[Const.FOLD_ID] = -1
+        if problem in [Const.BINARY_CLASSIFICATION, Const.MULTI_CLASS_CLASSIFICATION]:
+            y = df[target_columns].values.ravel()
+            skf = StratifiedKFold(n_splits=n_splits, shuffle=shuffle, random_state=random_state)
+            for fold, (_, valid_indicies) in enumerate(skf.split(X=df, y=y)):
+                df.loc[valid_indicies, Const.FOLD_ID] = fold
+                
+        elif problem in [Const.SINGLE_COLUMN_REGRESSION]:
+            y = df[target_columns].values.ravel()
+            num_bins = min(int(np.floor(1 + np.log2(len(df)))), 10)
+            kf = KFold(n_splits=n_splits, shuffle=shuffle, random_state=random_state)
+            df["bins"] = pd.cut(df[target_columns].values.ravel(), bins=num_bins, labels=False)
+            for fold, (_, valid_indicies) in enumerate(kf.split(X=df, y=df.bins.values)):
+                df.loc[valid_indicies, Const.FOLD_ID] = fold
+            df = df.drop("bins", axis=1)
+            
+        elif problem in [Const.MULTI_COLUMN_REGRESSION]:
+            # Todo: MultilabelStratifiedKFold
+            y = df[target_columns].values.ravel()
+            kf = KFold(n_splits=n_splits, shuffle=shuffle, random_state=random_state)
+            for fold, (_, valid_indicies) in enumerate(kf.split(X=df, y=y)):
+                df.loc[valid_indicies, Const.FOLD_ID] = fold
+        
+        elif problem in [Const.MULTI_LABEL_CLASSIFICATION]:
+            # Todo: MultilabelStratifiedKFold
+            y = df[target_columns].values.ravel()
+            kf = KFold(n_splits=n_splits, shuffle=shuffle, random_state=random_state)
+            for fold, (_, valid_indicies) in enumerate(kf.split(X=df, y=y)):
+                df.loc[valid_indicies, Const.FOLD_ID] = fold
+
+        else:
+            raise Exception("Invalid problem type for created fold.")
+            
+        return df
     
     def feature_engineering(
         self,
