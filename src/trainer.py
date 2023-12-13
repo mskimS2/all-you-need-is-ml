@@ -42,14 +42,6 @@ class Trainer:
             targets,
         )
         
-        if optimize_hyperparams is not None:
-            self.optimize_hyper_parameters(
-                df=train_df,
-                features=features,
-                targets=targets,
-                hparams=optimize_hyperparams,
-            )
-        
         for fold in range(self.config.num_folds):
             x_train = train_df[train_df[Const.FOLD_ID]!=fold][features]
             y_train = train_df[train_df[Const.FOLD_ID]!=fold][targets]
@@ -136,25 +128,3 @@ class Trainer:
             problem_type=self.problem_type, 
             num_classes=self.num_classes, 
         )
-        
-    def optimize_hyper_parameters(
-        self, 
-        df: pd.DataFrame, 
-        features: List[str] = None,
-        targets: List[str] = None,
-        n_trials: int = 15,
-        direction: str = "minimize",
-    ):             
-        study = optuna.create_study(direction=direction)
-        study.optimize(
-            partial(
-                self.model.optimize_hyper_params, 
-                df=df, 
-                features=features, 
-                targets=targets,
-            ), 
-            n_trials=n_trials,
-        )
-        
-        for k, v in study.best_params.items():
-            setattr(self.model.config, k, v)

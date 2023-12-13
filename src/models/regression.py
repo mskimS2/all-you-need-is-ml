@@ -8,8 +8,8 @@ class RegressorTemplate:
         id: str,
         name: str,
         class_def: Any,
-        is_early_stop: bool = True,
         args: Dict[str, Any] = None,
+        is_early_stop: bool = True,
         shap: Union[bool, str] = False,
     ) -> None:
         self.shap = shap
@@ -36,6 +36,7 @@ class LinearRegressionTemplate(RegressorTemplate):
         logger: Any, 
         use_gpu: bool = False,
         args: Dict[str, Any] = {},
+        tune_params: Dict[str, Any] = {},
         shap: Union[bool, str] = False,
         is_ealry_stop: bool = True,
     ) -> None:
@@ -43,6 +44,7 @@ class LinearRegressionTemplate(RegressorTemplate):
         
         self.logger = logger
         self.use_gpu = use_gpu
+        self.tune_params = tune_params
 
         super().__init__(
             id="lr",
@@ -61,6 +63,7 @@ class LassoRegressionTemplate(RegressorTemplate):
         logger: Any, 
         use_gpu: bool = False,
         args: Dict[str, Any] = {},
+        tune_params: Dict[str, Any] = {},
         shap: Union[bool, str] = False,
         is_ealry_stop: bool = True,
     ) -> None:
@@ -68,6 +71,7 @@ class LassoRegressionTemplate(RegressorTemplate):
 
         self.logger = logger
         self.use_gpu = use_gpu
+        self.tune_params = tune_params
 
         super().__init__(
             id="lasso",
@@ -86,6 +90,7 @@ class RidgeRegressionTemplate(RegressorTemplate):
         logger: Any, 
         use_gpu: bool = False,
         args: Dict[str, Any] = {},
+        tune_params: Dict[str, Any] = {},
         shap: Union[bool, str] = False,
         is_ealry_stop: bool = True,
     ) -> None:
@@ -93,6 +98,7 @@ class RidgeRegressionTemplate(RegressorTemplate):
         
         self.logger = logger
         self.use_gpu = use_gpu
+        self.tune_params = tune_params
         
         super().__init__(
             id="ridge",
@@ -111,6 +117,7 @@ class ElasticNetTemplate(RegressorTemplate):
         logger: Any, 
         use_gpu: bool = False,
         args: Dict[str, Any] = {},
+        tune_params: Dict[str, Any] = {},
         shap: Union[bool, str] = False,
         is_ealry_stop: bool = True,
     ) -> None:
@@ -118,6 +125,7 @@ class ElasticNetTemplate(RegressorTemplate):
         
         self.logger = logger
         self.use_gpu = use_gpu
+        self.tune_params = tune_params
 
         super().__init__(
             id="elastic_net",
@@ -136,13 +144,15 @@ class LarsTemplate(RegressorTemplate):
         logger: Any, 
         use_gpu: bool = False,
         args: Dict[str, Any] = {},
+        tune_params: Dict[str, Any] = {},
         shap: Union[bool, str] = False,
         is_ealry_stop: bool = True,
     ) -> None:
-        from sklearn.linear_model import Lars, LassoLars
+        from sklearn.linear_model import Lars
 
         self.logger = logger
         self.use_gpu = use_gpu
+        self.tune_params = tune_params
 
         super().__init__(
             id="least angle regression",
@@ -161,6 +171,7 @@ class LassoLarsTemplate(RegressorTemplate):
         logger: Any, 
         use_gpu: bool = False,
         args: Dict[str, Any] = {},
+        tune_params: Dict[str, Any] = {},
         shap: Union[bool, str] = False,
         is_ealry_stop: bool = True,
     ) -> None:
@@ -168,6 +179,7 @@ class LassoLarsTemplate(RegressorTemplate):
 
         self.logger = logger
         self.use_gpu = use_gpu
+        self.tune_params = tune_params
 
         super().__init__(
             id="lasso least angle regression",
@@ -186,6 +198,7 @@ class OrthogonalMatchingPursuitTemplate(RegressorTemplate):
         logger: Any, 
         use_gpu: bool = False,
         args: Dict[str, Any] = {},
+        tune_params: Dict[str, Any] = {},
         shap: Union[bool, str] = False,
         is_ealry_stop: bool = True,
     ) -> None:
@@ -193,6 +206,7 @@ class OrthogonalMatchingPursuitTemplate(RegressorTemplate):
 
         self.logger = logger
         self.use_gpu = use_gpu
+        self.tune_params = tune_params
 
         super().__init__(
             id="orthogonal matching pursuit",
@@ -211,6 +225,7 @@ class BayesianRidgeTemplate(RegressorTemplate):
         logger: Any, 
         use_gpu: bool = False,
         args: Dict[str, Any] = {},
+        tune_params: Dict[str, Any] = {},
         shap: Union[bool, str] = False,
         is_ealry_stop: bool = True,
     ) -> None:
@@ -218,6 +233,7 @@ class BayesianRidgeTemplate(RegressorTemplate):
 
         self.logger = logger
         self.use_gpu = use_gpu
+        self.tune_params = tune_params
 
         super().__init__(
             id="bayesian ridge",
@@ -236,6 +252,7 @@ class AutomaticRelevanceDeterminationTemplate(RegressorTemplate):
         logger: Any, 
         use_gpu: bool = False,
         args: Dict[str, Any] = {},
+        tune_params: Dict[str, Any] = {},
         shap: Union[bool, str] = False,
         is_ealry_stop: bool = True,
     ) -> None:
@@ -243,6 +260,7 @@ class AutomaticRelevanceDeterminationTemplate(RegressorTemplate):
 
         self.logger = logger
         self.use_gpu = use_gpu
+        self.tune_params = tune_params
 
         super().__init__(
             id="automatic relevance determination",
@@ -261,6 +279,7 @@ class PassiveAggressiveRegressorTemplate(RegressorTemplate):
         logger: Any, 
         use_gpu: bool = False,
         args: Dict[str, Any] = {},
+        tune_params: Dict[str, Any] = {},
         shap: Union[bool, str] = False,
         is_ealry_stop: bool = True,
     ) -> None:
@@ -268,6 +287,7 @@ class PassiveAggressiveRegressorTemplate(RegressorTemplate):
 
         self.logger = logger
         self.use_gpu = use_gpu
+        self.tune_params = tune_params
 
         super().__init__(
             id="passive aggressive regressor",
@@ -286,6 +306,7 @@ class RANSACRegressorTemplate(RegressorTemplate):
         logger: Any, 
         use_gpu: bool = False,
         args: Dict[str, Any] = {},
+        tune_params: Dict[str, Any] = {},
         shap: Union[bool, str] = False,
         is_ealry_stop: bool = True,
     ) -> None:
@@ -293,6 +314,7 @@ class RANSACRegressorTemplate(RegressorTemplate):
 
         self.logger = logger
         self.use_gpu = use_gpu
+        self.tune_params = tune_params
 
         super().__init__(
             id="random sample consensus",
@@ -311,6 +333,7 @@ class TheilSenRegressorTemplate(RegressorTemplate):
         logger: Any, 
         use_gpu: bool = False,
         args: Dict[str, Any] = {},
+        tune_params: Dict[str, Any] = {},
         shap: Union[bool, str] = False,
         is_ealry_stop: bool = True,
     ) -> None:
@@ -318,6 +341,7 @@ class TheilSenRegressorTemplate(RegressorTemplate):
 
         self.logger = logger
         self.use_gpu = use_gpu
+        self.tune_params = tune_params
 
         super().__init__(
             id="theilsen regressor",
@@ -336,6 +360,7 @@ class HuberRegressorTemplate(RegressorTemplate):
         logger: Any, 
         use_gpu: bool = False,
         args: Dict[str, Any] = {},
+        tune_params: Dict[str, Any] = {},
         shap: Union[bool, str] = False,
         is_ealry_stop: bool = True,
     ) -> None:
@@ -343,6 +368,7 @@ class HuberRegressorTemplate(RegressorTemplate):
 
         self.logger = logger
         self.use_gpu = use_gpu
+        self.tune_params = tune_params
 
         super().__init__(
             id="huber",
@@ -361,6 +387,7 @@ class KernelRidgeTemplate(RegressorTemplate):
         logger: Any, 
         use_gpu: bool = False,
         args: Dict[str, Any] = {},
+        tune_params: Dict[str, Any] = {},
         shap: Union[bool, str] = False,
         is_ealry_stop: bool = True,
     ) -> None:
@@ -368,6 +395,7 @@ class KernelRidgeTemplate(RegressorTemplate):
 
         self.logger = logger
         self.use_gpu = use_gpu
+        self.tune_params = tune_params
 
         super().__init__(
             id="kernel ridge",
@@ -386,6 +414,7 @@ class SVRModel(RegressorTemplate):
         logger: Any, 
         use_gpu: bool = False,
         args: Dict[str, Any] = {},
+        tune_params: Dict[str, Any] = {},
         shap: Union[bool, str] = False,
         is_ealry_stop: bool = True,
     ) -> None:
@@ -393,6 +422,7 @@ class SVRModel(RegressorTemplate):
         
         self.logger = logger
         self.use_gpu = use_gpu
+        self.tune_params = tune_params
 
         super().__init__(
             id="support vector regression",
@@ -411,6 +441,7 @@ class KNeighborsRegressorTemplate(RegressorTemplate):
         logger: Any, 
         use_gpu: bool = False,
         args: Dict[str, Any] = {},
+        tune_params: Dict[str, Any] = {},
         shap: Union[bool, str] = False,
         is_ealry_stop: bool = True,
     ) -> None:
@@ -418,6 +449,7 @@ class KNeighborsRegressorTemplate(RegressorTemplate):
         
         self.logger = logger
         self.use_gpu = use_gpu
+        self.tune_params = tune_params
 
         super().__init__(
             id="k neighbors regressor",
@@ -436,6 +468,7 @@ class DecisionTreeRegressorTemplate(RegressorTemplate):
         logger: Any, 
         use_gpu: bool = False,
         args: Dict[str, Any] = {},
+        tune_params: Dict[str, Any] = {},
         shap: Union[bool, str] = False,
         is_ealry_stop: bool = True,
     ) -> None:
@@ -443,6 +476,7 @@ class DecisionTreeRegressorTemplate(RegressorTemplate):
 
         self.logger = logger
         self.use_gpu = use_gpu
+        self.tune_params = tune_params
 
         super().__init__(
             id="decision tree regressor",
@@ -461,6 +495,7 @@ class RandomForestRegressorTemplate(RegressorTemplate):
         logger: Any, 
         use_gpu: bool = False,
         args: Dict[str, Any] = {},
+        tune_params: Dict[str, Any] = {},
         shap: Union[bool, str] = False,
         is_ealry_stop: bool = True,
     ) -> None:
@@ -468,6 +503,7 @@ class RandomForestRegressorTemplate(RegressorTemplate):
 
         self.logger = logger
         self.use_gpu = use_gpu
+        self.tune_params = tune_params
 
         super().__init__(
             id="random forest regressor",
@@ -486,6 +522,7 @@ class ExtraTreesRegressorTemplate(RegressorTemplate):
         logger: Any, 
         use_gpu: bool = False,
         args: Dict[str, Any] = {},
+        tune_params: Dict[str, Any] = {},
         shap: Union[bool, str] = False,
         is_ealry_stop: bool = True,
     ) -> None:
@@ -493,6 +530,7 @@ class ExtraTreesRegressorTemplate(RegressorTemplate):
 
         self.logger = logger
         self.use_gpu = use_gpu
+        self.tune_params = tune_params
 
         super().__init__(
             id="extra trees regressor",
@@ -511,6 +549,7 @@ class AdaBoostRegressorTemplate(RegressorTemplate):
         logger: Any, 
         use_gpu: bool = False,
         args: Dict[str, Any] = {},
+        tune_params: Dict[str, Any] = {},
         shap: Union[bool, str] = False,
         is_ealry_stop: bool = True,
     ) -> None:
@@ -518,6 +557,7 @@ class AdaBoostRegressorTemplate(RegressorTemplate):
 
         self.logger = logger
         self.use_gpu = use_gpu
+        self.tune_params = tune_params
 
         super().__init__(
             id="adaboost",
@@ -536,6 +576,7 @@ class GradientBoostingRegressorTemplate(RegressorTemplate):
         logger: Any, 
         use_gpu: bool = False,
         args: Dict[str, Any] = {},
+        tune_params: Dict[str, Any] = {},
         shap: Union[bool, str] = False,
         is_ealry_stop: bool = True,
     ) -> None:
@@ -543,6 +584,7 @@ class GradientBoostingRegressorTemplate(RegressorTemplate):
 
         self.logger = logger
         self.use_gpu = use_gpu
+        self.tune_params = tune_params
 
         super().__init__(
             id="gradient boosting regressor",
@@ -561,6 +603,7 @@ class MLPRegressorTemplate(RegressorTemplate):
         logger: Any, 
         use_gpu: bool = False,
         args: Dict[str, Any] = {},
+        tune_params: Dict[str, Any] = {},
         shap: Union[bool, str] = False,
         is_ealry_stop: bool = True,
     ) -> None:
@@ -568,6 +611,7 @@ class MLPRegressorTemplate(RegressorTemplate):
 
         self.logger = logger
         self.use_gpu = use_gpu
+        self.tune_params = tune_params
 
         super().__init__(
             id="mlp",
@@ -586,6 +630,7 @@ class XGBRegressorTemplate(RegressorTemplate):
         logger: Any, 
         use_gpu: bool = False,
         args: Dict[str, Any] = {},
+        tune_params: Dict[str, Any] = {},
         shap: Union[bool, str] = False,
         is_ealry_stop: bool = True,
     ) -> None:
@@ -593,6 +638,7 @@ class XGBRegressorTemplate(RegressorTemplate):
         
         self.logger = logger
         self.use_gpu = use_gpu
+        self.tune_params = tune_params
 
         super().__init__(
             id="xgboost",
@@ -611,6 +657,7 @@ class LGBMRegressorTemplate(RegressorTemplate):
         logger: Any, 
         use_gpu: bool = False,
         args: Dict[str, Any] = {},
+        tune_params: Dict[str, Any] = {},
         shap: Union[bool, str] = False,
         is_ealry_stop: bool = True,
     ) -> None:
@@ -618,6 +665,7 @@ class LGBMRegressorTemplate(RegressorTemplate):
 
         self.logger = logger
         self.use_gpu = use_gpu
+        self.tune_params = tune_params
 
         super().__init__(
             id="lightgbm",
@@ -636,6 +684,7 @@ class CatBoostRegressorTemplate(RegressorTemplate):
         logger: Any, 
         use_gpu: bool = False,
         args: Dict[str, Any] = {},
+        tune_params: Dict[str, Any] = {},
         shap: Union[bool, str] = False,
         is_ealry_stop: bool = True,
     ) -> None:
@@ -643,6 +692,7 @@ class CatBoostRegressorTemplate(RegressorTemplate):
 
         self.logger = logger
         self.use_gpu = use_gpu
+        self.tune_params = tune_params
 
         super().__init__(
             id="catboost",
@@ -661,6 +711,7 @@ class DummyRegressorTemplate(RegressorTemplate):
         logger: Any, 
         use_gpu: bool = False,
         args: Dict[str, Any] = {},
+        tune_params: Dict[str, Any] = {},
         shap: Union[bool, str] = False,
         is_ealry_stop: bool = True,
     ) -> None:
@@ -668,6 +719,7 @@ class DummyRegressorTemplate(RegressorTemplate):
 
         self.logger = logger
         self.use_gpu = use_gpu
+        self.tune_params = tune_params
 
         super().__init__(
             id="dummy",
@@ -687,6 +739,7 @@ class BaggingRegressorTemplate(RegressorTemplate):
         logger: Any, 
         use_gpu: bool = False,
         args: Dict[str, Any] = {},
+        tune_params: Dict[str, Any] = {},
         shap: Union[bool, str] = False,
         is_ealry_stop: bool = True,
     ) -> None:
@@ -694,6 +747,7 @@ class BaggingRegressorTemplate(RegressorTemplate):
 
         self.logger = logger
         self.use_gpu = use_gpu
+        self.tune_params = tune_params
 
         super().__init__(
             id="Bagging",
@@ -713,6 +767,7 @@ class StackingRegressorTemplate(RegressorTemplate):
         logger: Any, 
         use_gpu: bool = False,
         args: Dict[str, Any] = {},
+        tune_params: Dict[str, Any] = {},
         shap: Union[bool, str] = False,
         is_ealry_stop: bool = True,
     ) -> None:
@@ -720,6 +775,7 @@ class StackingRegressorTemplate(RegressorTemplate):
 
         self.logger = logger
         self.use_gpu = use_gpu
+        self.tune_params = tune_params
 
         super().__init__(
             id="Stacking",
@@ -739,6 +795,7 @@ class VotingRegressorTemplate(RegressorTemplate):
         logger: Any, 
         use_gpu: bool = False,
         args: Dict[str, Any] = {},
+        tune_params: Dict[str, Any] = {},
         shap: Union[bool, str] = False,
         is_ealry_stop: bool = True,
     ) -> None:
@@ -746,6 +803,7 @@ class VotingRegressorTemplate(RegressorTemplate):
 
         self.logger = logger
         self.use_gpu = use_gpu
+        self.tune_params = tune_params
 
         super().__init__(
             id="voting regressor",

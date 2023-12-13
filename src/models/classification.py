@@ -36,6 +36,7 @@ class LogisticRegressionClassifierTemplate(ClassifierTemplate):
         logger: Any, 
         use_gpu: bool = False,
         args: Dict[str, Any] = {},
+        tune_params: Dict[str, Any] = {},
         shap: Union[bool, str] = False,
         is_ealry_stop: bool = True,
     ) -> None:
@@ -43,6 +44,7 @@ class LogisticRegressionClassifierTemplate(ClassifierTemplate):
         
         self.logger = logger
         self.use_gpu = use_gpu
+        self.tune_params = tune_params
 
         super().__init__(
             id="lr",
@@ -60,6 +62,7 @@ class KNeighborsClassifierTemplate(ClassifierTemplate):
         experiment,
         logger: Any,
         args: Dict[str, Any] = {},
+        tune_params: Dict[str, Any] = {},
         use_gpu: bool = False,
         shap: Union[bool, str] = False,
         is_ealry_stop: bool = True,
@@ -68,6 +71,7 @@ class KNeighborsClassifierTemplate(ClassifierTemplate):
         
         self.logger = logger
         self.use_gpu = use_gpu
+        self.tune_params = tune_params
 
         super().__init__(
             id="knn",
@@ -85,6 +89,7 @@ class GaussianNBClassifierTemplate(ClassifierTemplate):
         experiment,
         logger: Any,
         args: Dict[str, Any] = {},
+        tune_params: Dict[str, Any] = {},
         use_gpu: bool = False,
         shap: Union[bool, str] = False,
         is_ealry_stop: bool = True,
@@ -93,6 +98,7 @@ class GaussianNBClassifierTemplate(ClassifierTemplate):
 
         self.logger = logger
         self.use_gpu = use_gpu
+        self.tune_params = tune_params
 
         super().__init__(
             id="nb",
@@ -110,6 +116,7 @@ class DecisionTreeClassifierTemplate(ClassifierTemplate):
         experiment,
         logger: Any,
         args: Dict[str, Any] = {},
+        tune_params: Dict[str, Any] = {},
         use_gpu: bool = False,
         shap: Union[bool, str] = False,
         is_ealry_stop: bool = True,
@@ -118,6 +125,7 @@ class DecisionTreeClassifierTemplate(ClassifierTemplate):
         
         self.logger = logger
         self.use_gpu = use_gpu
+        self.tune_params = tune_params
 
         super().__init__(
             id="dt",
@@ -135,6 +143,7 @@ class SGDClassifierTemplate(ClassifierTemplate):
         experiment,
         logger: Any,
         args: Dict[str, Any] = {},
+        tune_params: Dict[str, Any] = {},
         use_gpu: bool = False,
         shap: Union[bool, str] = False,
         is_ealry_stop: bool = True,
@@ -143,6 +152,7 @@ class SGDClassifierTemplate(ClassifierTemplate):
         
         self.logger = logger
         self.use_gpu = use_gpu
+        self.tune_params = tune_params
 
         super().__init__(
             id="svm",
@@ -160,6 +170,7 @@ class SVCClassifierTemplate(ClassifierTemplate):
         experiment,
         logger: Any,
         args: Dict[str, Any] = {},
+        tune_params: Dict[str, Any] = {},
         use_gpu: bool = False,
         shap: Union[bool, str] = False,
         is_ealry_stop: bool = True,
@@ -168,6 +179,7 @@ class SVCClassifierTemplate(ClassifierTemplate):
         
         self.logger = logger
         self.use_gpu = use_gpu
+        self.tune_params = tune_params
 
         super().__init__(
             id="rbfsvm",
@@ -185,6 +197,7 @@ class GaussianProcessClassifierTemplate(ClassifierTemplate):
         experiment,
         logger: Any,
         args: Dict[str, Any] = {},
+        tune_params: Dict[str, Any] = {},
         use_gpu: bool = False,
         shap: Union[bool, str] = False,
         is_ealry_stop: bool = True,
@@ -193,6 +206,7 @@ class GaussianProcessClassifierTemplate(ClassifierTemplate):
         
         self.logger = logger
         self.use_gpu = use_gpu
+        self.tune_params = tune_params
 
         super().__init__(
             id="gpc",
@@ -210,6 +224,7 @@ class MLPClassifierTemplate(ClassifierTemplate):
         experiment,
         logger: Any,
         args: Dict[str, Any] = {},
+        tune_params: Dict[str, Any] = {},
         use_gpu: bool = False,
         shap: Union[bool, str] = False,
         is_ealry_stop: bool = True,
@@ -218,6 +233,7 @@ class MLPClassifierTemplate(ClassifierTemplate):
         
         self.logger = logger
         self.use_gpu = use_gpu
+        self.tune_params = tune_params
 
         super().__init__(
             id="mlp",
@@ -235,6 +251,7 @@ class RidgeClassifierTemplate(ClassifierTemplate):
         experiment,
         logger: Any,
         args: Dict[str, Any] = {},
+        tune_params: Dict[str, Any] = {},
         use_gpu: bool = False,
         shap: Union[bool, str] = False,
         is_ealry_stop: bool = True,
@@ -243,6 +260,7 @@ class RidgeClassifierTemplate(ClassifierTemplate):
 
         self.logger = logger
         self.use_gpu = use_gpu
+        self.tune_params = tune_params
 
         super().__init__(
             id="ridge",
@@ -260,6 +278,7 @@ class RandomForestClassifierTemplate(ClassifierTemplate):
         experiment,
         logger: Any,
         args: Dict[str, Any] = {},
+        tune_params: Dict[str, Any] = {},
         use_gpu: bool = False,
         shap: Union[bool, str] = False,
         is_ealry_stop: bool = True,
@@ -268,6 +287,7 @@ class RandomForestClassifierTemplate(ClassifierTemplate):
         
         self.logger = logger
         self.use_gpu = use_gpu
+        self.tune_params = tune_params
 
         super().__init__(
             id="rf",
@@ -284,6 +304,7 @@ class QuadraticDiscriminantAnalysisTemplate(ClassifierTemplate):
         experiment,
         logger: Any,
         args: Dict[str, Any] = {},
+        tune_params: Dict[str, Any] = {},
         use_gpu: bool = False,
         shap: Union[bool, str] = False,
         is_ealry_stop: bool = True,
@@ -292,6 +313,7 @@ class QuadraticDiscriminantAnalysisTemplate(ClassifierTemplate):
 
         self.logger = logger
         self.use_gpu = use_gpu
+        self.tune_params = tune_params
 
         super().__init__(
             id="qda",
@@ -308,6 +330,7 @@ class AdaBoostClassifierTemplate(ClassifierTemplate):
         experiment,
         logger: Any,
         args: Dict[str, Any] = {},
+        tune_params: Dict[str, Any] = {},
         use_gpu: bool = False,
         shap: Union[bool, str] = False,
         is_ealry_stop: bool = True,
@@ -316,6 +339,7 @@ class AdaBoostClassifierTemplate(ClassifierTemplate):
         
         self.logger = logger
         self.use_gpu = use_gpu
+        self.tune_params = tune_params
 
         super().__init__(
             id="ada",
@@ -332,6 +356,7 @@ class GradientBoostingClassifierTemplate(ClassifierTemplate):
         experiment,
         logger: Any,
         args: Dict[str, Any] = {},
+        tune_params: Dict[str, Any] = {},
         use_gpu: bool = False,
         shap: Union[bool, str] = False,
         is_ealry_stop: bool = True,
@@ -340,6 +365,7 @@ class GradientBoostingClassifierTemplate(ClassifierTemplate):
         
         self.logger = logger
         self.use_gpu = use_gpu
+        self.tune_params = tune_params
 
         super().__init__(
             id="gbc",
@@ -356,6 +382,7 @@ class LinearDiscriminantAnalysisTemplate(ClassifierTemplate):
         experiment,
         logger: Any,
         args: Dict[str, Any] = {},
+        tune_params: Dict[str, Any] = {},
         use_gpu: bool = False,
         shap: Union[bool, str] = False,
         is_ealry_stop: bool = True,
@@ -364,6 +391,7 @@ class LinearDiscriminantAnalysisTemplate(ClassifierTemplate):
 
         self.logger = logger
         self.use_gpu = use_gpu
+        self.tune_params = tune_params
         
         super().__init__(
             id="lda",
@@ -380,6 +408,7 @@ class ExtraTreesClassifierTemplate(ClassifierTemplate):
         experiment,
         logger: Any,
         args: Dict[str, Any] = {},
+        tune_params: Dict[str, Any] = {},
         use_gpu: bool = False,
         shap: Union[bool, str] = False,
         is_ealry_stop: bool = True,
@@ -388,6 +417,7 @@ class ExtraTreesClassifierTemplate(ClassifierTemplate):
 
         self.logger = logger
         self.use_gpu = use_gpu
+        self.tune_params = tune_params
 
         super().__init__(
             id="et",
@@ -404,6 +434,7 @@ class XGBClassifierTemplate(ClassifierTemplate):
         experiment,
         logger: Any,
         args: Dict[str, Any] = {},
+        tune_params: Dict[str, Any] = {},
         use_gpu: bool = False,
         shap: Union[bool, str] = False,
         is_ealry_stop: bool = True,
@@ -412,6 +443,7 @@ class XGBClassifierTemplate(ClassifierTemplate):
          
         self.logger = logger
         self.use_gpu = use_gpu
+        self.tune_params = tune_params
 
         super().__init__(
             id="xgboost",
@@ -429,15 +461,16 @@ class LGBMClassifierTemplate(ClassifierTemplate):
         experiment,
         logger: Any,
         args: Dict[str, Any] = {},
+        tune_params: Dict[str, Any] = {},
         use_gpu: bool = False,
         shap: Union[bool, str] = False,
         is_ealry_stop: bool = True,
     ) -> None:
         from lightgbm import LGBMClassifier
-        from lightgbm.basic import LightGBMError
 
         self.logger = logger
         self.use_gpu = use_gpu
+        self.tune_params = tune_params
 
         super().__init__(
             id="lightgbm",
@@ -455,6 +488,7 @@ class CatBoostClassifierTemplate(ClassifierTemplate):
         experiment,
         logger: Any,
         args: Dict[str, Any] = {},
+        tune_params: Dict[str, Any] = {},
         use_gpu: bool = False,
         shap: Union[bool, str] = False,
         is_ealry_stop: bool = True,
@@ -463,6 +497,7 @@ class CatBoostClassifierTemplate(ClassifierTemplate):
 
         self.logger = logger
         self.use_gpu = use_gpu
+        self.tune_params = tune_params
 
         super().__init__(
             id="catboost",
@@ -480,6 +515,7 @@ class DummyClassifierTemplate(ClassifierTemplate):
         experiment,
         logger: Any,
         args: Dict[str, Any] = {},
+        tune_params: Dict[str, Any] = {},
         use_gpu: bool = False,
         shap: Union[bool, str] = False,
         is_ealry_stop: bool = True,
@@ -488,6 +524,7 @@ class DummyClassifierTemplate(ClassifierTemplate):
 
         self.logger = logger
         self.use_gpu = use_gpu
+        self.tune_params = tune_params
 
         super().__init__(
             id="dummy",
@@ -505,6 +542,7 @@ class BaggingClassifierTemplate(ClassifierTemplate):
         experiment,
         logger: Any,
         args: Dict[str, Any] = {},
+        tune_params: Dict[str, Any] = {},
         use_gpu: bool = False,
         shap: Union[bool, str] = False,
         is_ealry_stop: bool = True,
@@ -513,6 +551,7 @@ class BaggingClassifierTemplate(ClassifierTemplate):
 
         self.logger = logger
         self.use_gpu = use_gpu
+        self.tune_params = tune_params
 
         super().__init__(
             id="Bagging",
@@ -530,6 +569,7 @@ class StackingClassifierTemplate(ClassifierTemplate):
         experiment,
         logger: Any,
         args: Dict[str, Any] = {},
+        tune_params: Dict[str, Any] = {},
         use_gpu: bool = False,
         shap: Union[bool, str] = False,
         is_ealry_stop: bool = True,
@@ -538,6 +578,7 @@ class StackingClassifierTemplate(ClassifierTemplate):
 
         self.logger = logger
         self.use_gpu = use_gpu
+        self.tune_params = tune_params
 
         super().__init__(
             id="Stacking",
@@ -556,6 +597,7 @@ class VotingClassifierTemplate(ClassifierTemplate):
         experiment,
         logger: Any,
         args: Dict[str, Any] = {},
+        tune_params: Dict[str, Any] = {},
         use_gpu: bool = False,
         shap: Union[bool, str] = False,
         is_ealry_stop: bool = True,
@@ -564,6 +606,7 @@ class VotingClassifierTemplate(ClassifierTemplate):
 
         self.logger = logger
         self.use_gpu = use_gpu
+        self.tune_params = tune_params
 
         super().__init__(
             id="Voting",
@@ -581,6 +624,7 @@ class CalibratedClassifierCVTemplate(ClassifierTemplate):
         experiment,
         logger: Any,
         args: Dict[str, Any] = {},
+        tune_params: Dict[str, Any] = {},
         use_gpu: bool = False,
         shap: Union[bool, str] = False,
         is_ealry_stop: bool = True,
@@ -589,6 +633,7 @@ class CalibratedClassifierCVTemplate(ClassifierTemplate):
 
         self.logger = logger
         self.use_gpu = use_gpu
+        self.tune_params = tune_params
 
         super().__init__(
             id="CalibratedCV",

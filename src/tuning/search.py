@@ -6,38 +6,32 @@ import optuna
 from sklearn import ensemble
 from sklearn import metrics
 from sklearn import model_selection
-from sklearn import decomposition
-from sklearn import preprocessing
-from sklearn import pipeline
 from functools import partial
-from skopt import space, gp_minimize
+from typing import List, Any
 
-
-def optimize(params, param_names, x, y):
-    """gp_minimize
-    - x: feature
-    - y: target
-    """
-    params = dict(zip(param_names, params))
+def optimize_hyper_parameters(
+    self, 
+    df: pd.DataFrame, 
+    features: List[str] = None,
+    targets: List[str] = None,
+    n_trials: int = 15,
+    direction: str = "minimize",
+) -> dict[str, Any]:             
+    study = optuna.create_study(direction=direction)
+    study.optimize(
+        partial(
+            optimize_hyperparams, 
+            df=df, 
+            features=features, 
+            targets=targets,
+        ), 
+        n_trials=n_trials,
+    )
     
-    model = ensemble.RandomForestClassifier(**params)
-    kf = model_selection.StratifiedKFold(n_splits=5)
-    accuaraies = []
-    for idx in kf.split(X=x, y=y):
-        train_idx, test_idx = idx[0], idx[1]
-        xtrain = X[train_idx]
-        ytrain = y[train_idx]
-        xtest = X[test_idx]
-        ytest = y[test_idx]
-        
-        model.fit(xtrain, ytrain)
-        preds = model.predict(xtest)
-        fold_acc = metrics.accuracy_score(ytest, preds)
-        accuaraies.append(fold_acc)
+    return study.best_params
     
-    return -1.0 * np.mean(accuaraies)
 
-def optuna_optimize(trial, x, y):
+def optimize_hyperparams(trial, x, y):
     criterion = trial.suggest_categorical("criterion", ["gini", "entropy"])
     n_estimators = trial.suggest_int("n_estimators", 100, 1500)
     max_depth = trial.suggest_int("max_depth", 3, 15)
