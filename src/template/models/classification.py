@@ -12,16 +12,20 @@ class ClassifierTemplate:
         args: Dict[str, Any] = None,
         shap: Union[bool, str] = False,
     ) -> None:
+        self.id = id
+        self.name = name
         self.shap = shap
-        if not args:
-            args = {}
+        self.model = class_def
+        if args:
+           self.model(**args)
 
         self.is_early_stop = is_early_stop
 
-    def get_dict(self, internal: bool = True) -> Dict[str, Any]:
+    def get_dict(self) -> Dict[str, Any]:
         d = [
             ("ID", self.id),
             ("Name", self.name),
+            ("Class", self.class_def),
             ("is_early_stop", self.is_early_stop),
             ("Args", self.args),
         ]

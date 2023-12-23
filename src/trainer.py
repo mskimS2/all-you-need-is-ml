@@ -2,37 +2,42 @@ import os
 import pickle
 import numpy as np
 import pandas as pd
-import optuna
-from omegaconf import DictConfig
-from functools import partial
+from sklearn.pipeline import Pipeline
 from dataclasses import dataclass
-from typing import List, Tuple
+from typing import List, Dict, Any
 
-from type import Problem, Task
+from type import Problem
 from const import Const
-from preprocessor import Encoder, Scaler, Preprocessor
 from metrics import Metric
+from template.models import classifiers
 
 
 @dataclass
-class Trainer:
-    
+class ClassifierTrainer:
+    def set_up(
+        self,
+        models: List[Any] = None,
+        optimize_hyperparams_tune: bool =  False,
+    ):
+        if models is None:
+            self.models = self._get_models(optimize_hyperparams_tune)
+        
+        for _m in models:
+            if not isinstance(_m, Pipeline):
+                _m = Pipeline([_m.__repr__, _m])
+
+        self.models = models
+
     def fit(
-        self, 
+        self,         
         train_df: pd.DataFrame = None,
-        test_df: pd.DataFrame = None,
         features: List[str] = None,
         targets: List[str] = None,
-        optimize_hyperparams = None,
+        params: Dict[str, Any] = None,
         problem_type: Problem = None,
         num_classes: int = None,
     ):
-        print(f"configuration: {self.model.config}")
-        self.columns = features
-        scores = []
-        
         metrics = Metric(problem_type)
-        
         train_df = self.created_fold(
             train_df, 
             self.config.problem_type, 
@@ -42,15 +47,15 @@ class Trainer:
             targets,
         )
         
-        for fold in range(self.config.num_folds):
-            x_train = train_df[train_df[Const.FOLD_ID]!=fold][features]
-            y_train = train_df[train_df[Const.FOLD_ID]!=fold][targets]
-            x_valid = train_df[train_df[Const.FOLD_ID]!=fold][features]
-            y_valid = train_df[train_df[Const.FOLD_ID]!=fold][targets]
-
-            y_pred = []
-            models = [self.model] * len(targets)
-            for idx, _m in enumerate(models):
+        for fold_id in range(self.config.num_folds):
+            x_train = train_df[train_df[Const.FOLD_ID]!=fold_id][features]
+            y_train = train_df[train_df[Const.FOLD_ID]!=fold_id][targets]
+            x_valid = train_df[train_df[Const.FOLD_ID]!=fold_id][features]
+            y_valid = train_df[train_df[Const.FOLD_ID]!=fold_id][targets]
+            
+            y_pred = {m.__repr__: []*len(targets) for m in self.models}
+            scores = {m.__repr__: [] for m in self.models}
+            for idx, _m in enumerate(self.models):
                 _m.fit(
                     X=x_train,
                     y=y_train,
@@ -63,60 +68,58 @@ class Trainer:
                     kwargs=self.config,
                 )
             
-                if self.config.use_predict_proba is not None:
-                    y_pred_temp = self.model.predict_proba(X=x_valid, **vars(self.config))
+                if self.config.get("use_predict_proba") is not None:
+                    pred = self.model.predict_proba(X=x_valid, **vars(self.config))
                 else:
-                    y_pred_temp = self.model.predict(X=x_valid, **vars(self.config))
-                    
-                y_pred.append(y_pred_temp)
-            y_pred = np.column_stack(y_pred)
+                    pred = self.model.predict(X=x_valid, **vars(self.config))
+                
+                # calculate metric
+                metric_dict = metrics.calculate(y_valid, y_pred)
+                scores[_m.__repr__].append(metric_dict)
+                y_pred[_m.__repr__].append(pred)
+                self.model_save(self.model, _m.__repr__+f"_{fold_id}")
+                
+                if self.config.only_one_train is True:
+                    break
             
-            # calculate metric
-            metric_dict = metrics.calculate(y_valid, y_pred)
-            scores.append(metric_dict)
-            if self.config.only_one_train is True:
-                break
-
-        self.model_save(self.model)
-        mean_metrics = self.dict_mean(scores)
-        print(f"`{self.model.config.model_name}` model metric score: {mean_metrics}")
+            y_pred = np.column_stack(y_pred)
         
-        res = {
-            "training_metric": mean_metrics,
-        }
-        
-        return res
+        return pd.DataFrame.from_dict(
+            {k:self.score_mean(s) for k, s in scores.items()},
+            columns=["model"]+[f"{t}_pred" for t in targets]
+        )
     
     def predict(
         self, 
-        test_df: pd.DataFrame,
-        targets: List[str],
-        path: str = None,
-    ) -> np.ndarray:
-        model = self.model
-        if path is not None:
-            model = self.model_load()
-        
-        models = [model] * len(targets)
-        y_pred = []
+        models: List[Any],
+        test_df: pd.DataFrame = None,
+        targets: List[str] = None,
+    ) -> Dict[np.ndarray, Any]:
+        if models is None:
+            assert "models is None"
+            
+        y_pred = {m.__repr__: []* len(targets) for m in range(len(models))}
         for idx, _m in enumerate(models):
-            y_pred_temp = _m.predict_proba(test_df)[:, 1]
-            y_pred.append(y_pred_temp)
-        y_pred = np.column_stack(y_pred)
-        return y_pred
+            if models.hasattr("predict_proba"):
+                pred = _m.predict_proba(test_df)[:, 1]
+            elif models.hasattr("predict"):
+                pred = _m.predict(test_df)
+            y_pred[_m.__repr__].append(pred)
+        
+        return {k: np.column_stack(v) for k, v in y_pred.items()}
     
-    def save_model(self, model) -> None:
+    def save_model(self, model, name: str) -> None:
         os.makedirs(self.config.output_path, exist_ok=True)
-        with open(f"{self.config.output_path}/{self.config.model_name}.pkl", "wb") as f:
+        with open(f"{self.config.output_path}/{name}.pkl", "wb") as f:
             pickle.dump(model, f)
             
-    def load_model(self):
+    def load_model(self) -> Any:
         os.makedirs(self.config.output_path, exist_ok=True)
         with open(f"{self.config.output_path}/{self.config.model_name}.pkl", "rb") as f:
             model = pickle.load(f)
         return model
     
-    def dict_mean(self, dict_list):
+    def score_mean(self, dict_list):
         mean_dict = {}
         for key in dict_list[0].keys():
             mean_dict[key] = sum(d[key] for d in dict_list) / len(dict_list)
@@ -128,3 +131,30 @@ class Trainer:
             problem_type=self.problem_type, 
             num_classes=self.num_classes, 
         )
+        
+    def _get_models(self, optimize_hyperparams_tune: bool =  False):
+        return {
+            "lr": classifiers.LogisticRegressionClassifierTemplate(),
+            "knn": classifiers.KNeighborsClassifierTemplate(),
+            "nb": classifiers.GaussianNBClassifierTemplate(),
+            "dt": classifiers.DecisionTreeClassifierTemplate(),
+            "svm": classifiers.SGDClassifierTemplate(),
+            "rbfsvm": classifiers.SVCClassifierTemplate(),
+            "gpc": classifiers.GaussianProcessClassifierTemplate(),
+            "mlp": classifiers.MLPClassifierTemplate(),
+            "ridge": classifiers.RidgeClassifierTemplate(),
+            "rf": classifiers.RandomForestClassifierTemplate(),
+            "qda": classifiers.QuadraticDiscriminantAnalysisTemplate(),
+            "ada": classifiers.AdaBoostClassifierTemplate(),
+            "gbc": classifiers.GradientBoostingClassifierTemplate(),
+            "lda": classifiers.LinearDiscriminantAnalysisTemplate(),
+            "et": classifiers.ExtraTreesClassifierTemplate(),
+            "xgboost": classifiers.XGBClassifierTemplate(),
+            "lightgbm": classifiers.LGBMClassifierTemplate(),
+            "catboost": classifiers.CatBoostClassifierTemplate(),
+            "dummy": classifiers.DummyClassifierTemplate(),
+            "bagging": classifiers.BaggingClassifierTemplate(),
+            "stacking": classifiers.StackingClassifierTemplate(),
+            "voting": classifiers.VotingClassifierTemplate(),
+            "calibratedCV": classifiers.CalibratedClassifierCVTemplate(),
+        }

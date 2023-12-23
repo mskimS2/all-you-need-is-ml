@@ -12,13 +12,16 @@ class RegressorTemplate:
         is_early_stop: bool = True,
         shap: Union[bool, str] = False,
     ) -> None:
+        self.id = id
+        self.name = name
+        self.model = class_def
         self.shap = shap
-        if not args:
-            args = {}
+        if args:
+           self.model(**args)
 
         self.is_early_stop = is_early_stop
 
-    def get_dict(self, internal: bool = True) -> Dict[str, Any]:
+    def get_dict(self) -> Dict[str, Any]:
         d = [
             ("ID", self.id),
             ("Name", self.name),
